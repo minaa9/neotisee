@@ -15,6 +15,8 @@ import dotExposition from '../assets/common/pastille-exposition.svg'
 export const events = [
   {
     id: 'initiation-filage',
+    description:
+      'Découvrez les gestes du filage traditionnel et apprenez à transformer la laine en fil, comme autrefois.',
     date: '2026-11-08',
     categorie: 'atelier',
     titre: 'Initiation au filage de la laine',
@@ -24,6 +26,8 @@ export const events = [
   },
   {
     id: 'teinture-vegetale',
+    description:
+      'Explorez les pigments naturels et découvrez comment les plantes permettent de teindre les fibres textiles.',
     date: '2026-11-19',
     categorie: 'evenement',
     titre: 'Teinture végétale : les couleurs du vivant',
@@ -33,6 +37,8 @@ export const events = [
   },
   {
     id: 'textile-egypte',
+    description:
+      'Des sources écrites aux vestiges : la place du textile dans les sociétés de l’Égypte ancienne.',
     date: '2026-11-28',
     categorie: 'conference',
     titre: 'Le textile dans l’Égypte ancienne',
@@ -42,6 +48,8 @@ export const events = [
   },
   {
     id: 'journee-patrimoine',
+    description:
+      'Tissus, outils et reconstitutions : une journée pour découvrir le patrimoine textile, du Néolithique au Moyen Âge.',
     date: '2026-12-05',
     categorie: 'exposition',
     titre: 'Journée spéciale patrimoine textile',
@@ -51,11 +59,12 @@ export const events = [
   },
 ]
 
+/** `dot` : pastille des cartes de l'accueil ; `color` : couleur du mini-calendrier. */
 export const categories = {
-  atelier: { label: 'Atelier', dot: dotAtelier },
-  evenement: { label: 'Événement', dot: dotEvenement },
-  conference: { label: 'Conférence', dot: dotConference },
-  exposition: { label: 'Exposition', dot: dotExposition },
+  atelier: { label: 'Atelier', pluriel: 'Ateliers', dot: dotAtelier, color: '#913326' },
+  evenement: { label: 'Événement', pluriel: 'Événements', dot: dotEvenement, color: 'rgba(141,149,93,0.65)' },
+  conference: { label: 'Conférence', pluriel: 'Conférences', dot: dotConference, color: '#E3B06C' },
+  exposition: { label: 'Exposition', pluriel: 'Expositions', dot: dotExposition, color: '#060846' },
 }
 
 const mois = ['JANV.', 'FÉVR.', 'MARS', 'AVR.', 'MAI', 'JUIN', 'JUIL.', 'AOÛT', 'SEPT.', 'OCT.', 'NOV.', 'DÉC.']

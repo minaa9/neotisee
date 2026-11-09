@@ -53,6 +53,11 @@ const collage = [
   { x: 9, y: 319, w: 90, h: 175, src: planteGravure, cover: true },
 ]
 
+/** Composition photos + gravures, partagée avec la page L'association. */
+export function AssociationCollage() {
+  return <Collage width={W} height={H} items={collage} />
+}
+
 /** 02 · L'association (Figma 252:46) */
 export default function Association() {
   return (
@@ -83,7 +88,7 @@ export default function Association() {
         </Reveal>
 
         <Reveal delay={150} className="w-full max-w-[725px] self-center lg:-mt-[55px] lg:self-start xl:-mr-[103px]">
-          <Collage width={W} height={H} items={collage} />
+          <AssociationCollage />
         </Reveal>
       </div>
     </section>
