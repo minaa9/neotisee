@@ -125,12 +125,14 @@
 }
 
 /* Images « organiques » révélées en vague */
-.reveal-wave {
+/* L'animation porte sur l'image intérieure : le conteneur reste détectable
+   par l'IntersectionObserver (un clip-path sur lui le rendrait invisible). */
+.reveal-wave > * {
   clip-path: inset(0 100% 0 0);
   transition: clip-path 1.4s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-.reveal-wave.is-visible {
+.reveal-wave.is-visible > * {
   clip-path: inset(0);
 }
 
@@ -140,7 +142,7 @@
   }
 
   .reveal,
-  .reveal-wave {
+  .reveal-wave > * {
     opacity: 1;
     transform: none;
     clip-path: none;

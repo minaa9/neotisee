@@ -5,6 +5,8 @@ import Footer from './Footer'
 
 // Pages dont l'en-tête est posé sur une photo (navigation claire).
 const PHOTO_HEADERS = ['/']
+// Pages qui finissent par une section pêche (le pied de page continue sans vague).
+const PEACH_ENDINGS = ['/actualites', '/livre-d-or']
 
 export default function Layout() {
   const { pathname, hash } = useLocation()
@@ -26,7 +28,7 @@ export default function Layout() {
       <main id="contenu">
         <Outlet />
       </main>
-      <Footer />
+      <Footer afterPeach={PEACH_ENDINGS.includes(pathname)} />
     </>
   )
 }

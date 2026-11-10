@@ -9,14 +9,16 @@ import facebook from '../assets/v3/ui/facebook.svg'
 const socialIcons = { Instagram: instagram, Facebook: facebook }
 
 /** Pied de page V3, commun à toutes les pages (Figma « V3 Pied de page »). */
-export default function Footer() {
+export default function Footer({ afterPeach = false }) {
   const titleCls = 'text-label text-brique'
   const linkCls = 'text-[14px] leading-[2] text-brun transition-colors hover:text-terre-cuite'
 
   return (
-    <footer className="relative overflow-hidden bg-creme">
+    <footer className={`relative overflow-hidden ${afterPeach ? 'bg-peche' : 'bg-creme'}`}>
       {/* Vague pêche (le fond du pied de page) */}
+      {/* Après une section pêche, pas de vague : le fond pêche continue. */}
       <img
+        hidden={afterPeach}
         src={vague}
         alt=""
         aria-hidden="true"
