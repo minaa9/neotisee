@@ -7,7 +7,7 @@ import pointActif from '../../assets/v3/ui/point-actif.svg'
 import point from '../../assets/v3/ui/point.svg'
 
 // Décalages verticaux des cartes (Figma : 340, 460, 360).
-const offsets = ['lg:mt-0', 'lg:mt-[120px]', 'lg:mt-5']
+const offsets = ['lg:mt-0', 'lg:mt-[70px]', 'lg:mt-3']
 
 /** 06 · Avis (Figma 368:458) */
 export default function Reviews() {
@@ -33,7 +33,7 @@ export default function Reviews() {
   }
 
   return (
-    <section className="relative bg-peche pt-28 pb-20 xl:pt-[150px] xl:pb-[93px]">
+    <section className="relative bg-peche pt-24 pb-14 xl:pt-[120px] xl:pb-[70px]">
       <img src={vague} alt="" aria-hidden="true" className="absolute inset-x-0 top-[-1px] h-[50px] w-full md:h-[101px]" />
       <div className="container-site relative">
         <CenteredHeading
@@ -47,16 +47,16 @@ export default function Reviews() {
 
         <ul
           ref={listRef}
-          className="-mx-5 mt-12 flex snap-x snap-mandatory gap-[30px] overflow-x-auto px-5 pb-2 [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-3 lg:items-start lg:overflow-visible lg:px-0 xl:mt-[50px]"
+          className="-mx-5 mt-12 flex snap-x snap-mandatory gap-[30px] overflow-x-auto px-5 pb-2 [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-3 lg:items-start lg:overflow-visible lg:px-0 xl:mt-[40px]"
         >
           {temoignages.map((t, i) => (
             <li key={i} className={`w-[85%] shrink-0 snap-center sm:w-[380px] lg:w-auto ${offsets[i % 3]}`}>
-              <TestimonialCard temoignage={t} className="min-h-[380px]" />
+              <TestimonialCard temoignage={t} className="min-h-[330px]" />
             </li>
           ))}
         </ul>
 
-        <div className="mt-10 flex justify-center gap-[11px] xl:mt-[60px]">
+        <div className="mt-8 flex justify-center gap-[11px] xl:mt-10">
           {temoignages.map((_, i) => (
             <button
               key={i}

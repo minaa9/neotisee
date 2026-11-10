@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router'
 import PageHeader from '../components/PageHeader'
 import { Field, PillChoice } from '../components/forms'
 import { EMAIL_RE, inputCls, openMail, selectArrow } from '../components/formUtils'
-import { Button, Reveal, Star } from '../components/ui'
+import { Button, Reveal } from '../components/ui'
 import { events } from '../data/events'
 import { contact } from '../data/navigation'
 import heroImage from '../assets/ateliers/broderie.webp'
@@ -88,11 +88,11 @@ export default function ContactPage() {
         imageAlt="Broderie de fils de laine verte et beige sur toile de lin"
       />
 
-      <section aria-label="Coordonnées et formulaire" className="relative bg-creme pb-24 xl:h-[900px] xl:pt-10 xl:pb-0">
+      <section aria-label="Coordonnées et formulaire" className="relative bg-creme pb-16 xl:pt-2 xl:pb-[100px]">
         <div className="container-site flex flex-col gap-14 lg:flex-row lg:items-start lg:justify-between">
           {/* Coordonnées */}
           <Reveal className="relative lg:w-[460px] lg:shrink-0 lg:pt-5">
-            <ul className="flex flex-col gap-11">
+            <ul className="flex flex-col gap-7">
               {infos.map((info) => (
                 <li key={info.label} className="flex items-center gap-6">
                   <span className="relative flex size-14 shrink-0 items-center justify-center">
@@ -113,9 +113,8 @@ export default function ContactPage() {
               ))}
             </ul>
 
-            <div className="mt-12 rounded-[28px] bg-peche px-10 pt-7 pb-8 xl:mt-[74px]">
-              <p className="flex items-center gap-3 font-serif text-[26px] leading-[1.18] text-brun">
-                <Star className="-ml-[7px] size-3.5" />
+            <div className="mt-10 rounded-[28px] bg-peche px-8 pt-6 pb-7 sm:px-10 xl:mt-12">
+              <p className="font-serif text-[26px] leading-[1.18] text-brun">
                 Vous êtes une institution ?
               </p>
               <p className="mt-4 text-petit text-brun-doux">
@@ -128,7 +127,7 @@ export default function ContactPage() {
               src={fuseau}
               alt=""
               aria-hidden="true"
-              className="pointer-events-none mt-8 ml-[290px] hidden h-[240px] w-[70px] rotate-[14deg] object-contain lg:block"
+              className="pointer-events-none mt-6 ml-[300px] hidden h-[170px] w-[50px] rotate-[14deg] object-contain lg:block"
             />
           </Reveal>
 
@@ -211,7 +210,7 @@ export default function ContactPage() {
                     onChange={(e) => set('message', e.target.value)}
                     aria-invalid={!!errors.message}
                     aria-describedby={described('message')}
-                    className={`${inputCls(errors.message)} block min-h-[130px] resize-y py-4`}
+                    className={`${inputCls(errors.message)} block min-h-[110px] resize-y py-4`}
                   />
                 </Field>
                 <div>

@@ -1,16 +1,10 @@
 import { Link } from 'react-router'
 import { useReveal } from '../hooks/useReveal'
-import etoile from '../assets/v3/ui/etoile.svg'
 import logoPastille from '../assets/v3/ui/logo-pastille.svg'
 import logoN from '../assets/v3/ui/logo-n.webp'
 import flecheContour from '../assets/v3/ui/fleche-contour.svg'
 import flechePlein from '../assets/v3/ui/fleche-plein.svg'
 import flecheClair from '../assets/v3/ui/fleche-clair.svg'
-
-/** Étoile de fil (14 × 14), motif signature de la V3. */
-export function Star({ className = 'size-3.5' }) {
-  return <img src={etoile} alt="" width="14" height="14" className={className} />
-}
 
 /** Logo : le « N » blanc dans une pastille terre cuite (Figma « V3 Logo »). */
 export function Logo({ className = '' }) {
@@ -26,25 +20,19 @@ export function Logo({ className = '' }) {
   )
 }
 
-/** Sur-titre : étoile + libellé en capitales brique (Figma « V3 Sur-titre »). */
+/** Sur-titre : libellé en capitales brique (Figma « V3 Sur-titre »). */
 export function Eyebrow({ children, className = '' }) {
-  return (
-    <p className={`flex items-center gap-3 text-label text-brique ${className}`}>
-      <Star />
-      {children}
-    </p>
-  )
+  return <p className={`text-label text-brique ${className}`}>{children}</p>
 }
 
 /**
- * Titre de section centré : étoile, titre (partie en italique via <em>),
+ * Titre de section centré : titre (partie en italique via <em>),
  * chapô en italique. Utilisé sur l'accueil et les pages intérieures.
  */
 export function CenteredHeading({ title, subtitle, as: Tag = 'h2', className = '' }) {
   return (
     <Reveal className={`flex flex-col items-center text-center ${className}`}>
-      <Star />
-      <Tag className="mt-3.5 font-serif text-[40px] leading-[1.08] font-normal tracking-[-0.005em] text-brun md:text-[56px] [&_em]:font-light">
+      <Tag className="font-serif text-[40px] leading-[1.08] font-normal tracking-[-0.005em] text-brun md:text-[56px] [&_em]:font-light">
         {title}
       </Tag>
       {subtitle && <p className="mt-4 max-w-[900px] text-chapo text-brun-doux">{subtitle}</p>}

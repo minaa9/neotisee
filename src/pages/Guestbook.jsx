@@ -12,7 +12,7 @@ import fleurSechee from '../assets/home/fleur-seche.webp'
 import vague from '../assets/v3/home/vague-avis.svg'
 import etoile from '../assets/v3/ui/etoile-grande.svg'
 
-const offsets = ['lg:mt-0', 'lg:mt-[120px]', 'lg:mt-5']
+const offsets = ['lg:mt-0', 'lg:mt-[70px]', 'lg:mt-3']
 
 function Stars({ value, onChange }) {
   const [hover, setHover] = useState(0)
@@ -65,11 +65,11 @@ function LeaveAWord() {
   }
 
   return (
-    <section id="laisser-un-mot" aria-labelledby="mot-titre" className="relative scroll-mt-10 bg-peche pt-28 pb-24 xl:h-[820px] xl:pt-[160px] xl:pb-0">
+    <section id="laisser-un-mot" aria-labelledby="mot-titre" className="relative scroll-mt-10 bg-peche pt-24 pb-16 xl:pt-[130px] xl:pb-[100px]">
       <img src={vague} alt="" aria-hidden="true" className="absolute inset-x-0 top-[-1px] h-[50px] w-full md:h-[101px]" />
       <div className="container-site relative flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between">
         <Reveal className="flex gap-10">
-          <img src={fleurSechee} alt="" aria-hidden="true" className="mt-5 hidden h-[380px] w-[220px] shrink-0 object-contain md:block" />
+          <img src={fleurSechee} alt="" aria-hidden="true" className="mt-5 hidden h-[300px] w-[170px] shrink-0 object-contain md:block" />
           <div className="lg:pt-[30px]">
             <h2 id="mot-titre" className="max-w-[460px] font-serif text-[42px] leading-[1.08] tracking-[-0.005em] text-brun md:text-[52px]">
               À votre tour,
@@ -172,14 +172,16 @@ export default function GuestbookPage() {
         </Button>
       </PageHeader>
 
-      <section aria-label="Témoignages" className="bg-creme pb-24 xl:h-[760px] xl:pt-10 xl:pb-0">
-        <ul className="container-site grid gap-[30px] md:grid-cols-2 lg:grid-cols-3 lg:items-start">
+      <section aria-label="Témoignages" className="bg-creme pb-16 xl:pt-2 xl:pb-[90px]">
+        <div className="container-site">
+        <ul className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 [scrollbar-width:none] md:mx-0 md:grid md:gap-[30px] md:overflow-visible md:px-0 md:grid-cols-2 lg:grid-cols-3 lg:items-start">
           {temoignages.map((t, i) => (
-            <Reveal as="li" key={i} delay={i * 100} className={offsets[i % 3]}>
-              <TestimonialCard temoignage={t} className="min-h-[380px]" />
+            <Reveal as="li" key={i} delay={i * 100} className={`w-[85%] shrink-0 snap-center md:w-auto ${offsets[i % 3]}`}>
+              <TestimonialCard temoignage={t} className="min-h-[330px]" />
             </Reveal>
           ))}
         </ul>
+        </div>
       </section>
 
       <LeaveAWord />

@@ -52,7 +52,7 @@ export default function About() {
         imageAlt="Participantes et participants autour d’une table pendant un atelier textile"
       />
 
-      <section className="bg-creme pt-6 pb-24 xl:pt-[53px] xl:pb-[120px]">
+      <section className="bg-creme pt-4 pb-16 xl:pt-[30px] xl:pb-[90px]">
         <div className="container-site">
           <CenteredHeading
             title={
@@ -61,21 +61,21 @@ export default function About() {
               </>
             }
           />
-          <ol className="mt-14 grid gap-x-10 gap-y-14 sm:grid-cols-2 lg:grid-cols-4 xl:mt-[80px] xl:gap-x-[40px]">
+          <ol className="mt-10 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-10 lg:grid-cols-4 xl:mt-[50px] xl:gap-x-[40px]">
             {fils.map((f, i) => (
               <Reveal
                 as="li"
                 key={f.titre}
                 delay={i * 120}
-                className={`flex flex-col items-center text-center ${i % 2 === 1 ? 'lg:mt-10' : ''}`}
+                className={`flex flex-col items-center text-center ${i % 2 === 1 ? 'lg:mt-8' : ''}`}
               >
-                <div className="relative size-[250px]">
-                  <img src={f.image} alt="" loading="lazy" className="absolute top-2.5 left-2.5 size-[230px] rounded-full object-cover" />
+                <div className="relative size-[150px] sm:size-[210px]">
+                  <img src={f.image} alt="" loading="lazy" className="absolute top-2 left-2 size-[134px] rounded-full object-cover sm:size-[194px]" />
                   <img src={anneau} alt="" aria-hidden="true" className="absolute inset-0 size-full" />
                 </div>
                 <p className="mt-5 text-label text-brique">{String(i + 1).padStart(2, '0')}</p>
-                <h2 className="mt-1 max-w-[250px] font-serif text-[26px] leading-[1.18] text-brun">{f.titre}</h2>
-                <p className="mt-4 max-w-[230px] text-petit text-brun-doux">{f.texte}</p>
+                <h2 className="mt-1 max-w-[250px] font-serif text-[21px] leading-[1.18] text-brun sm:text-[26px]">{f.titre}</h2>
+                <p className="mt-3 max-w-[230px] text-petit text-brun-doux">{f.texte}</p>
               </Reveal>
             ))}
           </ol>

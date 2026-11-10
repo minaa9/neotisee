@@ -91,7 +91,7 @@ function Loom({ list }) {
   }
 
   return (
-    <section className="bg-creme pt-8 pb-20 xl:pt-[33px] xl:pb-[70px]">
+    <section className="bg-creme pt-4 pb-14 xl:pt-0 xl:pb-[50px]">
       <div className="container-site">
         <CenteredHeading
           title={
@@ -102,7 +102,7 @@ function Loom({ list }) {
           subtitle="Chaque fil vertical est un jour, chaque navette un rendez-vous."
         />
 
-        <div className="-mx-5 mt-10 overflow-x-auto px-5 pb-4 [scrollbar-width:thin] md:mx-0 md:px-0 xl:mt-[42px]">
+        <div className="-mx-5 mt-8 overflow-x-auto px-5 pb-4 [scrollbar-width:thin] md:mx-0 md:px-0 xl:mt-[34px]">
           <div
             onPointerDown={onPointerDown}
             onPointerUp={onPointerUp}
@@ -243,15 +243,15 @@ function NextEvent({ event }) {
   }
 
   return (
-    <section aria-labelledby="prochain" className="relative bg-peche pt-28 pb-20 xl:h-[720px] xl:pt-[140px] xl:pb-0">
+    <section aria-labelledby="prochain" className="relative bg-peche pt-24 pb-14 xl:pt-[120px] xl:pb-[80px]">
       <img src={vague} alt="" aria-hidden="true" className="absolute inset-x-0 top-[-1px] h-[50px] w-full md:h-[101px]" />
       <div className="container-site relative flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-20">
-        <Reveal className="overflow-hidden rounded-tl-[250px] rounded-tr-[24px] rounded-br-[250px] rounded-bl-[24px] lg:w-[520px] lg:shrink-0">
-          <img src={event.image} alt="" loading="lazy" className="aspect-[520/500] w-full object-cover" />
+        <Reveal className="overflow-hidden rounded-tl-[250px] rounded-tr-[24px] rounded-br-[250px] rounded-bl-[24px] lg:w-[440px] lg:shrink-0">
+          <img src={event.image} alt="" loading="lazy" className="aspect-[16/10] w-full object-cover sm:aspect-[520/440]" />
         </Reveal>
-        <Reveal delay={120} className="lg:pt-[30px]">
+        <Reveal delay={120} className="lg:pt-2">
           <p className="inline-block rounded-full bg-lin px-4 py-2 text-label text-brique">Prochain rendez-vous · {when}</p>
-          <p id="prochain" className="mt-4 font-serif text-[60px] leading-none font-light tracking-[-0.01em] text-brun md:text-[78px] xl:-ml-1">
+          <p id="prochain" className="mt-4 font-serif text-[52px] leading-none font-light tracking-[-0.01em] text-brun md:text-[66px] xl:-ml-1">
             {d.getDate()} <em>{MOIS[d.getMonth()]}</em>
           </p>
           <h2 className="mt-4 max-w-[520px] font-serif text-[30px] leading-[1.18] text-brun md:text-[34px]">{event.titre}</h2>
@@ -299,7 +299,7 @@ function AllEvents({ list }) {
   }, [list])
 
   return (
-    <section aria-labelledby="tous" className="relative overflow-hidden bg-creme pt-20 pb-24 xl:pt-[90px] xl:pb-[110px]">
+    <section aria-labelledby="tous" className="relative overflow-hidden bg-creme pt-16 pb-16 xl:pt-[70px] xl:pb-[80px]">
       <img src={planteGravee} alt="" aria-hidden="true" className="pointer-events-none absolute top-[60px] right-[70px] hidden h-[250px] w-[130px] object-contain opacity-60 xl:block" />
       <div className="container-site relative">
         <Reveal as="h2" id="tous" className="font-serif text-[40px] leading-[1.08] tracking-[-0.005em] text-brun md:text-[50px]">
@@ -322,7 +322,7 @@ function AllEvents({ list }) {
                   return (
                     <Reveal as="li" key={e.id} id={`rdv-${e.id}`} className={`relative scroll-mt-28 ${past ? 'opacity-50' : ''}`}>
                       <img src={cat.dot} alt="" aria-hidden="true" className="absolute top-[48px] left-0 size-[11px] lg:left-[-5.5px]" />
-                      <article className="ml-8 grid grid-cols-[80px_1fr_auto] items-start gap-x-4 border-b border-brun/10 pt-5 pb-5 lg:ml-12 lg:min-h-[140px] lg:grid-cols-[132px_1fr_auto] lg:gap-x-0">
+                      <article className="ml-8 grid grid-cols-[80px_1fr_auto] items-start gap-x-4 border-b border-brun/10 pt-4 pb-4 lg:ml-12 lg:min-h-[120px] lg:grid-cols-[132px_1fr_auto] lg:gap-x-0">
                         <p className="font-serif leading-[1.08] text-brun">
                           <span className="block text-[48px] tracking-[-0.005em] lg:text-[56px]">{String(d.getDate()).padStart(2, '0')}</span>
                           <span className="ml-1.5 block text-[20px] leading-[1.15] font-light text-brun-doux italic">{MOIS_COURT[d.getMonth()]}</span>

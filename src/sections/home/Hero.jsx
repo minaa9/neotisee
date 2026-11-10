@@ -1,15 +1,13 @@
 import { Button } from '../../components/ui'
 import hero from '../../assets/home/hero.webp'
 import cercleFil from '../../assets/v3/home/cercle-fil.svg'
-import haloEtoile from '../../assets/v3/home/halo-etoile.svg'
-import etoileBlanche from '../../assets/v3/home/etoile-blanche.svg'
 import noeud from '../../assets/v3/home/noeud.svg'
 import vagueCreme from '../../assets/v3/home/vague-creme.svg'
 
 /** 01 · Hero (Figma 347:20) */
 export default function Hero() {
   return (
-    <section className="relative isolate flex min-h-[720px] items-center overflow-hidden bg-brun md:min-h-[860px] xl:h-[1000px]">
+    <section className="relative isolate flex min-h-[620px] items-center overflow-hidden bg-brun md:min-h-[700px] xl:h-[820px]">
       <img
         src={hero}
         alt=""
@@ -26,19 +24,17 @@ export default function Hero() {
         className="absolute inset-x-0 top-0 -z-10 h-[420px] bg-gradient-to-b from-[rgba(140,152,165,0.45)] to-[rgba(140,152,165,0)]"
       />
 
-      {/* Cercle de fil qui tourne lentement + étoile */}
-      <div aria-hidden="true" className="pointer-events-none absolute top-[110px] left-1/2 hidden size-[640px] translate-x-[-20px] lg:block">
+      {/* Cercle de fil qui tourne lentement */}
+      <div aria-hidden="true" className="pointer-events-none absolute top-[90px] left-1/2 hidden size-[540px] translate-x-[20px] lg:block">
         <img src={cercleFil} alt="" className="animate-tourne absolute inset-0 size-full" />
-        <img src={haloEtoile} alt="" className="absolute top-[294px] left-[616px] size-[52px]" />
-        <img src={etoileBlanche} alt="" className="absolute top-[309px] left-[631px] size-[22px]" />
       </div>
 
-      <div className="container-site relative pt-24 pb-40 xl:pt-[38px] xl:pb-[110px]">
+      <div className="container-site relative pt-24 pb-32 xl:pt-[40px] xl:pb-[90px]">
         <div className="animate-[heroIn_1.1s_ease_both]">
-          <h1 className="-ml-1 font-serif text-[96px] leading-[0.9] font-light tracking-[-0.02em] text-lin sm:text-[130px] xl:-ml-2 xl:text-[170px]">
+          <h1 className="-ml-1 font-serif text-[96px] leading-[0.9] font-light tracking-[-0.02em] text-lin sm:text-[130px] xl:-ml-2 xl:text-[140px]">
             Néotisse
           </h1>
-          <p className="mt-6 max-w-[700px] font-serif text-[38px] leading-[1.15] font-light text-lin italic sm:text-[48px] xl:mt-[15px] xl:text-[58px]">
+          <p className="mt-6 max-w-[700px] font-serif text-[38px] leading-[1.15] font-light text-lin italic sm:text-[48px] xl:mt-[12px] xl:text-[48px]">
             Des gestes oubliés,
             <br />
             des histoires à retisser
@@ -57,7 +53,7 @@ export default function Hero() {
       <a
         href="#association"
         aria-label="Défiler vers la suite"
-        className="absolute bottom-[150px] left-1/2 hidden h-[110px] w-6 -translate-x-1/2 md:block"
+        className="absolute bottom-[110px] left-1/2 hidden h-[110px] w-6 -translate-x-1/2 md:block"
       >
         <span aria-hidden="true" className="absolute top-0 left-1/2 h-[110px] w-px -translate-x-1/2 bg-lin/60" />
         <img src={noeud} alt="" className="absolute bottom-[-4px] left-1/2 size-[9px] -translate-x-1/2 animate-bounce" />

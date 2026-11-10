@@ -36,27 +36,27 @@ export default function TeamPage() {
         imageAlt="Émilie Roma file de la laine au fuseau"
       />
 
-      <section aria-label="Portraits" className="bg-creme pb-24 xl:h-[780px] xl:pt-20 xl:pb-0">
-        <ul className="container-site grid gap-16 lg:grid-cols-2 lg:gap-[30px]">
+      <section aria-label="Portraits" className="bg-creme pb-16 xl:pt-10 xl:pb-[90px]">
+        <ul className="container-site grid gap-12 lg:grid-cols-2 lg:gap-[30px]">
           {membres.map((m, i) => (
             <Reveal
               as="li"
               key={m.nom}
               delay={i * 150}
-              className={`flex flex-col gap-6 sm:flex-row sm:gap-[30px] ${i === 1 ? 'lg:mt-[100px]' : ''}`}
+              className={`flex flex-col gap-6 sm:flex-row sm:gap-[30px] ${i === 1 ? 'lg:mt-[70px]' : ''}`}
             >
               <img
                 src={m.photo}
                 alt={`Portrait de ${m.nom}`}
                 loading="lazy"
-                className="aspect-[300/440] w-full max-w-[300px] shrink-0 rounded-t-[150px] rounded-b-[24px] object-cover"
+                className="aspect-[300/400] w-full max-w-[250px] shrink-0 rounded-t-[150px] rounded-b-[24px] object-cover"
               />
-              <div className="max-w-[260px] sm:pt-[60px]">
-                <h2 className="font-serif text-[44px] leading-[1.08] tracking-[-0.005em] text-brun">{m.nom}</h2>
-                <p className="mt-6 font-serif text-[22px] leading-[1.15] font-light text-terre-cuite italic sm:mt-[62px] sm:min-h-[50px]">
+              <div className="max-w-[280px] sm:pt-[40px]">
+                <h2 className="font-serif text-[38px] leading-[1.08] tracking-[-0.005em] text-brun">{m.nom}</h2>
+                <p className="mt-6 font-serif text-[22px] leading-[1.15] font-light text-terre-cuite italic sm:mt-[30px] sm:min-h-[50px]">
                   {m.role}
                 </p>
-                <p className="mt-6 text-petit text-brun-doux">{m.bio}</p>
+                <p className="mt-4 text-petit text-brun-doux">{m.bio}</p>
               </div>
             </Reveal>
           ))}

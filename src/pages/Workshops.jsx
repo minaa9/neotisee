@@ -32,15 +32,15 @@ export default function WorkshopsPage() {
       />
 
       {/* Formats */}
-      <section className="bg-creme pt-4 pb-20 xl:h-[420px] xl:pt-10 xl:pb-0">
+      <section className="bg-creme pt-2 pb-14 xl:pt-4 xl:pb-[70px]">
         <Reveal className="container-site text-center">
           <h2 className="font-serif text-[40px] leading-[1.08] tracking-[-0.005em] text-brun md:text-[48px]">
             Filage, tissage, <em className="font-light">teinture…</em>
           </h2>
-          <ul className="mt-12 flex flex-wrap justify-center gap-x-[154px] gap-y-8 xl:mt-[62px]">
+          <ul className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-6 sm:gap-x-[154px] xl:mt-10">
             {formats.map((f) => (
-              <li key={f.label} className="flex w-[176px] flex-col items-center">
-                <span className="relative flex size-24 items-center justify-center">
+              <li key={f.label} className="flex w-[100px] flex-col items-center sm:w-[176px]">
+                <span className="relative flex size-[72px] items-center justify-center sm:size-24">
                   <img src={pastille} alt="" className="absolute inset-0 size-full" />
                   <img src={f.icon} alt="" width="30" height="30" className="relative" />
                 </span>
@@ -58,7 +58,7 @@ export default function WorkshopsPage() {
           <section
             key={a.id}
             id={a.id}
-            className={`relative scroll-mt-24 overflow-hidden py-14 xl:h-[620px] xl:py-[60px] ${reversed ? 'bg-peche' : 'bg-creme'}`}
+            className={`relative scroll-mt-24 overflow-hidden py-12 xl:py-[50px] ${reversed ? 'bg-peche' : 'bg-creme'}`}
           >
             <div
               className={`container-site flex flex-col gap-10 lg:items-start lg:gap-10 ${
@@ -66,18 +66,18 @@ export default function WorkshopsPage() {
               }`}
             >
               <Reveal
-                className={`overflow-hidden lg:w-[540px] lg:shrink-0 ${
+                className={`overflow-hidden lg:w-[440px] lg:shrink-0 ${
                   reversed ? 'rounded-t-[250px] rounded-b-[24px]' : 'rounded-l-[24px] rounded-r-[250px]'
                 }`}
               >
-                <img src={a.image} alt="" loading="lazy" className="aspect-[540/500] w-full object-cover" />
+                <img src={a.image} alt="" loading="lazy" className="aspect-[540/400] w-full object-cover" />
               </Reveal>
 
               <Reveal delay={120} className={`relative lg:pt-[30px] ${reversed ? 'lg:pl-10' : ''}`}>
-                <p className="font-serif text-[80px] leading-[0.9] font-light tracking-[-0.02em] text-terre-cuite/90 xl:text-[96px]">
+                <p className="font-serif text-[56px] leading-[0.9] font-light tracking-[-0.02em] text-terre-cuite/90 xl:text-[72px]">
                   {String(i + 1).padStart(2, '0')}
                 </p>
-                <h2 className="mt-8 max-w-[520px] font-serif text-[40px] leading-[1.08] tracking-[-0.005em] text-brun md:text-[52px] xl:mt-[44px]">
+                <h2 className="mt-4 max-w-[520px] font-serif text-[34px] leading-[1.08] tracking-[-0.005em] text-brun md:text-[44px] xl:mt-6">
                   {a.titre}
                 </h2>
                 <p className="mt-5 max-w-[460px] text-courant text-brun-doux xl:mt-6">{a.description}</p>
@@ -87,15 +87,15 @@ export default function WorkshopsPage() {
               src={a.objet}
               alt=""
               aria-hidden="true"
-              className={`pointer-events-none absolute top-[380px] hidden h-[180px] w-[90px] object-contain opacity-85 xl:block ${
-                reversed ? 'left-[600px]' : 'left-[1260px]'
+              className={`pointer-events-none absolute top-[300px] hidden h-[140px] w-[70px] object-contain opacity-85 xl:block ${
+                reversed ? 'left-[520px]' : 'left-[1240px]'
               }`}
             />
           </section>
         )
       })}
 
-      <section className="bg-creme py-20 xl:py-24">
+      <section className="bg-creme py-14 xl:py-16">
         <Reveal className="container-site flex flex-col items-center gap-6 text-center">
           <p className="text-chapo text-brun-doux">Un atelier pour votre école, votre musée ou votre festival ?</p>
           <Button to="/contact?objet=prestation" variant="plein">

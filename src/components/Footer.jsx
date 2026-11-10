@@ -28,10 +28,10 @@ export default function Footer({ afterPeach = false }) {
         src={planteGravee}
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute top-[150px] right-[15px] hidden h-[290px] w-[150px] object-contain opacity-70 xl:block"
+        className="pointer-events-none absolute top-[120px] right-[15px] hidden h-[240px] w-[124px] object-contain opacity-70 xl:block"
       />
 
-      <div className="container-site relative pt-28 pb-8 xl:pt-[140px]">
+      <div className="container-site relative pt-24 pb-8 xl:pt-[115px]">
         <div className="flex flex-col gap-12 lg:flex-row lg:justify-between">
           <div className="max-w-[460px]">
             <Logo />
@@ -93,7 +93,7 @@ export default function Footer({ afterPeach = false }) {
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col gap-2 border-t border-brun/15 pt-5 text-petit text-brun-doux sm:flex-row sm:justify-between xl:mt-[70px]">
+        <div className="mt-10 flex flex-col gap-2 border-t border-brun/15 pt-5 text-petit text-brun-doux sm:flex-row sm:justify-between xl:mt-[44px]">
           <p>© {new Date().getFullYear()} Néotisse — association loi 1901</p>
           <p>
             <Link to="/mentions-legales" className="hover:text-brun">
