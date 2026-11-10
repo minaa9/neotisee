@@ -4,10 +4,10 @@ import cercleFil from '../../assets/v3/home/cercle-fil.svg'
 import noeud from '../../assets/v3/home/noeud.svg'
 import vagueCreme from '../../assets/v3/home/vague-creme.svg'
 
-/** 01 · Hero (Figma 347:20) */
+/** 01 · Hero (Figma 347:20) — toujours la hauteur de l'écran, pour que la vague et « Défiler » restent visibles. */
 export default function Hero() {
   return (
-    <section className="relative isolate flex min-h-[620px] items-center overflow-hidden bg-brun md:min-h-[700px] xl:h-[820px]">
+    <section className="relative isolate flex h-[100svh] min-h-[600px] max-h-[960px] items-center overflow-hidden bg-brun">
       <img
         src={hero}
         alt=""
@@ -25,13 +25,13 @@ export default function Hero() {
       />
 
       {/* Cercle de fil qui tourne lentement */}
-      <div aria-hidden="true" className="pointer-events-none absolute top-[90px] left-1/2 hidden size-[540px] translate-x-[20px] lg:block">
+      <div aria-hidden="true" className="pointer-events-none absolute top-[calc(50%-20px)] right-[6%] hidden aspect-square h-[min(560px,62svh)] -translate-y-1/2 lg:block">
         <img src={cercleFil} alt="" className="animate-tourne absolute inset-0 size-full" />
       </div>
 
-      <div className="container-site relative pt-24 pb-32 xl:pt-[40px] xl:pb-[90px]">
+      <div className="container-site relative pt-20 pb-36 md:pb-40">
         <div className="animate-[heroIn_1.1s_ease_both]">
-          <h1 className="-ml-1 font-serif text-[96px] leading-[0.9] font-light tracking-[-0.02em] text-lin sm:text-[130px] xl:-ml-2 xl:text-[140px]">
+          <h1 className="-ml-1 font-serif text-[96px] leading-[0.9] font-light tracking-[-0.02em] text-lin sm:text-[120px] xl:-ml-2 xl:text-[clamp(110px,15svh,140px)]">
             Néotisse
           </h1>
           <p className="mt-6 max-w-[700px] font-serif text-[38px] leading-[1.15] font-light text-lin italic sm:text-[48px] xl:mt-[12px] xl:text-[48px]">
@@ -53,13 +53,11 @@ export default function Hero() {
       <a
         href="#association"
         aria-label="Défiler vers la suite"
-        className="absolute bottom-[110px] left-1/2 hidden h-[110px] w-6 -translate-x-1/2 md:block"
+        className="group absolute bottom-[150px] left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 md:flex"
       >
-        <span aria-hidden="true" className="absolute top-0 left-1/2 h-[110px] w-px -translate-x-1/2 bg-lin/60" />
-        <img src={noeud} alt="" className="absolute bottom-[-4px] left-1/2 size-[9px] -translate-x-1/2 animate-bounce" />
-        <span className="absolute top-[30px] left-1/2 -translate-x-1/2 rotate-90 text-petit whitespace-nowrap text-lin/80">
-          Défiler
-        </span>
+        <span className="text-label text-lin/80 transition-colors group-hover:text-lin">Défiler</span>
+        <span aria-hidden="true" className="h-12 w-px bg-lin/60" />
+        <img src={noeud} alt="" className="size-[9px] animate-bounce" />
       </a>
 
       <img

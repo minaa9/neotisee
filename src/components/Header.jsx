@@ -26,7 +26,7 @@ export default function Header({ variant = 'creme' }) {
 
   return (
     <header className="absolute inset-x-0 top-0 z-40">
-      <div className="mx-auto flex h-[84px] max-w-site items-center justify-between px-5 md:px-12 xl:h-24 xl:px-[72px]">
+      <div className="container-site flex h-[84px] items-center justify-between xl:h-24">
         <Link to="/" aria-label="Néotisse, retour à l’accueil" className="relative z-50">
           <Logo />
         </Link>
