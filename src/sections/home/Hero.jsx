@@ -53,7 +53,7 @@ export default function Hero() {
       <a
         href="#association"
         aria-label="Défiler vers la suite"
-        className="group absolute bottom-[150px] left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 md:flex"
+        className="group absolute bottom-[90px] left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 md:flex"
       >
         <span className="text-label text-lin/80 transition-colors group-hover:text-lin">Défiler</span>
         <span aria-hidden="true" className="h-12 w-px bg-lin/60" />
@@ -64,7 +64,7 @@ export default function Hero() {
         src={vagueCreme}
         alt=""
         aria-hidden="true"
-        className="absolute inset-x-0 bottom-[-1px] h-[60px] w-full md:h-[146px]"
+        className="absolute inset-x-0 bottom-[-1px] h-[36px] w-full md:h-[64px]"
       />
     </section>
   )
