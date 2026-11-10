@@ -13,7 +13,15 @@ export default function Header({ variant = 'creme' }) {
   // Le menu mobile se ferme tout seul quand on change de page.
   const [openOn, setOpenOn] = useState(null)
   const open = openOn === pathname
-  const onPhoto = variant === 'photo'
+  // Une fois qu'on a défilé, la barre prend un fond crème (elle reste collée en haut).
+  const [scrolled, setScrolled] = useState(false)
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+  const onPhoto = variant === 'photo' && !scrolled
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
@@ -25,8 +33,16 @@ export default function Header({ variant = 'creme' }) {
   const text = onPhoto && !open ? 'text-lin' : 'text-brun'
 
   return (
-    <header className="absolute inset-x-0 top-0 z-40">
-      <div className="container-site flex h-[84px] items-center justify-between xl:h-24">
+    <header
+      className={`fixed inset-x-0 top-0 z-40 transition-[background-color,box-shadow] duration-300 ${
+        scrolled ? 'bg-creme/92 shadow-[0_1px_0_rgba(61,42,35,0.08)] backdrop-blur-md' : ''
+      }`}
+    >
+      <div
+        className={`container-site flex items-center justify-between transition-[height] duration-300 ${
+          scrolled ? 'h-[68px] xl:h-[76px]' : 'h-[84px] xl:h-24'
+        }`}
+      >
         <Link to="/" aria-label="Néotisse, retour à l’accueil" className="relative z-50">
           <Logo />
         </Link>
