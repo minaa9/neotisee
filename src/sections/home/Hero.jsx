@@ -2,9 +2,8 @@ import { Button } from '../../components/ui'
 import hero from '../../assets/home/hero.webp'
 import cercleFil from '../../assets/v3/home/cercle-fil.svg'
 import noeud from '../../assets/v3/home/noeud.svg'
-import vagueCreme from '../../assets/v3/home/vague-creme.svg'
 
-/** 01 · Hero (Figma 347:20) — toujours la hauteur de l'écran, pour que la vague et « Défiler » restent visibles. */
+/** 01 · Hero (Figma 347:20) — photo plein écran, sans vague en bas. */
 export default function Hero() {
   return (
     <section className="relative isolate flex h-[100svh] min-h-[600px] max-h-[960px] items-center overflow-hidden bg-brun">
@@ -53,19 +52,13 @@ export default function Hero() {
       <a
         href="#association"
         aria-label="Défiler vers la suite"
-        className="group absolute bottom-[90px] left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 md:flex"
+        className="group absolute bottom-[40px] left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 md:flex"
       >
         <span className="text-label text-lin/80 transition-colors group-hover:text-lin">Défiler</span>
         <span aria-hidden="true" className="h-12 w-px bg-lin/60" />
         <img src={noeud} alt="" className="size-[9px] animate-bounce" />
       </a>
 
-      <img
-        src={vagueCreme}
-        alt=""
-        aria-hidden="true"
-        className="absolute inset-x-0 bottom-[-1px] h-[36px] w-full md:h-[64px]"
-      />
     </section>
   )
 }
