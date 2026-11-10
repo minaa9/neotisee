@@ -1,15 +1,13 @@
-import { Button, Eyebrow, SectionTitle } from '../components/ui'
+import { Button, Eyebrow } from '../components/ui'
 
 /** Page temporaire en attendant l'intégration de la maquette. */
 export default function Placeholder({ eyebrow, title }) {
   return (
-    <section className="container-site flex min-h-[60vh] flex-col items-start justify-center gap-6 py-24">
+    <section className="container-site flex min-h-[70vh] flex-col items-start justify-center gap-6 pt-40 pb-24">
       <Eyebrow>{eyebrow}</Eyebrow>
-      <SectionTitle as="h1">{title}</SectionTitle>
-      <p className="text-encre/70">Cette page est en cours de construction.</p>
-      <Button to="/" variant="outline">
-        Retour à l’accueil
-      </Button>
+      <h1 className="font-serif text-[48px] leading-[1.08] text-brun md:text-[64px]">{title}</h1>
+      <p className="text-courant text-brun-doux">Cette page est en cours de construction.</p>
+      <Button to="/">Retour à l’accueil</Button>
     </section>
   )
 }

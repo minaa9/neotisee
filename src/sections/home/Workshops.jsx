@@ -1,70 +1,44 @@
 import { Link } from 'react-router'
-import Collage from '../../components/Collage'
-import { Eyebrow, Reveal, SectionTitle } from '../../components/ui'
+import { CenteredHeading, Reveal } from '../../components/ui'
 import { ateliers } from '../../data/ateliers'
-import arrowLong from '../../assets/common/arrow-long.svg'
+import vague from '../../assets/v3/home/vague-ateliers.svg'
 
-/** 05 · Nos ateliers (Figma 253:2) */
+/** 05 · Nos ateliers (Figma 348:71) */
 export default function Workshops() {
   return (
-    <section className="bg-lin py-20 xl:pt-20 xl:pb-[110px]">
-      <div className="container-site">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-          <Reveal className="flex flex-col items-start gap-[18px]">
-            <Eyebrow>Nos ateliers</Eyebrow>
-            <SectionTitle>
-              Apprendre, expérimenter,
-              <br />
-              transmettre
-            </SectionTitle>
-          </Reveal>
-          <Reveal
-            as="p"
-            delay={100}
-            className="max-w-[440px] text-[17px] leading-[1.4] text-encre/70 lg:mt-12 lg:mr-[62px] xl:text-[19px]"
-          >
-            Des ateliers pour toucher l’histoire du bout des doigts : filer, tisser, teindre et
-            broder comme autrefois, guidé·es par des passionnées d’archéologie.
-          </Reveal>
-        </div>
+    <section className="relative bg-creme pt-28 pb-24 xl:pt-[223px] xl:pb-[130px]">
+      <img src={vague} alt="" aria-hidden="true" className="absolute inset-x-0 top-[-1px] h-[70px] w-full md:h-[141px]" />
+      <div className="container-site relative">
+        <CenteredHeading
+          title={
+            <>
+              Apprendre, <em>expérimenter,</em> transmettre
+            </>
+          }
+          subtitle="Des ateliers pour toucher l’histoire du bout des doigts, guidé·es par des passionnées d’archéologie."
+        />
 
-        <ul className="mt-12 grid grid-cols-1 gap-x-[45px] gap-y-12 sm:grid-cols-2 lg:grid-cols-4 xl:mt-[78px]">
+        <ul className="mt-14 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-4 xl:mt-[76px]">
           {ateliers.map((a, i) => (
-            <Reveal as="li" key={a.id} delay={i * 100}>
-              <Link to={`/ateliers#${a.id}`} className="group block text-center">
-                <div className="mx-auto max-w-[287px] transition-transform duration-500 group-hover:-translate-y-1.5 group-hover:rotate-[-1.5deg]">
-                  <Collage
-                    width={287.13}
-                    height={266.601}
-                    items={[
-                      { x: 0, y: 0, w: 287.13, h: 266.601, iw: 261.172, ih: 282.112, rotate: -91.11, src: a.image },
-                    ]}
+            <Reveal as="li" key={a.id} delay={i * 100} className={i % 2 === 1 ? 'lg:mt-[50px]' : ''}>
+              <Link to={`/ateliers#${a.id}`} className="group block">
+                <div className="overflow-hidden rounded-t-[135px] rounded-b-[20px]">
+                  <img
+                    src={a.image}
+                    alt=""
+                    loading="lazy"
+                    className="aspect-[270/370] w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 </div>
-                <h3 className="mt-3 text-[18px] font-medium text-black">{a.titre}</h3>
-                <p className="mx-auto mt-2 max-w-[200px] text-[14.5px] font-light text-black/70">
-                  {a.accroche}
-                </p>
+                <p className="mt-[26px] text-label text-brique">{String(i + 1).padStart(2, '0')}</p>
+                <h3 className="mt-1.5 font-serif text-[30px] leading-[1.18] text-brun transition-colors group-hover:text-terre-cuite">
+                  {a.titre}
+                </h3>
+                <p className="mt-1.5 font-serif text-[19px] leading-[1.15] font-light text-brun-doux italic">{a.accroche}</p>
               </Link>
             </Reveal>
           ))}
         </ul>
-
-        <div className="mt-14 flex justify-center xl:mt-[85px]">
-          <Link
-            to="/ateliers"
-            className="group inline-flex h-14 w-full max-w-[451px] items-center justify-center gap-9 rounded-[40px] bg-terre-fonce text-[20px] font-bold text-white transition-colors hover:bg-terre"
-          >
-            Voir tous nos ateliers
-            <img
-              src={arrowLong}
-              alt=""
-              width="27"
-              height="11"
-              className="transition-transform duration-300 group-hover:translate-x-1"
-            />
-          </Link>
-        </div>
       </div>
     </section>
   )

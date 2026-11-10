@@ -1,74 +1,76 @@
+import PageHeader from '../components/PageHeader'
 import { Eyebrow, Reveal } from '../components/ui'
 import { news } from '../data/news'
-import traitTitre from '../assets/actualites/trait-titre.svg'
-import photoTissage from '../assets/actualites/photo-tissage.webp'
-import HeroDecor from '../components/HeroDecor'
+import heroImage from '../assets/ateliers/tissage.webp'
+import vague from '../assets/v3/home/vague-avis.svg'
 
-/** Page Actualités (Figma 257:324) */
+/** Page Actualités V3 (Figma 352:280) */
 export default function NewsPage() {
+  const [featured, ...others] = news
+
   return (
-    <div className="overflow-hidden bg-creme pb-24 xl:pb-[120px]">
-      <section className="relative pt-14 xl:min-h-[558px] xl:pt-[56px]">
-        <HeroDecor />
+    <>
+      <PageHeader
+        title="Actualités"
+        subtitle={
+          <>
+            Les fils de
+            <br />
+            nos découvertes
+          </>
+        }
+        text="Événements, ateliers, rencontres et nouvelles collaborations : suivez la vie de Néotisse."
+        image={heroImage}
+        imageAlt="Bandes tissées à chevrons sur des cadres en bois"
+      />
 
-        <Reveal as="header" className="container-site relative">
-          <Eyebrow>Actualités</Eyebrow>
-          <h1 className="mt-8 font-serif text-[40px] leading-[normal] text-black/88 xl:text-[48px]">
-            Les fils de nos découvertes.
-          </h1>
-          <img src={traitTitre} alt="" width="122" height="4" className="mt-6 -ml-0.5 xl:mt-9" />
-          <p className="mt-6 max-w-[569px] text-[19px] leading-[normal] text-black/72 xl:text-[22px]">
-            Événements, ateliers, rencontres et nouvelles collaborations : suivez la vie de Néotisse
-            et découvrez comment les savoir-faire textiles anciens continuent de se transmettre et
-            de s’expérimenter.
-          </p>
-        </Reveal>
+      {/* À la une */}
+      <article id={featured.id} className="scroll-mt-24 bg-creme pb-20 xl:h-[680px] xl:pt-10 xl:pb-0">
+        <div className="container-site flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-[60px]">
+          <Reveal className="overflow-hidden rounded-l-[260px] rounded-r-[24px] lg:w-[640px] lg:shrink-0">
+            <img src={featured.image} alt={featured.alt} loading="lazy" className="aspect-[640/520] w-full object-cover" />
+          </Reveal>
+          <Reveal delay={120} className="lg:pt-[50px]">
+            <Eyebrow>À la une · {featured.rubrique}</Eyebrow>
+            <h2 className="mt-5 max-w-[500px] font-serif text-[40px] leading-[1.08] tracking-[-0.005em] text-brun md:text-[50px] xl:-ml-0.5">
+              {featured.titre}
+            </h2>
+            <div className="mt-3 max-w-[460px] space-y-[1.65em] text-courant text-brun-doux">
+              {featured.paragraphes.map((p) => (
+                <p key={p}>{p}</p>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+      </article>
 
-        <Reveal className="container-site mt-10 xl:hidden">
-          <img src={photoTissage} alt="" className="mx-auto w-full max-w-[442px]" />
-        </Reveal>
+      {/* Autres actualités */}
+      <section aria-labelledby="derniers-fils" className="relative bg-peche pt-28 pb-24 xl:pt-[150px] xl:pb-[90px]">
+        <img src={vague} alt="" aria-hidden="true" className="absolute inset-x-0 top-[-1px] h-[50px] w-full md:h-[101px]" />
+        <div className="container-site relative">
+          <Reveal as="h2" id="derniers-fils" className="font-serif text-[40px] leading-[1.08] tracking-[-0.005em] text-brun md:text-[48px]">
+            Les derniers fils
+          </Reveal>
+          <ul className="mt-10 grid gap-[30px] md:grid-cols-2 lg:grid-cols-3 xl:mt-[38px]">
+            {others.map((a, i) => (
+              <Reveal as="li" key={a.id} id={a.id} delay={i * 100} className="scroll-mt-24">
+                <article className="h-full overflow-hidden rounded-[24px] bg-lin">
+                  <img src={a.image} alt={a.alt} loading="lazy" className="aspect-[380/220] w-full object-cover" />
+                  <div className="px-7 pt-[26px] pb-10">
+                    <p className="text-label text-brique">{a.rubrique}</p>
+                    <h3 className="mt-2.5 font-serif text-[28px] leading-[1.18] text-brun">{a.titre}</h3>
+                    <div className="mt-2 space-y-[1.55em] text-petit text-brun-doux">
+                      {a.paragraphes.map((p) => (
+                        <p key={p}>{p}</p>
+                      ))}
+                    </div>
+                  </div>
+                </article>
+              </Reveal>
+            ))}
+          </ul>
+        </div>
       </section>
-
-      <div className="container-site mt-14 xl:mt-[100px]">
-        {news.map((article, i) => {
-          const reversed = i % 2 === 1
-          return (
-            <article
-              key={article.id}
-              id={article.id}
-              className={`scroll-mt-28 border-terre/18 ${i > 0 ? 'mt-14 border-t pt-14 xl:mt-[60px] xl:pt-[60px]' : ''}`}
-            >
-              <div
-                className={`flex flex-col gap-8 lg:items-center lg:gap-[82px] ${
-                  reversed ? 'lg:flex-row-reverse lg:justify-between' : 'lg:flex-row'
-                }`}
-              >
-                <Reveal className="overflow-hidden rounded-[24px] lg:w-[600px] lg:shrink-0">
-                  <img
-                    src={article.image}
-                    alt={article.alt}
-                    loading="lazy"
-                    className="aspect-[3/2] w-full object-cover"
-                  />
-                </Reveal>
-                <Reveal
-                  delay={120}
-                  className={`flex max-w-[520px] flex-col items-start gap-[18px] ${reversed ? 'lg:ml-[82px]' : ''}`}
-                >
-                  <p className="text-xs font-semibold tracking-[0.14em] text-terre uppercase">
-                    {article.rubrique}
-                  </p>
-                  <h2 className="font-serif text-[30px] leading-[1.2] text-encre xl:text-[38px]">
-                    {article.titre}
-                  </h2>
-                  <span aria-hidden="true" className="h-[2px] w-16 bg-terre" />
-                  <p className="text-[17px] leading-[1.55] text-encre/72 xl:text-[18px]">{article.texte}</p>
-                </Reveal>
-              </div>
-            </article>
-          )
-        })}
-      </div>
-    </div>
+    </>
   )
 }

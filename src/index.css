@@ -1,30 +1,22 @@
 @import "tailwindcss";
 
 /* ------------------------------------------------------------------
-   Charte Néotisse (Figma « Palette & Typo » + maquettes)
+   Charte Néotisse V3 (Figma « wireframe vibecoding »)
    ------------------------------------------------------------------ */
 @theme {
-  /* Couleurs de la charte */
-  --color-terre: #a53f30;        /* rouge terre : accents, sur-titres */
-  --color-terre-fonce: #913326;  /* boutons principaux */
-  --color-sable: #d3b690;        /* beige sable */
-  --color-pistache: #c5cc9a;     /* vert pistache */
-  --color-olive: #8d955d;
-  --color-nuit: #202b3c;         /* bleu nuit : footer, contrastes */
-  --color-ocre: #d9a452;
-  --color-mauve: #d8c3cc;
-
-  /* Fonds et textes */
-  --color-creme: #f6eddd;        /* fond principal */
-  --color-lin: #efe2cc;          /* fond alterné */
-  --color-ivoire: #f1e0c3;       /* texte clair sur fond sombre */
-  --color-encre: #1f1a17;        /* texte principal */
-  --color-brun: #261a12;
+  /* Couleurs */
+  --color-creme: #f8ede4;        /* fond principal */
+  --color-lin: #fffaf5;          /* cartes, texte clair */
+  --color-peche: #f1ddcf;        /* fonds alternés, vagues */
+  --color-poudre: #e7c6b3;       /* points inactifs, détails */
+  --color-brun: #3d2a23;         /* titres, texte principal */
+  --color-brun-doux: #6e5348;    /* texte courant */
+  --color-brique: #9a4a33;       /* sur-titres */
+  --color-terre-cuite: #b4583d;  /* accents, boutons pleins */
 
   /* Typographies */
-  --font-serif: "Hedvig Letters Serif", Georgia, serif;
-  --font-sans: "DM Sans", system-ui, sans-serif;
-  --font-script: "Homemade Apple", cursive; /* annotations manuscrites */
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Jost", system-ui, sans-serif;
 
   --container-site: 1440px;
 }
@@ -35,16 +27,16 @@
   }
 
   body {
-    @apply bg-creme font-sans text-encre antialiased;
-    font-optical-sizing: auto;
+    @apply bg-creme font-sans text-brun antialiased;
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-terre);
+    outline: 2px solid var(--color-terre-cuite);
     outline-offset: 3px;
   }
 }
 
+/* Marges latérales des maquettes : 120 px sur grand écran. */
 @utility container-site {
   width: 100%;
   max-width: var(--container-site);
@@ -52,14 +44,50 @@
   padding-inline: 20px;
 
   @variant md {
-    padding-inline: 40px;
+    padding-inline: 48px;
   }
 
   @variant xl {
-    padding-inline: 78px;
+    padding-inline: 120px;
   }
 }
 
+/* Styles de texte V3 */
+@utility text-label {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+@utility text-courant {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+@utility text-petit {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+@utility text-chapo {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-style: italic;
+  font-size: 22px;
+  line-height: 1.15;
+
+  @variant md {
+    font-size: 24px;
+  }
+}
+
+/* Animations */
 @keyframes heroIn {
   from {
     opacity: 0;
@@ -71,13 +99,23 @@
   }
 }
 
+@keyframes tourne {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-tourne {
+  animation: tourne 120s linear infinite;
+}
+
 /* Apparition progressive au défilement */
 .reveal {
   opacity: 0;
   transform: translateY(24px);
   transition:
-    opacity 0.8s ease,
-    transform 0.8s ease;
+    opacity 0.9s ease,
+    transform 0.9s ease;
   transition-delay: var(--reveal-delay, 0ms);
 }
 
@@ -86,15 +124,31 @@
   transform: none;
 }
 
+/* Images « organiques » révélées en vague */
+.reveal-wave {
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 1.4s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.reveal-wave.is-visible {
+  clip-path: inset(0);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
 
-  .reveal {
+  .reveal,
+  .reveal-wave {
     opacity: 1;
     transform: none;
+    clip-path: none;
     transition: none;
+  }
+
+  .animate-tourne {
+    animation: none;
   }
 
   *,

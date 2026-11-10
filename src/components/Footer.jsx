@@ -1,30 +1,52 @@
 import { Link } from 'react-router'
-import { contact, footerNav } from '../data/navigation'
-import logo from '../assets/common/logo-neotisse.webp'
+import { contact, footerNav, socials } from '../data/navigation'
+import { Logo } from './ui'
+import vague from '../assets/v3/ui/vague.svg'
+import planteGravee from '../assets/v3/ui/plante-gravee.webp'
+import instagram from '../assets/v3/ui/instagram.svg'
+import facebook from '../assets/v3/ui/facebook.svg'
 
-/** Pied de page commun à toutes les pages (Figma « footer »). */
+const socialIcons = { Instagram: instagram, Facebook: facebook }
+
+/** Pied de page V3, commun à toutes les pages (Figma « V3 Pied de page »). */
 export default function Footer() {
-  const linkCls = 'text-[15px] text-ivoire transition-colors hover:text-sable'
-  const titleCls = 'text-xs font-semibold tracking-[0.16em] text-sable uppercase'
+  const titleCls = 'text-label text-brique'
+  const linkCls = 'text-[14px] leading-[2] text-brun transition-colors hover:text-terre-cuite'
 
   return (
-    <footer className="bg-nuit text-ivoire">
-      <div className="container-site pt-16 pb-8 xl:pt-20">
+    <footer className="relative overflow-hidden bg-creme">
+      {/* Vague pêche (le fond du pied de page) */}
+      <img
+        src={vague}
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-x-0 top-0 h-full w-full object-cover object-top"
+      />
+      <img
+        src={planteGravee}
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute top-[150px] right-[15px] hidden h-[290px] w-[150px] object-contain opacity-70 xl:block"
+      />
+
+      <div className="container-site relative pt-28 pb-8 xl:pt-[140px]">
         <div className="flex flex-col gap-12 lg:flex-row lg:justify-between">
-          <div className="max-w-[340px]">
-            <img src={logo} alt="Néotisse" width="66" height="58" className="h-[58px] w-auto" />
-            <p className="mt-5 font-script text-[19px] text-white">Ne perdez pas le fil !</p>
-            <p className="mt-6 text-[15px] leading-normal text-ivoire/80">
+          <div className="max-w-[460px]">
+            <Logo />
+            <p className="mt-4 font-serif text-[42px] leading-[1.15] font-light text-brun italic md:text-[52px]">
+              Ne perdez pas le fil !
+            </p>
+            <p className="mt-3 max-w-[380px] text-petit text-brun-doux">
               Association de médiation scientifique autour des savoir-faire textiles anciens, fondée
               en 2024 à Montpellier.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-10 gap-y-10 sm:grid-cols-3 lg:grid-cols-[220px_220px_auto] lg:gap-x-0 xl:mr-[90px]">
+          <div className="grid grid-cols-2 gap-10 sm:grid-cols-[200px_200px_auto] sm:gap-0 lg:mr-[80px] lg:pt-2.5">
             {footerNav.map((col) => (
               <nav key={col.title} aria-label={col.title}>
                 <p className={titleCls}>{col.title}</p>
-                <ul className="mt-3 flex flex-col gap-3">
+                <ul className="mt-4">
                   {col.links.map((l) => (
                     <li key={l.to}>
                       <Link to={l.to} className={linkCls}>
@@ -37,7 +59,7 @@ export default function Footer() {
             ))}
             <div className="col-span-2 sm:col-span-1">
               <p className={titleCls}>Nous écrire</p>
-              <ul className="mt-3 flex flex-col gap-3">
+              <ul className="mt-4">
                 <li>
                   <a href={`mailto:${contact.email}`} className={linkCls}>
                     {contact.email}
@@ -48,20 +70,35 @@ export default function Footer() {
                     {contact.phone}
                   </a>
                 </li>
-                <li className="text-[15px]">{contact.city}</li>
+                <li className="text-[14px] leading-[2]">{contact.city}</li>
+              </ul>
+              <ul className="mt-5 flex flex-wrap gap-3">
+                {socials.map((s) => (
+                  <li key={s.label}>
+                    <a
+                      href={s.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-2 rounded-full border border-brique/45 py-2 pr-4 pl-3 text-[14px] text-brun transition-colors hover:bg-lin"
+                    >
+                      <img src={socialIcons[s.label]} alt="" width="18" height="18" />
+                      {s.label}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-3 border-t border-ivoire/15 pt-6 text-[13px] text-ivoire/55 sm:flex-row sm:justify-between xl:mt-[62px]">
+        <div className="mt-14 flex flex-col gap-2 border-t border-brun/15 pt-5 text-petit text-brun-doux sm:flex-row sm:justify-between xl:mt-[70px]">
           <p>© {new Date().getFullYear()} Néotisse — association loi 1901</p>
           <p>
-            <Link to="/mentions-legales" className="hover:text-ivoire">
+            <Link to="/mentions-legales" className="hover:text-brun">
               Mentions légales
             </Link>
-            {' · '}
-            <Link to="/confidentialite" className="hover:text-ivoire">
+            {'  ·  '}
+            <Link to="/confidentialite" className="hover:text-brun">
               Confidentialité
             </Link>
           </p>

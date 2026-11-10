@@ -1,88 +1,103 @@
 import { Link } from 'react-router'
 import { useReveal } from '../hooks/useReveal'
-import flecheBlanche from '../assets/common/fleche-blanche.svg'
-import flecheRouge from '../assets/common/fleche-rouge.svg'
-import flecheNoire from '../assets/common/fleche-noire.svg'
+import etoile from '../assets/v3/ui/etoile.svg'
+import logoPastille from '../assets/v3/ui/logo-pastille.svg'
+import logoN from '../assets/v3/ui/logo-n.webp'
+import flecheContour from '../assets/v3/ui/fleche-contour.svg'
+import flechePlein from '../assets/v3/ui/fleche-plein.svg'
+import flecheClair from '../assets/v3/ui/fleche-clair.svg'
 
-const arrows = { white: flecheBlanche, red: flecheRouge, dark: flecheNoire }
+/** Étoile de fil (14 × 14), motif signature de la V3. */
+export function Star({ className = 'size-3.5' }) {
+  return <img src={etoile} alt="" width="14" height="14" className={className} />
+}
 
-/** Flèche horizontale des maquettes (27 × 12). */
-export function Arrow({ color = 'red', className = '' }) {
+/** Logo : le « N » blanc dans une pastille terre cuite (Figma « V3 Logo »). */
+export function Logo({ className = '' }) {
   return (
-    <img
-      src={arrows[color]}
-      alt=""
-      width="27"
-      height="12"
-      className={`h-3 w-[27px] shrink-0 transition-transform duration-300 group-hover:translate-x-1 ${className}`}
-    />
+    <span className={`relative block size-[46px] shrink-0 ${className}`}>
+      <img src={logoPastille} alt="" width="46" height="46" className="absolute inset-0 size-full" />
+      <img
+        src={logoN}
+        alt=""
+        className="absolute top-[10.5px] left-[9px] h-[25px] w-[28px] object-contain"
+      />
+    </span>
   )
 }
 
-/** Sur-titre en capitales rouges avec trait(s). */
-export function Eyebrow({ children, centered = false, light = false, className = '' }) {
-  const line = <span aria-hidden="true" className="h-[1.5px] w-7 shrink-0 bg-current" />
+/** Sur-titre : étoile + libellé en capitales brique (Figma « V3 Sur-titre »). */
+export function Eyebrow({ children, className = '' }) {
   return (
-    <p
-      className={`flex items-center gap-3 text-[13px] font-semibold tracking-[0.14em] uppercase ${
-        light ? 'text-sable' : 'text-terre'
-      } ${className}`}
-    >
-      {centered && line}
-      <span>{children}</span>
-      {line}
+    <p className={`flex items-center gap-3 text-label text-brique ${className}`}>
+      <Star />
+      {children}
     </p>
   )
 }
 
-/** Titre de section en Hedvig Letters Serif. */
-export function SectionTitle({ as: Tag = 'h2', children, className = '' }) {
+/**
+ * Titre de section centré : étoile, titre (partie en italique via <em>),
+ * chapô en italique. Utilisé sur l'accueil et les pages intérieures.
+ */
+export function CenteredHeading({ title, subtitle, as: Tag = 'h2', className = '' }) {
   return (
-    <Tag
-      className={`font-serif text-[34px] leading-[1.2] font-normal text-encre/90 md:text-[44px] xl:text-[48px] ${className}`}
-    >
-      {children}
-    </Tag>
+    <Reveal className={`flex flex-col items-center text-center ${className}`}>
+      <Star />
+      <Tag className="mt-3.5 font-serif text-[40px] leading-[1.08] font-normal tracking-[-0.005em] text-brun md:text-[56px] [&_em]:font-light">
+        {title}
+      </Tag>
+      {subtitle && <p className="mt-4 max-w-[900px] text-chapo text-brun-doux">{subtitle}</p>}
+    </Reveal>
   )
 }
 
-const buttonStyles = {
-  primary: 'bg-terre-fonce text-white hover:bg-terre',
-  outline: 'border-[1.2px] border-encre text-encre hover:bg-encre hover:text-creme',
-  'outline-light': 'border-[1.5px] border-ivoire text-white hover:bg-ivoire hover:text-encre',
+const pill = {
+  contour: 'border border-brun/55 text-brun group-hover:bg-brun group-hover:text-lin',
+  plein: 'bg-terre-cuite text-lin group-hover:bg-brique',
+  clair: 'border border-lin/55 text-lin group-hover:bg-lin group-hover:text-brun',
+}
+const circle = {
+  contour: 'border-brun/55 group-hover:bg-brun',
+  plein: 'border-terre-cuite/55 group-hover:bg-terre-cuite',
+  clair: 'border-lin/55 group-hover:bg-lin',
+}
+const arrows = { contour: flecheContour, plein: flechePlein, clair: flecheClair }
+// Couleur de la flèche quand le cercle se remplit au survol.
+const arrowHover = {
+  contour: 'group-hover:invert',
+  plein: 'group-hover:brightness-0 group-hover:invert',
+  clair: 'group-hover:invert',
 }
 
 /**
- * Bouton arrondi. Rend un <Link> si `to` est fourni, un <a> si `href`,
- * sinon un <button>.
+ * Bouton V3 : pilule + cercle flèche.
+ * Survol : la flèche glisse de 4 px et le cercle se remplit.
+ * Rend un <Link> (to), un <a> (href) ou un <button>.
  */
-export function Button({
-  to,
-  href,
-  variant = 'primary',
-  arrow = false,
-  size = 'md',
-  className = '',
-  children,
-  ...props
-}) {
-  const sizes = {
-    sm: 'px-[18px] py-3 text-[15px]',
-    md: 'px-8 py-4 text-[17px]',
-    lg: 'px-8 py-5 text-[19px]',
-  }
-  const cls = `group inline-flex items-center justify-center gap-3.5 rounded-full transition-colors duration-300 ${sizes[size]} ${buttonStyles[variant]} ${className}`
+export function Button({ to, href, variant = 'contour', className = '', children, ...props }) {
   const content = (
     <>
-      {children}
-      {arrow && (
-        <Arrow
-          color={variant === 'primary' ? 'white' : 'dark'}
-          className={variant === 'primary' ? '' : 'group-hover:invert'}
+      <span
+        className={`rounded-full px-6 py-[13px] text-[15px] leading-none tracking-[0.02em] whitespace-nowrap transition-colors duration-300 ${pill[variant]}`}
+      >
+        {children}
+      </span>
+      <span
+        aria-hidden="true"
+        className={`flex size-11 shrink-0 items-center justify-center rounded-full border transition-colors duration-300 ${circle[variant]}`}
+      >
+        <img
+          src={arrows[variant]}
+          alt=""
+          width="16"
+          height="16"
+          className={`size-4 transition-transform duration-300 group-hover:translate-x-1 ${arrowHover[variant]}`}
         />
-      )}
+      </span>
     </>
   )
+  const cls = `group inline-flex items-center gap-3.5 ${className}`
 
   if (to) {
     return (
@@ -105,26 +120,13 @@ export function Button({
   )
 }
 
-/** Lien texte rouge suivi d'une flèche. */
-export function ArrowLink({ to, children, className = '', size = 'text-base' }) {
-  return (
-    <Link
-      to={to}
-      className={`group inline-flex items-center gap-2.5 font-medium text-terre-fonce transition-colors hover:text-terre ${size} ${className}`}
-    >
-      {children}
-      <Arrow color="red" />
-    </Link>
-  )
-}
-
 /** Conteneur qui apparaît en fondu au défilement. */
-export function Reveal({ as: Tag = 'div', delay = 0, className = '', style, children, ...props }) {
+export function Reveal({ as: Tag = 'div', delay = 0, effect = 'reveal', className = '', style, children, ...props }) {
   const ref = useReveal()
   return (
     <Tag
       ref={ref}
-      className={`reveal ${className}`}
+      className={`${effect} ${className}`}
       style={{ '--reveal-delay': `${delay}ms`, ...style }}
       {...props}
     >

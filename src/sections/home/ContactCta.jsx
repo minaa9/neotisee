@@ -1,84 +1,45 @@
-import Collage from '../../components/Collage'
-import { Button, Eyebrow, Reveal } from '../../components/ui'
-import { contact } from '../../data/navigation'
-import planteGravure from '../../assets/home/plante-gravure.webp'
-import fleurViolette from '../../assets/home/fleur-violette.webp'
-import iconeMail from '../../assets/common/icone-mail.svg'
-import iconeTel from '../../assets/common/icone-tel.svg'
-import iconeLieu from '../../assets/common/icone-lieu.svg'
+import { Button, Eyebrow, Reveal, Star } from '../../components/ui'
+import photo from '../../assets/ateliers/broderie.webp'
+import vague from '../../assets/v3/home/vague-contact.svg'
+import cercle from '../../assets/v3/home/cercle-contact.svg'
 
-const infos = [
-  { icon: iconeMail, label: contact.email, href: `mailto:${contact.email}` },
-  { icon: iconeTel, label: contact.phone, href: contact.phoneHref },
-  { icon: iconeLieu, label: contact.city },
-]
-
-/** 08 · Contact (Figma 255:44) */
+/** 09 · Contact (Figma 350:121) */
 export default function ContactCta() {
   return (
-    <section className="relative overflow-hidden bg-creme py-20 xl:pt-[110px] xl:pb-[120px]">
-      {/* Gravures décoratives */}
-      <div className="pointer-events-none absolute top-[136px] -left-[3px] hidden w-[153px] md:block">
-        <Collage
-          width={152.548}
-          height={258.668}
-          items={[
-            { x: 0, y: 0, w: 152.548, h: 258.668, iw: 127.123, ih: 246.492, rotate: -173.87, flipY: true, src: planteGravure, cover: true },
-          ]}
-        />
-      </div>
-      <div className="pointer-events-none absolute top-[82px] right-[37px] hidden w-[223px] md:block">
-        <Collage
-          width={222.915}
-          height={226.223}
-          items={[
-            { x: 0, y: 0, w: 222.915, h: 226.223, iw: 196.127, ih: 200.04, rotate: -8.29, src: fleurViolette, cover: true },
-          ]}
-        />
-      </div>
+    <section className="relative overflow-hidden bg-creme pt-28 pb-16 xl:h-[731px] xl:pt-0 xl:pb-0">
+      <img src={vague} alt="" aria-hidden="true" className="absolute inset-x-0 top-[-1px] h-[70px] w-full md:h-[141px]" />
 
-      <Reveal className="container-site relative flex flex-col items-center gap-[26px] text-center">
-        <Eyebrow centered>Contact</Eyebrow>
-        <h2 className="font-serif text-[34px] leading-tight text-encre/90 md:text-[44px] xl:text-[52px]">
-          Une question ? Une envie de projet ?
-        </h2>
-        <p className="max-w-[620px] text-[17px] leading-[1.45] text-encre/68 xl:text-[18px]">
-          Un atelier pour une école, un musée, un festival ? Écrivez-nous, nous serons ravies
-          d’échanger avec vous.
-        </p>
-        <div className="flex flex-wrap justify-center gap-4">
-          <Button to="/contact" arrow className="py-[18px]">
-            Nous écrire
-          </Button>
-          <Button to="/calendrier" variant="outline" className="py-[18px]">
-            Voir le calendrier
-          </Button>
-        </div>
+      <div className="container-site relative flex flex-col gap-14 lg:flex-row lg:items-start lg:justify-between">
+        <Reveal className="lg:pt-[240px]">
+          <Eyebrow>Contact</Eyebrow>
+          <h2 className="mt-6 font-serif text-[56px] leading-none font-light tracking-[-0.01em] text-brun md:text-[80px] xl:-ml-1">
+            Tissons la suite
+            <br />
+            <em>ensemble.</em>
+          </h2>
+          <p className="mt-8 max-w-[440px] text-courant text-brun-doux xl:mt-[34px]">
+            Un atelier pour une école, un musée, un festival ? Une question sur nos rendez-vous ?
+            Écrivez-nous, nous serons ravies d’échanger avec vous.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-x-5 gap-y-4 xl:mt-[28px]">
+            <Button to="/contact" variant="plein">
+              Nous écrire
+            </Button>
+            <Button to="/contact?objet=prestation" variant="contour">
+              Demander une prestation
+            </Button>
+          </div>
+        </Reveal>
 
-        <ul className="mt-2.5 flex flex-col items-center gap-5 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-12">
-          {infos.map((info) => {
-            const content = (
-              <>
-                <span className="flex size-11 items-center justify-center rounded-full bg-mauve">
-                  <img src={info.icon} alt="" width="22" height="22" />
-                </span>
-                {info.label}
-              </>
-            )
-            return (
-              <li key={info.label}>
-                {info.href ? (
-                  <a href={info.href} className="flex items-center gap-3 text-encre/80 hover:text-terre">
-                    {content}
-                  </a>
-                ) : (
-                  <span className="flex items-center gap-3 text-encre/80">{content}</span>
-                )}
-              </li>
-            )
-          })}
-        </ul>
-      </Reveal>
+        {/* Image organique entourée d'un cercle de fil */}
+        <Reveal delay={150} className="relative mx-auto aspect-[640/560] w-full max-w-[640px] lg:mx-0 lg:mt-[130px] lg:-mr-[60px] lg:w-[50%]">
+          <img src={cercle} alt="" aria-hidden="true" className="animate-tourne absolute inset-0 size-full" />
+          <div className="absolute top-[7.1%] left-[6.25%] h-[85.7%] w-[87.5%] overflow-hidden rounded-tl-[42%] rounded-tr-[7%] rounded-br-[42%] rounded-bl-[7%]">
+            <img src={photo} alt="Broderie de fils de laine verte et beige sur toile de lin" loading="lazy" className="size-full object-cover" />
+          </div>
+          <Star className="absolute top-[-1.6%] left-[48.6%] size-[18px]" />
+        </Reveal>
+      </div>
     </section>
   )
 }

@@ -1,90 +1,188 @@
-import Collage from '../components/Collage'
-import { Eyebrow, Reveal } from '../components/ui'
+import { useState } from 'react'
+import PageHeader from '../components/PageHeader'
+import TestimonialCard from '../components/TestimonialCard'
+import { Field } from '../components/forms'
+import { inputCls, openMail, selectArrow } from '../components/formUtils'
+import { Button, Reveal } from '../components/ui'
+import { ateliers } from '../data/ateliers'
+import { contact } from '../data/navigation'
 import { temoignages } from '../data/temoignages'
-import photo1 from '../assets/events/teinture.webp'
-import photo2 from '../assets/ateliers/hero.webp'
-import fleurViolette from '../assets/home/fleur-violette.webp'
-import etoiles from '../assets/common/etoiles.svg'
+import heroImage from '../assets/events/teinture.webp'
+import fleurSechee from '../assets/home/fleur-seche.webp'
+import vague from '../assets/v3/home/vague-avis.svg'
+import etoile from '../assets/v3/ui/etoile-grande.svg'
 
-function Polaroid({ src, w, h, pw, ph }) {
-  const pad = (v, total) => `${(v / total) * 100}%`
+const offsets = ['lg:mt-0', 'lg:mt-[120px]', 'lg:mt-5']
+
+function Stars({ value, onChange }) {
+  const [hover, setHover] = useState(0)
   return (
-    <div className="absolute inset-0 overflow-hidden rounded-[6px] bg-[#fbf6ec] shadow-[0_18px_40px_rgba(31,26,23,0.14)]">
-      <img
-        src={src}
-        alt=""
-        className="absolute rounded-[3px] object-cover"
-        style={{ left: pad(14, w), top: pad(14, h), width: pad(pw, w), height: pad(ph, h) }}
-      />
+    <div role="radiogroup" aria-label="Votre note" className="flex gap-[5px]" onMouseLeave={() => setHover(0)}>
+      {[1, 2, 3, 4, 5].map((n) => (
+        <button
+          key={n}
+          type="button"
+          role="radio"
+          aria-checked={value === n}
+          aria-label={`${n} étoile${n > 1 ? 's' : ''}`}
+          onClick={() => onChange(n)}
+          onMouseEnter={() => setHover(n)}
+          className={`transition-opacity ${n <= (hover || value) ? 'opacity-100' : 'opacity-25'}`}
+        >
+          <img src={etoile} alt="" width="20" height="18" className="h-[18px] w-5" />
+        </button>
+      ))}
     </div>
   )
 }
 
-// Tirages photo + fleur (Figma 306:645 → 306:518), origine x=740 y=130.
-const PW = 670
-const PH = 555
-const photos = [
-  { x: 0, y: 45, w: 386.984, h: 451.93, iw: 358, ih: 428, rotate: -4, node: <Polaroid src={photo1} w={358} h={428} pw={330} ph={400} /> },
-  { x: 256.18, y: 140.18, w: 360.568, h: 415.111, iw: 328, ih: 388, rotate: 5, node: <Polaroid src={photo2} w={328} h={388} pw={300} ph={360} /> },
-  { x: 510, y: 0, w: 159.152, h: 161.688, iw: 140, ih: 143, rotate: -8.29, src: fleurViolette, cover: true },
-]
+function LeaveAWord() {
+  const [values, setValues] = useState({ prenom: '', atelier: '', note: 5, message: '' })
+  const [errors, setErrors] = useState({})
+  const [sent, setSent] = useState(false)
 
-/** Page Livre d'or (Figma 306:486) */
+  const set = (name, value) => {
+    setValues((v) => ({ ...v, [name]: value }))
+    setErrors((e) => ({ ...e, [name]: undefined }))
+  }
+
+  const submit = (e) => {
+    e.preventDefault()
+    const found = {}
+    if (!values.prenom.trim()) found.prenom = 'Indiquez votre prénom.'
+    if (values.message.trim().length < 10) found.message = 'Votre mot doit contenir au moins 10 caractères.'
+    setErrors(found)
+    if (Object.keys(found).length) {
+      document.getElementById(`lo-${Object.keys(found)[0]}`)?.focus()
+      return
+    }
+    openMail(
+      contact.email,
+      `[Livre d’or] Un mot de ${values.prenom}`,
+      `${values.message}\n\nAtelier : ${values.atelier || 'non précisé'}\nNote : ${values.note}/5\n— ${values.prenom}`,
+    )
+    setSent(true)
+  }
+
+  return (
+    <section id="laisser-un-mot" aria-labelledby="mot-titre" className="relative scroll-mt-10 bg-peche pt-28 pb-24 xl:h-[820px] xl:pt-[160px] xl:pb-0">
+      <img src={vague} alt="" aria-hidden="true" className="absolute inset-x-0 top-[-1px] h-[50px] w-full md:h-[101px]" />
+      <div className="container-site relative flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between">
+        <Reveal className="flex gap-10">
+          <img src={fleurSechee} alt="" aria-hidden="true" className="mt-5 hidden h-[380px] w-[220px] shrink-0 object-contain md:block" />
+          <div className="lg:pt-[30px]">
+            <h2 id="mot-titre" className="max-w-[460px] font-serif text-[42px] leading-[1.08] tracking-[-0.005em] text-brun md:text-[52px]">
+              À votre tour,
+              <br />
+              <em className="font-light">laissez-nous un mot</em>
+            </h2>
+            <p className="mt-6 max-w-[320px] text-petit text-brun-doux">
+              Votre message sera publié après relecture par l’association.
+            </p>
+          </div>
+        </Reveal>
+
+        <Reveal delay={120} className="w-full rounded-[28px] bg-lin p-6 sm:p-9 lg:w-[540px] lg:shrink-0">
+          {sent ? (
+            <div role="status">
+              <p className="font-serif text-[30px] leading-[1.18] text-brun">Merci pour votre mot !</p>
+              <p className="mt-3 text-courant text-brun-doux">
+                Votre messagerie s’est ouverte avec votre message : il ne reste plus qu’à l’envoyer. Il
+                sera publié après relecture.
+              </p>
+              <button type="button" onClick={() => setSent(false)} className="mt-6 text-petit text-terre-cuite underline">
+                Écrire un autre mot
+              </button>
+            </div>
+          ) : (
+            <form noValidate onSubmit={submit} className="flex flex-col gap-[22px]">
+              <Field id="lo-prenom" label="Prénom" error={errors.prenom}>
+                <input
+                  id="lo-prenom"
+                  autoComplete="given-name"
+                  placeholder="Votre prénom"
+                  value={values.prenom}
+                  onChange={(e) => set('prenom', e.target.value)}
+                  aria-invalid={!!errors.prenom}
+                  aria-describedby={errors.prenom ? 'lo-prenom-erreur' : undefined}
+                  className={`${inputCls(errors.prenom)} h-[54px]`}
+                />
+              </Field>
+              <Field id="lo-atelier" label="Atelier suivi">
+                <select
+                  id="lo-atelier"
+                  value={values.atelier}
+                  onChange={(e) => set('atelier', e.target.value)}
+                  className={`${inputCls()} ${selectArrow} h-[54px] ${values.atelier ? '' : 'text-brun-doux/80'}`}
+                >
+                  <option value="">Sélectionnez un atelier</option>
+                  {ateliers.map((a) => (
+                    <option key={a.id} value={a.titre}>
+                      {a.titre}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <div>
+                <p className="mb-2.5 text-label text-brun">Votre note</p>
+                <Stars value={values.note} onChange={(n) => set('note', n)} />
+              </div>
+              <Field id="lo-message" label="Votre message" error={errors.message}>
+                <textarea
+                  id="lo-message"
+                  rows={4}
+                  placeholder="Racontez-nous votre expérience…"
+                  value={values.message}
+                  onChange={(e) => set('message', e.target.value)}
+                  aria-invalid={!!errors.message}
+                  aria-describedby={errors.message ? 'lo-message-erreur' : undefined}
+                  className={`${inputCls(errors.message)} block min-h-[110px] resize-y py-4`}
+                />
+              </Field>
+              <Button type="submit" variant="plein" className="self-start">
+                Envoyer
+              </Button>
+            </form>
+          )}
+        </Reveal>
+      </div>
+    </section>
+  )
+}
+
+/** Page Livre d'or V3 (Figma 354:318) */
 export default function GuestbookPage() {
   return (
-    <div className="overflow-hidden bg-[#f7eddd] pb-16">
-      <section className="container-site relative flex flex-col gap-12 pt-14 lg:flex-row lg:justify-between xl:pt-[98px]">
-        <Reveal as="header" className="lg:pt-0">
-          <Eyebrow>Livre d’or</Eyebrow>
-          <h1 className="mt-6 font-serif text-[52px] leading-[1.05] text-encre xl:text-[72px]">
+    <>
+      <PageHeader
+        title="Livre d’or"
+        subtitle={
+          <>
             Ils ont tissé
             <br />
             avec nous
-          </h1>
-          <span aria-hidden="true" className="mt-8 block h-[2px] w-[119px] bg-terre" />
-          <p className="mt-8 max-w-[560px] text-[18px] leading-[1.55] text-encre/78 xl:text-[20px]">
-            Les mots laissés par celles et ceux qui ont partagé un atelier, une démonstration ou une
-            rencontre.
-          </p>
-        </Reveal>
+          </>
+        }
+        text="Les mots laissés par celles et ceux qui ont partagé un atelier, une démonstration ou une rencontre."
+        image={heroImage}
+        imageAlt="Une animatrice prépare un bain de teinture végétale dans une jarre"
+      >
+        <Button href="#laisser-un-mot" className="mt-8 xl:mt-[52px]">
+          Laisser un mot
+        </Button>
+      </PageHeader>
 
-        <Reveal delay={150} className="mx-auto w-full max-w-[620px] lg:mx-0 lg:-mt-[49px] lg:w-[47%] xl:mr-[-47px] xl:max-w-[670px]">
-          <Collage width={PW} height={PH} items={photos} />
-        </Reveal>
-      </section>
-
-      <section aria-label="Témoignages" className="container-site mt-16 xl:mt-[130px]">
-        <ol className="border-t border-terre/35">
+      <section aria-label="Témoignages" className="bg-creme pb-24 xl:h-[760px] xl:pt-10 xl:pb-0">
+        <ul className="container-site grid gap-[30px] md:grid-cols-2 lg:grid-cols-3 lg:items-start">
           {temoignages.map((t, i) => (
-            <Reveal
-              as="li"
-              key={i}
-              className="grid gap-6 border-b border-sable/70 py-12 md:grid-cols-[368px_1fr] md:gap-0 xl:py-[70px]"
-            >
-              <div>
-                <p className="font-serif text-[20px] text-terre">{String(i + 1).padStart(2, '0')}</p>
-                <img src={etoiles} alt="5 étoiles sur 5" width="106" height="18" className="mt-5" />
-                <p className="mt-6 text-sm leading-[1.6] text-encre/60">
-                  {t.atelier}
-                  <br />
-                  {t.date}
-                </p>
-              </div>
-              <blockquote className="relative pl-12 xl:pl-14">
-                <span
-                  aria-hidden="true"
-                  className="absolute top-[22px] left-0 font-serif text-[90px] leading-[0.5] text-terre xl:text-[120px]"
-                >
-                  “
-                </span>
-                <p className="font-serif text-[24px] leading-[1.38] text-encre md:text-[28px] xl:text-[34px]">
-                  {t.texte}
-                </p>
-              </blockquote>
+            <Reveal as="li" key={i} delay={i * 100} className={offsets[i % 3]}>
+              <TestimonialCard temoignage={t} className="min-h-[380px]" />
             </Reveal>
           ))}
-        </ol>
+        </ul>
       </section>
-    </div>
+
+      <LeaveAWord />
+    </>
   )
 }

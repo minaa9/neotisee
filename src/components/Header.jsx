@@ -1,23 +1,20 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router'
 import { mainNav } from '../data/navigation'
-import logo from '../assets/common/logo-neotisse.webp'
+import { Button, Logo } from './ui'
 
 /**
- * En-tête du site (Figma « navbar »).
- * - variant="overlay" : posé sur la photo du hero de l'accueil, textes blancs.
- * - variant="solid"   : pages intérieures, textes foncés.
+ * Navigation V3 (Figma « V3 Navigation »).
+ * - variant="photo" : posée sur une photo, textes clairs, bouton « Clair ».
+ * - variant="creme" : sur fond crème, textes bruns, bouton « Plein ».
  */
-export default function Header({ variant = 'solid' }) {
+export default function Header({ variant = 'creme' }) {
   const { pathname } = useLocation()
-  // Le menu mobile est lié à la page où il a été ouvert : il se ferme
-  // automatiquement quand on change de page.
+  // Le menu mobile se ferme tout seul quand on change de page.
   const [openOn, setOpenOn] = useState(null)
   const open = openOn === pathname
-  const setOpen = (fn) => setOpenOn(fn(open) ? pathname : null)
-  const overlay = variant === 'overlay'
+  const onPhoto = variant === 'photo'
 
-  // Bloque le défilement de la page quand le menu mobile est ouvert.
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
     return () => {
@@ -25,85 +22,51 @@ export default function Header({ variant = 'solid' }) {
     }
   }, [open])
 
-  const textColor = overlay ? 'text-white' : 'text-encre'
+  const text = onPhoto && !open ? 'text-lin' : 'text-brun'
 
   return (
-    <header
-      className={`${
-        overlay ? 'absolute inset-x-0 top-0' : 'relative'
-      } z-40 h-[84px] bg-sable/18 xl:h-[102px]`}
-    >
-      <div className="mx-auto flex h-full max-w-site items-center justify-between px-5 md:px-[22px]">
-        <Link to="/" className="shrink-0" aria-label="Néotisse, retour à l’accueil">
-          <img
-            src={logo}
-            alt="Néotisse"
-            width="56"
-            height="50"
-            className={`h-[44px] w-auto object-contain xl:h-[50px] ${overlay ? '' : 'invert-[.85]'}`}
-          />
+    <header className="absolute inset-x-0 top-0 z-40">
+      <div className="mx-auto flex h-[84px] max-w-site items-center justify-between px-5 md:px-12 xl:h-24 xl:px-[72px]">
+        <Link to="/" aria-label="Néotisse, retour à l’accueil" className="relative z-50">
+          <Logo />
         </Link>
 
-        {/* Navigation ordinateur */}
-        <nav aria-label="Navigation principale" className="hidden xl:block">
-          <ul className="flex items-start gap-8 min-[1400px]:gap-14">
-            {mainNav.map((item) => (
-              <li key={item.to}>
-                <NavLink
-                  to={item.to}
-                  end={item.to === '/'}
-                  className={`group flex flex-col gap-1.5 font-serif text-[15px] ${textColor}`}
-                >
-                  {({ isActive }) => (
-                    <>
-                      <span>{item.label}</span>
-                      <span
-                        aria-hidden="true"
-                        className={`h-[3px] w-full origin-left rounded-[2px] bg-terre transition-transform duration-300 ${
-                          isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-                        }`}
-                      />
-                    </>
-                  )}
-                </NavLink>
-              </li>
-            ))}
+        <nav aria-label="Navigation principale" className="hidden lg:block">
+          <ul className={`flex gap-7 text-[15px] leading-none tracking-[0.013em] xl:gap-10 ${text}`}>
+            {mainNav
+              .filter((item) => item.to !== '/')
+              .map((item) => (
+                <li key={item.to}>
+                  <NavLink
+                    to={item.to}
+                    className={({ isActive }) =>
+                      `relative pb-1.5 transition-colors after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:after:scale-x-100 ${
+                        isActive ? (onPhoto ? 'text-lin' : 'text-terre-cuite') : ''
+                      }`
+                    }
+                  >
+                    {item.label}
+                  </NavLink>
+                </li>
+              ))}
           </ul>
         </nav>
 
-        <div className="flex items-center gap-3">
-          <Link
-            to="/contact"
-            className="hidden rounded-full bg-terre-fonce px-[18px] py-3 font-serif text-[15px] text-white transition-colors hover:bg-terre sm:inline-flex"
-          >
-            Nous contacter
-          </Link>
-
-          {/* Bouton menu mobile */}
+        <div className="flex items-center gap-2">
+          <Button to="/contact" variant={onPhoto ? 'clair' : 'plein'} className="hidden sm:inline-flex">
+            Contact
+          </Button>
           <button
             type="button"
-            className={`flex size-11 items-center justify-center rounded-full xl:hidden ${textColor}`}
+            className={`relative z-50 flex size-11 items-center justify-center lg:hidden ${text}`}
             aria-expanded={open}
             aria-controls="menu-mobile"
             aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'}
-            onClick={() => setOpen((v) => !v)}
+            onClick={() => setOpenOn(open ? null : pathname)}
           >
-            <span className="relative block h-3.5 w-6">
-              <span
-                className={`absolute left-0 h-[1.5px] w-6 bg-current transition-all duration-300 ${
-                  open ? 'top-1.5 rotate-45' : 'top-0'
-                }`}
-              />
-              <span
-                className={`absolute left-0 top-1.5 h-[1.5px] w-6 bg-current transition-opacity duration-300 ${
-                  open ? 'opacity-0' : ''
-                }`}
-              />
-              <span
-                className={`absolute left-0 h-[1.5px] w-6 bg-current transition-all duration-300 ${
-                  open ? 'top-1.5 -rotate-45' : 'top-3'
-                }`}
-              />
+            <span className="relative block h-3 w-6">
+              <span className={`absolute left-0 h-px w-6 bg-current transition-all duration-300 ${open ? 'top-1.5 rotate-45' : 'top-0'}`} />
+              <span className={`absolute left-0 h-px w-6 bg-current transition-all duration-300 ${open ? 'top-1.5 -rotate-45' : 'top-3'}`} />
             </span>
           </button>
         </div>
@@ -112,19 +75,19 @@ export default function Header({ variant = 'solid' }) {
       {/* Menu mobile */}
       <div
         id="menu-mobile"
-        className={`fixed inset-x-0 top-[84px] bottom-0 z-40 overflow-y-auto bg-creme px-5 pt-8 pb-12 transition-[opacity,visibility] duration-300 xl:hidden ${
+        className={`fixed inset-0 z-40 overflow-y-auto bg-creme px-5 pt-28 pb-12 transition-[opacity,visibility] duration-300 lg:hidden ${
           open ? 'visible opacity-100' : 'invisible opacity-0'
         }`}
       >
         <nav aria-label="Navigation mobile">
-          <ul className="flex flex-col">
+          <ul>
             {mainNav.map((item) => (
-              <li key={item.to} className="border-b border-terre/15">
+              <li key={item.to} className="border-b border-brun/10">
                 <NavLink
                   to={item.to}
                   end={item.to === '/'}
                   className={({ isActive }) =>
-                    `block py-4 font-serif text-[26px] ${isActive ? 'text-terre' : 'text-encre'}`
+                    `block py-4 font-serif text-[30px] leading-tight ${isActive ? 'text-terre-cuite italic' : 'text-brun'}`
                   }
                 >
                   {item.label}
@@ -132,12 +95,9 @@ export default function Header({ variant = 'solid' }) {
               </li>
             ))}
           </ul>
-          <Link
-            to="/contact"
-            className="mt-8 inline-flex rounded-full bg-terre-fonce px-8 py-4 font-serif text-[17px] text-white"
-          >
-            Nous contacter
-          </Link>
+          <Button to="/contact" variant="plein" className="mt-8">
+            Contact
+          </Button>
         </nav>
       </div>
     </header>
