@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import PageHeader from '../components/PageHeader'
-import TestimonialCard from '../components/TestimonialCard'
+import InfiniteCards from '../components/InfiniteCards'
 import { Field } from '../components/forms'
 import { inputCls, openMail, selectArrow } from '../components/formUtils'
 import { Button, Reveal } from '../components/ui'
@@ -12,7 +12,6 @@ import fleurSechee from '../assets/home/fleur-seche.webp'
 import vague from '../assets/v3/home/vague-avis.svg'
 import etoile from '../assets/v3/ui/etoile-grande.svg'
 
-const offsets = ['lg:mt-0', 'lg:mt-[70px]', 'lg:mt-3']
 
 function Stars({ value, onChange }) {
   const [hover, setHover] = useState(0)
@@ -172,15 +171,9 @@ export default function GuestbookPage() {
         </Button>
       </PageHeader>
 
-      <section aria-label="Témoignages" className="bg-creme pb-16 xl:pt-2 xl:pb-[90px]">
+      <section aria-label="Témoignages" className="overflow-hidden bg-creme pb-16 xl:pt-2 xl:pb-[90px]">
         <div className="container-site">
-        <ul className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 [scrollbar-width:none] md:mx-0 md:grid md:gap-[30px] md:overflow-visible md:px-0 md:grid-cols-2 lg:grid-cols-3 lg:items-start">
-          {temoignages.map((t, i) => (
-            <Reveal as="li" key={i} delay={i * 100} className={`w-[85%] shrink-0 snap-center md:w-auto ${offsets[i % 3]}`}>
-              <TestimonialCard temoignage={t} className="min-h-[330px]" />
-            </Reveal>
-          ))}
-        </ul>
+          <InfiniteCards items={temoignages} />
         </div>
       </section>
 

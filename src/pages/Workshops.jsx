@@ -1,4 +1,6 @@
+import { useRef } from 'react'
 import PageHeader from '../components/PageHeader'
+import { MOTION_OK, ScrollTrigger, gsap, useGSAP } from '../motion/gsap'
 import { Button, Reveal } from '../components/ui'
 import { ateliers } from '../data/ateliers'
 import hero from '../assets/events/patrimoine.webp'
@@ -13,8 +15,48 @@ const formats = [
   { label: 'Présentations', icon: iconePresentations },
 ]
 
+/**
+ * Les ateliers s'empilent comme des feuillets : chaque section reste épinglée
+ * pendant que la suivante glisse par-dessus, puis s'efface doucement.
+ * Si une section est plus haute que l'écran (« overscroll »), elle n'est
+ * épinglée qu'une fois son bas atteint, pour qu'on puisse tout lire.
+ */
+function useStackedSlides(ref) {
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia()
+      mm.add(`${MOTION_OK} and (min-width: 1024px)`, () => {
+        const slides = gsap.utils.toArray(ref.current.querySelectorAll('[data-slide]'))
+        slides.forEach((slide, i) => {
+          if (i === slides.length - 1) return
+          const inner = slide.querySelector('[data-slide-inner]')
+          ScrollTrigger.create({
+            trigger: slide,
+            start: () => (slide.offsetHeight <= window.innerHeight ? 'top top' : 'bottom bottom'),
+            endTrigger: slides[i + 1],
+            end: 'top top',
+            pin: true,
+            pinSpacing: false,
+            invalidateOnRefresh: true,
+          })
+          gsap.to(inner, {
+            scale: 0.92,
+            autoAlpha: 0.35,
+            ease: 'none',
+            scrollTrigger: { trigger: slides[i + 1], start: 'top bottom', end: 'top top', scrub: true },
+          })
+        })
+      })
+      return () => mm.revert()
+    },
+    { scope: ref },
+  )
+}
+
 /** Page Nos ateliers V3 (Figma 352:195) */
 export default function WorkshopsPage() {
+  const slidesRef = useRef(null)
+  useStackedSlides(slidesRef)
   return (
     <>
       <PageHeader
@@ -52,16 +94,21 @@ export default function WorkshopsPage() {
       </section>
 
       {/* Les quatre ateliers, en alternance */}
+      <div ref={slidesRef}>
       {ateliers.map((a, i) => {
         const reversed = i % 2 === 1
         return (
           <section
             key={a.id}
             id={a.id}
-            className={`relative scroll-mt-24 overflow-hidden py-12 xl:py-[50px] ${reversed ? 'bg-peche' : 'bg-creme'}`}
+            data-slide
+            className={`relative scroll-mt-24 overflow-hidden py-12 lg:flex lg:min-h-svh lg:items-center xl:py-[50px] ${reversed ? 'bg-peche' : 'bg-creme'} ${
+              i > 0 ? 'lg:rounded-t-[56px] lg:shadow-[0_-24px_50px_rgba(61,42,35,0.10)]' : ''
+            }`}
           >
             <div
-              className={`container-site flex flex-col gap-10 lg:items-start lg:gap-10 ${
+              data-slide-inner
+              className={`container-site flex w-full origin-top flex-col gap-10 lg:items-start lg:gap-10 ${
                 reversed ? 'lg:flex-row-reverse lg:justify-between' : 'lg:flex-row'
               }`}
             >
@@ -94,6 +141,7 @@ export default function WorkshopsPage() {
           </section>
         )
       })}
+      </div>
 
       <section className="bg-creme py-14 xl:py-16">
         <Reveal className="container-site flex flex-col items-center gap-6 text-center">

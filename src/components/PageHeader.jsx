@@ -1,5 +1,4 @@
 import { Reveal } from './ui'
-import filCourbe from '../assets/v3/association/fil-courbe.svg'
 
 /**
  * En-tête des pages intérieures V3 (Figma « Header », version resserrée) :
@@ -19,12 +18,21 @@ export default function PageHeader({ title, subtitle, text, image, imageAlt = ''
       )}
 
       {/* Fil courbe */}
-      <img
-        src={filCourbe}
-        alt=""
+      <svg
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-[480px] hidden h-[120px] w-full lg:block"
-      />
+        viewBox="0 0 1440.4 140.911"
+        preserveAspectRatio="none"
+        className="pointer-events-none absolute inset-x-0 top-[480px] hidden h-[120px] w-full overflow-visible lg:block"
+      >
+        <path
+          data-draw
+          d="M0.158114 140.437C300.158 40.4371 560.158 20.4371 800.158 70.4371C1060.16 124.437 1260.16 100.437 1440.16 0.437079"
+          stroke="#B4583D"
+          strokeOpacity="0.45"
+          fill="none"
+          vectorEffect="non-scaling-stroke"
+        />
+      </svg>
 
       <Reveal className="container-site relative mt-8 lg:mt-0 lg:pt-[160px]">
         <h1 className="font-serif text-[52px] leading-none font-light tracking-[-0.01em] text-brun md:text-[72px] xl:-ml-1 xl:text-[80px]">

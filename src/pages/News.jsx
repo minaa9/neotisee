@@ -1,4 +1,6 @@
+import { useRef } from 'react'
 import PageHeader from '../components/PageHeader'
+import { MOTION_OK, gsap, useGSAP } from '../motion/gsap'
 import { Eyebrow, Reveal } from '../components/ui'
 import { news } from '../data/news'
 import heroImage from '../assets/ateliers/tissage.webp'
@@ -6,6 +8,47 @@ import vague from '../assets/v3/home/vague-avis.svg'
 
 /** Page Actualités V3 (Figma 352:280) */
 export default function NewsPage() {
+  const listRef = useRef(null)
+
+  /*
+   * « Les derniers fils » : chaque carte arrive en plusieurs temps (keyframes),
+   * chacun avec sa propre courbe (easeEach) : elle monte, dépasse un peu en
+   * tournant comme une étiquette qu'on accroche, puis se pose.
+   */
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia()
+      mm.add(MOTION_OK, () => {
+        const cards = gsap.utils.toArray(listRef.current.querySelectorAll('[data-news]'))
+        cards.forEach((card, i) => {
+          gsap.to(card, {
+            keyframes: {
+              '0%': { y: 120, rotation: i % 2 ? 6 : -6, autoAlpha: 0 },
+              '45%': { y: -18, rotation: i % 2 ? -2.5 : 2.5, autoAlpha: 1, ease: 'power3.out' },
+              '75%': { y: 6, rotation: i % 2 ? 1 : -1, ease: 'sine.inOut' },
+              '100%': { y: 0, rotation: 0, ease: 'sine.out' },
+              easeEach: 'none',
+            },
+            duration: 1.5,
+            delay: i * 0.15,
+            immediateRender: true,
+            scrollTrigger: { trigger: listRef.current, start: 'top 80%', once: true },
+          })
+          // Au survol, la carte « respire » en trois temps.
+          const hover = gsap.to(card, {
+            keyframes: { y: [0, -10, -6], easeEach: 'sine.inOut' },
+            duration: 0.5,
+            paused: true,
+          })
+          card.addEventListener('mouseenter', () => hover.play())
+          card.addEventListener('mouseleave', () => hover.reverse())
+        })
+      })
+      return () => mm.revert()
+    },
+    { scope: listRef },
+  )
+
   const [featured, ...others] = news
 
   return (
@@ -51,9 +94,9 @@ export default function NewsPage() {
           <Reveal as="h2" id="derniers-fils" className="font-serif text-[40px] leading-[1.08] tracking-[-0.005em] text-brun md:text-[48px]">
             Les derniers fils
           </Reveal>
-          <ul className="mt-8 -mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 [scrollbar-width:none] md:mx-0 md:grid md:gap-[30px] md:overflow-visible md:px-0 md:grid-cols-2 lg:grid-cols-3 xl:mt-[38px]">
-            {others.map((a, i) => (
-              <Reveal as="li" key={a.id} id={a.id} delay={i * 100} className="w-[85%] shrink-0 scroll-mt-24 snap-center md:w-auto">
+          <ul ref={listRef} className="mt-8 -mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 [scrollbar-width:none] md:mx-0 md:grid md:gap-[30px] md:overflow-visible md:px-0 md:grid-cols-2 lg:grid-cols-3 xl:mt-[38px]">
+            {others.map((a) => (
+              <li key={a.id} id={a.id} data-news className="w-[85%] shrink-0 scroll-mt-24 snap-center md:w-auto">
                 <article className="h-full overflow-hidden rounded-[24px] bg-lin">
                   <img src={a.image} alt={a.alt} loading="lazy" className="aspect-[380/200] w-full object-cover" />
                   <div className="px-7 pt-6 pb-8">
@@ -66,7 +109,7 @@ export default function NewsPage() {
                     </div>
                   </div>
                 </article>
-              </Reveal>
+              </li>
             ))}
           </ul>
         </div>

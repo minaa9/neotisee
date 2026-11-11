@@ -39,7 +39,7 @@ export default function Association() {
             {stats.map((s) => (
               <div key={s.label} className="flex w-[150px] flex-col-reverse">
                 <dt className="mt-3 text-petit text-brun-doux">{s.label}</dt>
-                <dd className="font-serif text-[46px] leading-[1.08] tracking-[-0.005em] text-terre-cuite">{s.value}</dd>
+                <dd className="font-serif text-[46px] leading-[1.08] tracking-[-0.005em] text-terre-cuite" data-count={s.value}>{s.value}</dd>
               </div>
             ))}
           </Reveal>

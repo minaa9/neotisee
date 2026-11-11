@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router'
 import Header from './Header'
 import Footer from './Footer'
+import SiteMotion from '../motion/SiteMotion'
 
 // Pages dont l'en-tête est posé sur une photo (navigation claire).
 const PHOTO_HEADERS = ['/']
@@ -28,6 +29,7 @@ export default function Layout() {
       <main id="contenu">
         <Outlet />
       </main>
+      <SiteMotion />
       <Footer afterPeach={PEACH_ENDINGS.includes(pathname)} />
     </>
   )

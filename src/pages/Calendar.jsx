@@ -211,7 +211,7 @@ function AllEvents({ list }) {
         {groups.map(([month, items]) => (
           <div key={month} className="relative mb-6">
             <p className="pl-8 font-serif text-[24px] leading-[1.15] font-light text-terre-cuite italic">{month}</p>
-            <ul>
+            <ul data-stagger>
               {items.map((e) => {
                 const d = toDate(e.date)
                 const past = e.date < today

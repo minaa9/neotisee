@@ -1,29 +1,72 @@
+import { useRef } from 'react'
 import { Link } from 'react-router'
+import { MOTION_OK, ScrollTrigger, gsap, useGSAP } from '../motion/gsap'
 import { contact, footerNav, socials } from '../data/navigation'
 import { Logo } from './ui'
-import vague from '../assets/v3/ui/vague.svg'
 import planteGravee from '../assets/v3/ui/plante-gravee.webp'
 import instagram from '../assets/v3/ui/instagram.svg'
 import facebook from '../assets/v3/ui/facebook.svg'
 
 const socialIcons = { Instagram: instagram, Facebook: facebook }
 
-/** Pied de page V3, commun à toutes les pages (Figma « V3 Pied de page »). */
+// Bord supérieur du pied de page : une vague dont le creux dépend de `b`.
+const wave = (b) => `M0 ${50 + b * 0.25} C 360 ${-12 + b} 1000 ${96 + b} 1440 ${18 + b * 0.25} V 140 H 0 Z`
+
+/**
+ * Pied de page V3, commun à toutes les pages (Figma « V3 Pied de page »).
+ * Son bord en vague rebondit selon la vitesse à laquelle on arrive en bas.
+ */
 export default function Footer({ afterPeach = false }) {
+  const footerRef = useRef(null)
+  const pathRef = useRef(null)
+
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia()
+      mm.add(MOTION_OK, () => {
+        const state = { b: 0 }
+        const draw = () => pathRef.current?.setAttribute('d', wave(state.b))
+        let bounce
+        const st = ScrollTrigger.create({
+          trigger: footerRef.current,
+          start: 'top bottom',
+          end: 'bottom bottom',
+          onUpdate: (self) => {
+            const target = gsap.utils.clamp(-70, 70, self.getVelocity() / 35)
+            if (Math.abs(target) < Math.abs(state.b) * 0.6) return
+            bounce && bounce.kill()
+            bounce = gsap
+              .timeline({ onUpdate: draw })
+              .to(state, { b: target, duration: 0.18, ease: 'power2.out' })
+              .to(state, { b: 0, duration: 1.6, ease: 'elastic.out(1.1, 0.25)' })
+          },
+        })
+        return () => {
+          st.kill()
+          bounce && bounce.kill()
+        }
+      })
+      return () => mm.revert()
+    },
+    { scope: footerRef },
+  )
+
   const titleCls = 'text-label text-brique'
   const linkCls = 'text-[14px] leading-[2] text-brun transition-colors hover:text-terre-cuite'
 
   return (
-    <footer className={`relative overflow-hidden ${afterPeach ? 'bg-peche' : 'bg-creme'}`}>
-      {/* Vague pêche (le fond du pied de page) */}
-      {/* Après une section pêche, pas de vague : le fond pêche continue. */}
-      <img
+    <footer ref={footerRef} className={`relative overflow-hidden ${afterPeach ? 'bg-peche' : 'bg-creme'}`}>
+      {/* Fond pêche avec un bord en vague (après une section pêche, le fond continue sans vague). */}
+      <div aria-hidden="true" className="absolute inset-x-0 top-[60px] bottom-0 bg-peche md:top-[120px]" />
+      <svg
         hidden={afterPeach}
-        src={vague}
-        alt=""
         aria-hidden="true"
-        className="absolute inset-x-0 top-0 h-full w-full object-cover object-top"
-      />
+        viewBox="0 0 1440 140"
+        preserveAspectRatio="none"
+        className="absolute inset-x-0 top-0 h-[70px] w-full overflow-visible md:h-[140px]"
+      >
+        <path ref={pathRef} d={wave(0)} fill="#F1DDCF" />
+      </svg>
       <img
         src={planteGravee}
         alt=""

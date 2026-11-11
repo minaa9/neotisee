@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import PageHeader from '../components/PageHeader'
 import { Field, PillChoice } from '../components/forms'
 import { EMAIL_RE, inputCls, openMail, selectArrow } from '../components/formUtils'
 import { Button, Reveal } from '../components/ui'
+import { MOTION_OK, gsap, useGSAP } from '../motion/gsap'
 import { events } from '../data/events'
 import { contact } from '../data/navigation'
 import heroImage from '../assets/ateliers/broderie.webp'
@@ -27,7 +28,43 @@ const infos = [
 ]
 
 /** Page Contact V3 (Figma 354:428) */
+/** Bouton « aimanté » : il suit légèrement le curseur quand on s'en approche. */
+function Magnetic({ children }) {
+  const ref = useRef(null)
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia()
+      mm.add(`${MOTION_OK} and (hover: hover)`, () => {
+        const el = ref.current
+        const x = gsap.quickTo(el, 'x', { duration: 0.5, ease: 'power3.out' })
+        const y = gsap.quickTo(el, 'y', { duration: 0.5, ease: 'power3.out' })
+        const move = (e) => {
+          const r = el.getBoundingClientRect()
+          x((e.clientX - (r.left + r.width / 2)) * 0.3)
+          y((e.clientY - (r.top + r.height / 2)) * 0.4)
+        }
+        const leave = () => gsap.to(el, { x: 0, y: 0, duration: 1, ease: 'elastic.out(1, 0.35)' })
+        el.addEventListener('mousemove', move)
+        el.addEventListener('mouseleave', leave)
+        return () => {
+          el.removeEventListener('mousemove', move)
+          el.removeEventListener('mouseleave', leave)
+        }
+      })
+      return () => mm.revert()
+    },
+    { scope: ref },
+  )
+  return (
+    <div ref={ref} className="-m-4 self-start p-4">
+      {children}
+    </div>
+  )
+}
+
 export default function ContactPage() {
+  const threadRef = useRef(null)
+  const trackRef = useRef(null)
   const [params] = useSearchParams()
   const rdv = events.find((e) => e.id === params.get('rdv'))
   const initialObjet = OBJETS[params.get('objet')] ? params.get('objet') : ''
@@ -42,6 +79,27 @@ export default function ContactPage() {
   })
   const [errors, setErrors] = useState({})
   const [sent, setSent] = useState(false)
+
+  // Le fil de couture : il avance à chaque champ bien rempli, un nœud par étape.
+  const steps = [
+    values.nom.trim().length > 1,
+    EMAIL_RE.test(values.email.trim()),
+    !!values.objet,
+    values.message.trim().length >= 10,
+    values.accord,
+  ]
+  const done = steps.filter(Boolean).length
+  useGSAP(
+    () => {
+      const path = threadRef.current
+      if (!path) return
+      // La courbe garde la hauteur totale du rail, seule la fenêtre qui la montre grandit.
+      path.style.setProperty('--fil-h', `${trackRef.current.offsetHeight}px`)
+      const reduce = !window.matchMedia(MOTION_OK).matches
+      gsap.to(path, { height: `${(done / (steps.length - 1)) * 100}%`, duration: reduce ? 0 : 1, ease: 'power3.inOut' })
+    },
+    { dependencies: [done, sent] },
+  )
 
   const set = (name, value) => {
     setValues((v) => ({ ...v, [name]: value }))
@@ -149,6 +207,32 @@ export default function ContactPage() {
                 </button>
               </div>
             ) : (
+              <div className="relative">
+              {/* Fil de couture le long du formulaire */}
+              <div aria-hidden="true" ref={trackRef} className="absolute top-12 -left-[26px] bottom-24 hidden w-3 sm:block">
+                {/* fil en pointillés (à faire) */}
+                <svg viewBox="0 0 12 100" preserveAspectRatio="none" className="absolute inset-0 size-full overflow-visible">
+                  <path d="M6 0 C 1 12, 11 22, 6 34 S 1 56, 6 68 S 11 88, 6 100" fill="none" stroke="#B4583D" strokeOpacity="0.25" strokeDasharray="2 5" vectorEffect="non-scaling-stroke" />
+                </svg>
+                {/* fil cousu : on dévoile la même courbe de haut en bas */}
+                <div ref={threadRef} className="absolute inset-x-[-4px] top-0 h-0 overflow-hidden">
+                  <svg viewBox="0 0 12 100" preserveAspectRatio="none" className="absolute inset-x-[4px] top-0 h-[var(--fil-h)] w-3 overflow-visible">
+                    <path d="M6 0 C 1 12, 11 22, 6 34 S 1 56, 6 68 S 11 88, 6 100" fill="none" stroke="#B4583D" strokeWidth="1.6" vectorEffect="non-scaling-stroke" />
+                  </svg>
+                </div>
+                {steps.map((ok, i) => (
+                  <span
+                    key={i}
+                    className={`absolute left-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border transition-all duration-500 ${
+                      ok ? 'scale-125 border-terre-cuite bg-terre-cuite' : 'border-terre-cuite/40 bg-lin'
+                    }`}
+                    style={{ top: `${(i / (steps.length - 1)) * 100}%` }}
+                  />
+                ))}
+              </div>
+              <p aria-live="polite" className="mb-4 text-petit text-brun-doux">
+                {done === steps.length ? 'Tout est prêt, il ne reste qu’à envoyer.' : `Fil tissé : ${done} / ${steps.length}`}
+              </p>
               <form noValidate onSubmit={submit} className="flex flex-col gap-[22px]" aria-label="Formulaire de contact">
                 <fieldset>
                   <legend className="mb-2.5 text-label text-brun">Vous êtes</legend>
@@ -232,10 +316,13 @@ export default function ContactPage() {
                     </p>
                   )}
                 </div>
-                <Button type="submit" variant="plein" className="self-start">
+                <Magnetic>
+                  <Button type="submit" variant="plein">
                   Envoyer
                 </Button>
+                </Magnetic>
               </form>
+              </div>
             )}
           </Reveal>
         </div>
