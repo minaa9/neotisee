@@ -87,6 +87,39 @@
   }
 }
 
+/* Curseur personnalisé : on masque le curseur système, sauf dans les champs. */
+.has-cursor,
+.has-cursor a,
+.has-cursor button,
+.has-cursor [data-cursor] {
+  cursor: none;
+}
+
+/* Lien souligné d'un fil qui se dessine au survol */
+@utility link-fil {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  transition: background-size 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+
+  &:hover,
+  &:focus-visible {
+    background-size: 100% 1px;
+  }
+}
+
+/* Icône qui s'anime quand on survole son parent (.group) */
+@keyframes balance {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-12deg); }
+  75% { transform: rotate(10deg); }
+}
+
+.group:hover .icone-anim {
+  animation: balance 0.7s ease-in-out;
+}
+
 /* Animations */
 @keyframes heroIn {
   from {
@@ -97,6 +130,13 @@
     opacity: 1;
     transform: none;
   }
+}
+
+@keyframes fil {
+  0% { transform: scaleY(0); transform-origin: top; }
+  45% { transform: scaleY(1); transform-origin: top; }
+  55% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
 }
 
 @keyframes tourne {

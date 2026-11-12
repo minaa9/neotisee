@@ -11,6 +11,8 @@ import { MOTION_OK, ScrollTrigger, SplitText, gsap, useGSAP } from './gsap'
  *  3. Fil courbe des en-têtes : il se dessine de gauche à droite.
  *  4. Listes marquées data-stagger : les éléments arrivent l'un après l'autre.
  *  5. Chiffres marqués data-count : ils se comptent jusqu'à leur valeur.
+ *  6. Cartes data-tilt : légère inclinaison 3D sous la souris.
+ *  7. Fils data-fil-scroll : se dessinent au rythme du défilement.
  *
  * Un élément peut s'exclure avec l'attribut data-no-motion.
  */
@@ -86,6 +88,32 @@ export default function SiteMotion() {
             ease: 'power3.out',
             onUpdate: () => (el.textContent = Math.round(obj.v)),
             scrollTrigger: { trigger: el, start: 'top 90%', once: true },
+          })
+        })
+
+        // 6. Cartes qui s'inclinent légèrement sous la souris (data-tilt)
+        if (window.matchMedia('(hover: hover)').matches) {
+          main.querySelectorAll('[data-tilt]').forEach((card) => {
+            gsap.set(card, { transformPerspective: 900 })
+            const rx = gsap.quickTo(card, 'rotationX', { duration: 0.5, ease: 'power3.out' })
+            const ry = gsap.quickTo(card, 'rotationY', { duration: 0.5, ease: 'power3.out' })
+            const move = (e) => {
+              const r = card.getBoundingClientRect()
+              ry(((e.clientX - r.left) / r.width - 0.5) * 8)
+              rx(-((e.clientY - r.top) / r.height - 0.5) * 8)
+            }
+            const leave = () => (rx(0), ry(0))
+            card.addEventListener('mousemove', move)
+            card.addEventListener('mouseleave', leave)
+          })
+        }
+
+        // 7. Fils séparateurs qui se dessinent au défilement (data-fil-scroll)
+        main.querySelectorAll('[data-fil-scroll]').forEach((path) => {
+          gsap.from(path, {
+            drawSVG: 0,
+            ease: 'none',
+            scrollTrigger: { trigger: path.closest('svg'), start: 'top 90%', end: 'bottom 40%', scrub: 0.6 },
           })
         })
 

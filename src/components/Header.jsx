@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router'
 import { mainNav } from '../data/navigation'
 import { Button, Logo } from './ui'
+import FullscreenMenu from './FullscreenMenu'
 
 /**
  * Navigation V3 (Figma « V3 Navigation »).
@@ -23,19 +24,15 @@ export default function Header({ variant = 'creme' }) {
   }, [])
   const onPhoto = variant === 'photo' && !scrolled
 
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : ''
-    return () => {
-      document.body.style.overflow = ''
-    }
-  }, [open])
+  const close = useCallback(() => setOpenOn(null), [])
 
-  const text = onPhoto && !open ? 'text-lin' : 'text-brun'
+  const text = onPhoto || open ? 'text-lin' : 'text-brun'
 
   return (
+    <>
     <header
-      className={`fixed inset-x-0 top-0 z-40 transition-[background-color,box-shadow] duration-300 ${
-        scrolled ? 'bg-creme/92 shadow-[0_1px_0_rgba(61,42,35,0.08)] backdrop-blur-md' : ''
+      className={`fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow] duration-300 ${
+        open ? '' : scrolled ? 'bg-creme/92 shadow-[0_1px_0_rgba(61,42,35,0.08)] backdrop-blur-md' : ''
       }`}
     >
       <div
@@ -47,7 +44,7 @@ export default function Header({ variant = 'creme' }) {
           <Logo />
         </Link>
 
-        <nav aria-label="Navigation principale" className="hidden lg:block">
+        <nav aria-label="Navigation principale" className={`hidden transition-opacity duration-300 lg:block ${open ? 'pointer-events-none opacity-0' : ''}`}>
           <ul className={`flex gap-7 text-[15px] leading-none tracking-[0.013em] xl:gap-10 ${text}`}>
             {mainNav
               .filter((item) => item.to !== '/')
@@ -69,17 +66,19 @@ export default function Header({ variant = 'creme' }) {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button to="/contact" variant={onPhoto ? 'clair' : 'plein'} className="hidden sm:inline-flex">
+          <Button to="/contact" variant={onPhoto ? 'clair' : 'plein'} className={`hidden sm:inline-flex ${open ? 'invisible' : ''}`}>
             Contact
           </Button>
           <button
             type="button"
-            className={`relative z-50 flex size-11 items-center justify-center lg:hidden ${text}`}
+            data-cursor={open ? 'Fermer' : 'Menu'}
+            className={`relative z-50 ml-2 flex h-11 items-center gap-3 rounded-full px-2 transition-colors ${text}`}
             aria-expanded={open}
-            aria-controls="menu-mobile"
+            aria-controls="menu-plein-ecran"
             aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'}
             onClick={() => setOpenOn(open ? null : pathname)}
           >
+            <span className="hidden text-[14px] tracking-[0.06em] xl:inline">{open ? 'Fermer' : 'Menu'}</span>
             <span className="relative block h-3 w-6">
               <span className={`absolute left-0 h-px w-6 bg-current transition-all duration-300 ${open ? 'top-1.5 rotate-45' : 'top-0'}`} />
               <span className={`absolute left-0 h-px w-6 bg-current transition-all duration-300 ${open ? 'top-1.5 -rotate-45' : 'top-3'}`} />
@@ -88,34 +87,8 @@ export default function Header({ variant = 'creme' }) {
         </div>
       </div>
 
-      {/* Menu mobile */}
-      <div
-        id="menu-mobile"
-        className={`fixed inset-0 z-40 overflow-y-auto bg-creme px-5 pt-28 pb-12 transition-[opacity,visibility] duration-300 lg:hidden ${
-          open ? 'visible opacity-100' : 'invisible opacity-0'
-        }`}
-      >
-        <nav aria-label="Navigation mobile">
-          <ul>
-            {mainNav.map((item) => (
-              <li key={item.to} className="border-b border-brun/10">
-                <NavLink
-                  to={item.to}
-                  end={item.to === '/'}
-                  className={({ isActive }) =>
-                    `block py-4 font-serif text-[30px] leading-tight ${isActive ? 'text-terre-cuite italic' : 'text-brun'}`
-                  }
-                >
-                  {item.label}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-          <Button to="/contact" variant="plein" className="mt-8">
-            Contact
-          </Button>
-        </nav>
-      </div>
     </header>
+    <FullscreenMenu open={open} onClose={close} />
+    </>
   )
 }

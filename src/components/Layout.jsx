@@ -3,6 +3,8 @@ import { Outlet, useLocation } from 'react-router'
 import Header from './Header'
 import Footer from './Footer'
 import SiteMotion from '../motion/SiteMotion'
+import Cursor from '../motion/Cursor'
+import PageTransition from '../motion/PageTransition'
 
 // Pages dont l'en-tête est posé sur une photo (navigation claire).
 const PHOTO_HEADERS = ['/']
@@ -30,6 +32,8 @@ export default function Layout() {
         <Outlet />
       </main>
       <SiteMotion />
+      <PageTransition />
+      <Cursor />
       <Footer afterPeach={PEACH_ENDINGS.includes(pathname)} />
     </>
   )
