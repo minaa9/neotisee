@@ -5,6 +5,7 @@ import Footer from './Footer'
 import SiteMotion from '../motion/SiteMotion'
 import Cursor from '../motion/Cursor'
 import PageTransition from '../motion/PageTransition'
+import CookieBanner from './CookieBanner'
 
 // Pages dont l'en-tête est posé sur une photo (navigation claire).
 const PHOTO_HEADERS = ['/']
@@ -34,7 +35,8 @@ export default function Layout() {
       <SiteMotion />
       <PageTransition />
       <Cursor />
-      <Footer afterPeach={PEACH_ENDINGS.includes(pathname)} />
+      <Footer afterPeach={PEACH_ENDINGS.includes(pathname)} besideCalendar={pathname === '/calendrier'} />
+      <CookieBanner />
     </>
   )
 }

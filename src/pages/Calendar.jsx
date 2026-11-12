@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import PageHeader from '../components/PageHeader'
+import { ScrollTrigger, useGSAP } from '../motion/gsap'
 import { Button, CenteredHeading, Reveal } from '../components/ui'
 import {
   JOURS,
@@ -271,6 +272,26 @@ export default function CalendarPage() {
   const today = todayIso()
   const next = sorted.find((e) => e.date >= today)
 
+  // Sur ordinateur, le calendrier reste fixé à l'écran jusqu'en bas de la
+  // page, pied de page compris : il ne bouge plus et ne disparaît jamais.
+  const loomRef = useRef(null)
+  useGSAP(
+    () => {
+      const mm = window.matchMedia('(min-width: 1024px)')
+      if (!mm.matches) return
+      const st = ScrollTrigger.create({
+        trigger: loomRef.current,
+        start: 'top 96px',
+        endTrigger: document.documentElement,
+        end: 'max',
+        pin: true,
+        pinSpacing: false,
+      })
+      return () => st.kill()
+    },
+    { dependencies: [filter], revertOnUpdate: true },
+  )
+
   const now = toDate(today)
   const [view, setView] = useState({ y: now.getFullYear(), m: now.getMonth() })
   const move = (delta) =>
@@ -335,8 +356,8 @@ export default function CalendarPage() {
             <div className="order-2 lg:order-1">
               <AllEvents list={list} onHover={setHighlight} />
             </div>
-            {/* À droite : le calendrier, collé en haut pendant le défilement */}
-            <div className="order-1 lg:sticky lg:top-[96px] lg:order-2">
+            {/* À droite : le calendrier, fixé à l'écran jusqu'au pied de page */}
+            <div ref={loomRef} className="relative z-30 order-1 lg:order-2">
               <Loom list={list} view={view} onMove={move} highlight={highlight} />
             </div>
           </div>

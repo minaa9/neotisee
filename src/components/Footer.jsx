@@ -16,7 +16,7 @@ const wave = (b) => `M0 ${50 + b * 0.25} C 360 ${-12 + b} 1000 ${96 + b} 1440 ${
  * Pied de page V3, commun à toutes les pages (Figma « V3 Pied de page »).
  * Son bord en vague rebondit selon la vitesse à laquelle on arrive en bas.
  */
-export default function Footer({ afterPeach = false }) {
+export default function Footer({ afterPeach = false, besideCalendar = false }) {
   const footerRef = useRef(null)
   const pathRef = useRef(null)
 
@@ -71,11 +71,13 @@ export default function Footer({ afterPeach = false }) {
         src={planteGravee}
         alt=""
         aria-hidden="true"
+        hidden={besideCalendar}
         className="pointer-events-none absolute top-[120px] right-[15px] hidden h-[240px] w-[124px] object-contain opacity-70 xl:block"
       />
 
-      <div className="container-site relative pt-24 pb-8 xl:pt-[115px]">
-        <div className="flex flex-col gap-12 lg:flex-row lg:justify-between">
+      {/* Sur la page Calendrier, le calendrier reste fixé à droite : le contenu se range à gauche. */}
+      <div className={`container-site relative pt-24 pb-8 xl:pt-[115px] ${besideCalendar ? 'lg:pr-[540px] xl:pr-[640px]' : ''}`}>
+        <div className={`flex flex-col gap-12 ${besideCalendar ? '' : 'lg:flex-row lg:justify-between'}`}>
           <div className="max-w-[460px]">
             <Logo />
             <p className="mt-4 font-serif text-[42px] leading-[1.15] font-light text-brun italic md:text-[52px]">
@@ -87,7 +89,7 @@ export default function Footer({ afterPeach = false }) {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-10 sm:grid-cols-[200px_200px_auto] sm:gap-0 lg:mr-[80px] lg:pt-2.5">
+          <div className={`grid grid-cols-2 gap-10 sm:grid-cols-[200px_200px_auto] sm:gap-0 ${besideCalendar ? 'lg:grid-cols-[150px_150px_auto]' : 'lg:mr-[80px] lg:pt-2.5'}`}>
             {footerNav.map((col) => (
               <nav key={col.title} aria-label={col.title}>
                 <p className={titleCls}>{col.title}</p>
@@ -138,15 +140,23 @@ export default function Footer({ afterPeach = false }) {
 
         <div className="mt-10 flex flex-col gap-2 border-t border-brun/15 pt-5 text-petit text-brun-doux sm:flex-row sm:justify-between xl:mt-[44px]">
           <p>© {new Date().getFullYear()} Néotisse — association loi 1901</p>
-          <p>
-            <Link to="/mentions-legales" className="hover:text-brun">
-              Mentions légales
-            </Link>
-            {'  ·  '}
-            <Link to="/confidentialite" className="hover:text-brun">
-              Confidentialité
-            </Link>
-          </p>
+          <ul className="flex flex-wrap gap-x-4 gap-y-1">
+            <li>
+              <Link to="/mentions-legales" className="link-fil hover:text-brun">
+                Mentions légales
+              </Link>
+            </li>
+            <li>
+              <Link to="/confidentialite" className="link-fil hover:text-brun">
+                Confidentialité
+              </Link>
+            </li>
+            <li>
+              <Link to="/cookies" className="link-fil hover:text-brun">
+                Gestion des cookies
+              </Link>
+            </li>
+          </ul>
         </div>
       </div>
     </footer>

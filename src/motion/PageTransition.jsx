@@ -12,6 +12,9 @@ const NAMES = {
   '/calendrier': 'Calendrier',
   '/livre-d-or': 'Livre d’or',
   '/contact': 'Contact',
+  '/mentions-legales': 'Mentions légales',
+  '/confidentialite': 'Confidentialité',
+  '/cookies': 'Cookies',
 }
 
 /**

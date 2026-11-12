@@ -9,6 +9,9 @@ import CalendarPage from './pages/Calendar'
 import GuestbookPage from './pages/Guestbook'
 import ContactPage from './pages/Contact'
 import Placeholder from './pages/Placeholder'
+import LegalNoticePage from './pages/LegalNotice'
+import PrivacyPage from './pages/Privacy'
+import CookiesPage from './pages/Cookies'
 
 export default function App() {
   return (
@@ -23,9 +26,9 @@ export default function App() {
           <Route path="calendrier" element={<CalendarPage />} />
           <Route path="livre-d-or" element={<GuestbookPage />} />
           <Route path="contact" element={<ContactPage />} />
-          {/* Pages légales : maquettes pas encore faites */}
-          <Route path="mentions-legales" element={<Placeholder eyebrow="Informations" title="Mentions légales" />} />
-          <Route path="confidentialite" element={<Placeholder eyebrow="Informations" title="Politique de confidentialité" />} />
+          <Route path="mentions-legales" element={<LegalNoticePage />} />
+          <Route path="confidentialite" element={<PrivacyPage />} />
+          <Route path="cookies" element={<CookiesPage />} />
           <Route path="*" element={<Placeholder eyebrow="Erreur 404" title="Page introuvable" />} />
         </Route>
       </Routes>
