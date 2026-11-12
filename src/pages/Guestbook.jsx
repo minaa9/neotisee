@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import PageHeader from '../components/PageHeader'
 import InfiniteCards from '../components/InfiniteCards'
+import QuoteCycler from '../components/QuoteCycler'
 import { Field } from '../components/forms'
 import { inputCls, openMail, selectArrow } from '../components/formUtils'
 import { Button, Reveal } from '../components/ui'
@@ -173,6 +174,8 @@ export default function GuestbookPage() {
 
       <section aria-label="Témoignages" className="overflow-hidden bg-creme pb-16 xl:pt-2 xl:pb-[90px]">
         <div className="container-site">
+          <QuoteCycler items={temoignages} />
+          <p className="mt-16 mb-6 text-center text-label text-brique">Tous les témoignages · faites glisser</p>
           <InfiniteCards items={temoignages} />
         </div>
       </section>

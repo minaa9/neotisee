@@ -1,5 +1,7 @@
 import { useRef } from 'react'
 import PageHeader from '../components/PageHeader'
+import Hotspots from '../components/Hotspots'
+import DyeBath from '../components/DyeBath'
 import { MOTION_OK, ScrollTrigger, gsap, useGSAP } from '../motion/gsap'
 import { Button, Reveal } from '../components/ui'
 import { ateliers } from '../data/ateliers'
@@ -112,12 +114,11 @@ export default function WorkshopsPage() {
                 reversed ? 'lg:flex-row-reverse lg:justify-between' : 'lg:flex-row'
               }`}
             >
-              <Reveal
-                className={`overflow-hidden lg:w-[440px] lg:shrink-0 ${
-                  reversed ? 'rounded-t-[250px] rounded-b-[24px]' : 'rounded-l-[24px] rounded-r-[250px]'
-                }`}
-              >
-                <img src={a.image} alt="" loading="lazy" className="aspect-[540/400] w-full object-cover" />
+              <Reveal data-no-motion className="relative lg:w-[440px] lg:shrink-0">
+                <div className={`overflow-hidden ${reversed ? 'rounded-t-[250px] rounded-b-[24px]' : 'rounded-l-[24px] rounded-r-[250px]'}`}>
+                  <img src={a.image} alt="" loading="lazy" className="aspect-[540/400] w-full object-cover" />
+                </div>
+                <Hotspots points={a.points} />
               </Reveal>
 
               <Reveal delay={120} className={`relative lg:pt-[30px] ${reversed ? 'lg:pl-10' : ''}`}>
@@ -142,6 +143,12 @@ export default function WorkshopsPage() {
         )
       })}
       </div>
+
+      <section className="bg-creme pt-20 pb-6 xl:pt-28">
+        <div className="container-site">
+          <DyeBath />
+        </div>
+      </section>
 
       <section className="bg-creme py-14 xl:py-16">
         <Reveal className="container-site flex flex-col items-center gap-6 text-center">

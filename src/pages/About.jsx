@@ -1,5 +1,7 @@
 import { useRef } from 'react'
 import PageHeader from '../components/PageHeader'
+import PeriodTimeline from '../components/PeriodTimeline'
+import ThreadDivider from '../components/ThreadDivider'
 import { MOTION_OK, gsap, useGSAP } from '../motion/gsap'
 import { CenteredHeading } from '../components/ui'
 import festival from '../assets/news/festival.webp'
@@ -131,6 +133,23 @@ export default function About() {
               </li>
             ))}
           </ol>
+        </div>
+      </section>
+      <ThreadDivider className="bg-creme" />
+
+      <section aria-labelledby="periodes-titre" className="bg-creme pt-6 pb-24 xl:pb-[110px]">
+        <div className="container-site">
+          <CenteredHeading
+            title={
+              <span id="periodes-titre">
+                Trois périodes, <em>un même fil</em>
+              </span>
+            }
+            subtitle="Du Néolithique au Moyen Âge : choisissez une période pour remonter le fil."
+          />
+          <div className="mt-12 xl:mt-16">
+            <PeriodTimeline />
+          </div>
         </div>
       </section>
     </>

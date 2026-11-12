@@ -152,10 +152,10 @@ export default function ContactPage() {
           <Reveal className="relative lg:w-[460px] lg:shrink-0 lg:pt-5">
             <ul className="flex flex-col gap-7">
               {infos.map((info) => (
-                <li key={info.label} className="flex items-center gap-6">
+                <li key={info.label} className="group flex items-center gap-6">
                   <span className="relative flex size-14 shrink-0 items-center justify-center">
                     <img src={pastille} alt="" className="absolute inset-0 size-full" />
-                    <img src={info.icon} alt="" width="24" height="24" className="relative" />
+                    <img src={info.icon} alt="" width="24" height="24" className="icone-anim relative" />
                   </span>
                   <p>
                     <span className="block text-label text-brique">{info.label}</span>

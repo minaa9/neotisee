@@ -1,5 +1,8 @@
 import { useRef } from 'react'
 import PageHeader from '../components/PageHeader'
+import Gallery from '../components/Gallery'
+import ThreadDivider from '../components/ThreadDivider'
+import { photos } from '../data/photos'
 import { MOTION_OK, gsap, useGSAP } from '../motion/gsap'
 import { Eyebrow, Reveal } from '../components/ui'
 import { news } from '../data/news'
@@ -87,6 +90,33 @@ export default function NewsPage() {
         </div>
       </article>
 
+      {/* Galerie */}
+      <section aria-labelledby="en-images" className="bg-creme pb-24 xl:pb-32">
+        <ThreadDivider />
+        <div className="container-site mt-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <h2 id="en-images" className="font-serif text-[40px] leading-[1.08] text-brun md:text-[56px]">
+              En images, <em className="font-light">au fil des ateliers</em>
+            </h2>
+            <p className="max-w-[340px] text-petit text-brun-doux">Cliquez sur une photo pour l’ouvrir en grand, puis naviguez avec les flèches.</p>
+          </div>
+          <div className="mt-10 xl:mt-14">
+            <Gallery
+              items={[
+                photos.atelierTable,
+                photos.metierBande,
+                photos.echeveau,
+                photos.broderie,
+                photos.jarreTeinture,
+                photos.bandesChevrons,
+                photos.standTeintures,
+                photos.metierCarton,
+              ]}
+            />
+          </div>
+        </div>
+      </section>
+
       {/* Autres actualités */}
       <section aria-labelledby="derniers-fils" className="relative bg-peche pt-24 pb-16 xl:pt-[120px] xl:pb-[70px]">
         <img src={vague} alt="" aria-hidden="true" className="absolute inset-x-0 top-[-1px] h-[50px] w-full md:h-[101px]" />
@@ -97,7 +127,7 @@ export default function NewsPage() {
           <ul ref={listRef} className="mt-8 -mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 [scrollbar-width:none] md:mx-0 md:grid md:gap-[30px] md:overflow-visible md:px-0 md:grid-cols-2 lg:grid-cols-3 xl:mt-[38px]">
             {others.map((a) => (
               <li key={a.id} id={a.id} data-news className="w-[85%] shrink-0 scroll-mt-24 snap-center md:w-auto">
-                <article className="h-full overflow-hidden rounded-[24px] bg-lin">
+                <article data-tilt className="h-full overflow-hidden rounded-[24px] bg-lin">
                   <img src={a.image} alt={a.alt} loading="lazy" className="aspect-[380/200] w-full object-cover" />
                   <div className="px-7 pt-6 pb-8">
                     <p className="text-label text-brique">{a.rubrique}</p>

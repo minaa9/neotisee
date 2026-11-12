@@ -54,7 +54,7 @@ function Filters({ value, onChange }) {
 /* Le métier du mois (à droite, reste visible au défilement).          */
 /* Chaque fil horizontal est un jour, chaque navette un rendez-vous.   */
 /* ------------------------------------------------------------------ */
-function Loom({ list, view, onMove }) {
+function Loom({ list, view, onMove, highlight }) {
   const today = todayIso()
   const [hover, setHover] = useState(null)
   const drag = useRef(null)
@@ -133,7 +133,7 @@ function Loom({ list, view, onMove }) {
               {evs.map((e, j) => {
                 const cat = categories[e.categorie]
                 const past = e.date < today
-                const open = hover === e.id
+                const open = hover === e.id || highlight === e.id
                 return (
                   <div
                     key={e.id}
@@ -146,7 +146,7 @@ function Loom({ list, view, onMove }) {
                       href={`#rdv-${e.id}`}
                       onFocus={() => setHover(e.id)}
                       onBlur={() => setHover(null)}
-                      className={`relative flex items-center rounded-full py-1 pr-3 pl-6 text-[13px] whitespace-nowrap transition-transform hover:scale-[1.04] ${cat.bg} ${cat.text} ${past ? 'opacity-50' : ''}`}
+                      className={`relative flex items-center rounded-full py-1 pr-3 pl-6 text-[13px] whitespace-nowrap transition-[transform,box-shadow] duration-300 hover:scale-[1.04] ${cat.bg} ${cat.text} ${past ? 'opacity-50' : ''} ${open ? 'scale-110 shadow-[0_0_0_4px_rgba(180,88,61,0.18)]' : ''}`}
                     >
                       <img src={noeud} alt="" aria-hidden="true" className="absolute top-1/2 left-[5px] size-3 -translate-y-1/2" />
                       {e.court}
@@ -186,7 +186,7 @@ function Loom({ list, view, onMove }) {
 /* ------------------------------------------------------------------ */
 /* Tous les rendez-vous, regroupés par mois (à gauche)                 */
 /* ------------------------------------------------------------------ */
-function AllEvents({ list }) {
+function AllEvents({ list, onHover }) {
   const today = todayIso()
   const groups = useMemo(() => {
     const map = new Map()
@@ -217,7 +217,13 @@ function AllEvents({ list }) {
                 const past = e.date < today
                 const cat = categories[e.categorie]
                 return (
-                  <li key={e.id} id={`rdv-${e.id}`} className={`relative scroll-mt-28 ${past ? 'opacity-50' : ''}`}>
+                  <li
+                    key={e.id}
+                    id={`rdv-${e.id}`}
+                    onMouseEnter={() => onHover(e.id)}
+                    onMouseLeave={() => onHover(null)}
+                    className={`group/rdv relative scroll-mt-28 transition-transform duration-500 hover:translate-x-2 ${past ? 'opacity-50' : ''}`}
+                  >
                     <img src={cat.dot} alt="" aria-hidden="true" className="absolute top-[42px] left-0 size-[11px]" />
                     <article className="ml-8 grid grid-cols-[64px_1fr_auto] items-start gap-x-4 border-b border-brun/10 py-4">
                       <p className="font-serif leading-[1.08] text-brun">
@@ -258,6 +264,8 @@ function AllEvents({ list }) {
 /** Page Calendrier V3 (Figma 353:269) */
 export default function CalendarPage() {
   const [filter, setFilter] = useState('tous')
+  // Survol d'un rendez-vous dans la liste : sa navette s'allume dans le métier.
+  const [highlight, setHighlight] = useState(null)
   const sorted = useMemo(() => [...events].sort((a, b) => a.date.localeCompare(b.date)), [])
   const list = sorted.filter((e) => filter === 'tous' || e.categorie === filter)
   const today = todayIso()
@@ -325,11 +333,11 @@ export default function CalendarPage() {
           <div className="mt-10 grid items-start gap-10 lg:grid-cols-[1fr_440px] lg:gap-12 xl:grid-cols-[1fr_480px]">
             {/* À gauche : la liste */}
             <div className="order-2 lg:order-1">
-              <AllEvents list={list} />
+              <AllEvents list={list} onHover={setHighlight} />
             </div>
             {/* À droite : le calendrier, collé en haut pendant le défilement */}
             <div className="order-1 lg:sticky lg:top-[96px] lg:order-2">
-              <Loom list={list} view={view} onMove={move} />
+              <Loom list={list} view={view} onMove={move} highlight={highlight} />
             </div>
           </div>
         </div>
