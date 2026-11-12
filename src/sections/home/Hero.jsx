@@ -19,11 +19,16 @@ export default function Hero() {
     () => {
       const mm = gsap.matchMedia()
       mm.add(MOTION_OK, () => {
+        // Intro « pelote » : rejouée à chaque arrivée sur l'accueil,
+        // l'entrée du hero démarre quand le rideau de laine se lève.
+        const intro = window.__ntIntro
+        if (intro && !intro.playing()) intro.play()
+        const start = intro && intro.playing() ? 2.5 : 0.3
         const title = SplitText.create('[data-hero-title]', { type: 'chars', mask: 'chars' })
         const lines = SplitText.create('[data-hero-lines]', { type: 'lines', mask: 'lines' })
 
         gsap
-          .timeline({ delay: 0.3, defaults: { ease: 'expo.out' } })
+          .timeline({ delay: start, defaults: { ease: 'expo.out' } })
           .fromTo('[data-hero-frame]', { clipPath: 'inset(22% 30% 22% 30% round 300px)' }, { clipPath: 'inset(0% 0% 0% 0% round 0px)', duration: 1.8, ease: 'expo.inOut' })
           .fromTo('[data-hero-img]', { scale: 1.35 }, { scale: 1.08, duration: 2.4 }, 0)
           .from('[data-hero-veil]', { autoAlpha: 0, duration: 1.2 }, 0.6)

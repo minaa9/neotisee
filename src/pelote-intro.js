@@ -145,7 +145,7 @@
     raf = requestAnimationFrame(frame);
   }
 
-  window.__ntIntro = { play, stop };
+  window.__ntIntro = { play, stop, playing: () => !!svg };
 
   if (document.readyState === 'loading') addEventListener('DOMContentLoaded', play, { once: true });
   else play();

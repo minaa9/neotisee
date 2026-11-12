@@ -1,7 +1,6 @@
 import { useRef } from 'react'
 import PageHeader from '../components/PageHeader'
 import Hotspots from '../components/Hotspots'
-import DyeBath from '../components/DyeBath'
 import { MOTION_OK, ScrollTrigger, gsap, useGSAP } from '../motion/gsap'
 import { Button, Reveal } from '../components/ui'
 import { ateliers } from '../data/ateliers'
@@ -143,12 +142,6 @@ export default function WorkshopsPage() {
         )
       })}
       </div>
-
-      <section className="bg-creme pt-20 pb-6 xl:pt-28">
-        <div className="container-site">
-          <DyeBath />
-        </div>
-      </section>
 
       <section className="bg-creme py-14 xl:py-16">
         <Reveal className="container-site flex flex-col items-center gap-6 text-center">
