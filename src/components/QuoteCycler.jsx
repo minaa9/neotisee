@@ -10,7 +10,7 @@ export default function QuoteCycler({ items, every = 7 }) {
   const [i, setI] = useState(0)
   const textRef = useRef(null)
   const barRef = useRef(null)
-  const t = items[i]
+  const t = items[i % items.length]
 
   // Mots qui se posent + fil de lecture
   useEffect(() => {

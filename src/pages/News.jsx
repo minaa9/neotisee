@@ -2,12 +2,13 @@ import { useRef } from 'react'
 import PageHeader from '../components/PageHeader'
 import { MOTION_OK, gsap, useGSAP } from '../motion/gsap'
 import { Eyebrow, Reveal } from '../components/ui'
-import { news } from '../data/news'
+import { usePublic } from '../lib/usePublic'
 import heroImage from '../assets/ateliers/tissage.webp'
 import vague from '../assets/v3/home/vague-avis.svg'
 
 /** Page Actualités V3 (Figma 352:280) */
 export default function NewsPage() {
+  const news = usePublic('actualites')
   const listRef = useRef(null)
 
   /*
@@ -46,7 +47,7 @@ export default function NewsPage() {
       })
       return () => mm.revert()
     },
-    { scope: listRef },
+    { scope: listRef, dependencies: [news], revertOnUpdate: true },
   )
 
   const [featured, ...others] = news

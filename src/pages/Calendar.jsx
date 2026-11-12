@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import PageHeader from '../components/PageHeader'
 import { ScrollTrigger, useGSAP } from '../motion/gsap'
+import { usePublic } from '../lib/usePublic'
 import { Button, CenteredHeading, Reveal } from '../components/ui'
 import {
   JOURS,
@@ -8,7 +9,6 @@ import {
   MOIS_COURT,
   capitalize,
   categories,
-  events,
   horaires,
   icsFor,
   toDate,
@@ -267,7 +267,8 @@ export default function CalendarPage() {
   const [filter, setFilter] = useState('tous')
   // Survol d'un rendez-vous dans la liste : sa navette s'allume dans le métier.
   const [highlight, setHighlight] = useState(null)
-  const sorted = useMemo(() => [...events].sort((a, b) => a.date.localeCompare(b.date)), [])
+  const events = usePublic('evenements')
+  const sorted = useMemo(() => [...events].sort((a, b) => a.date.localeCompare(b.date)), [events])
   const list = sorted.filter((e) => filter === 'tous' || e.categorie === filter)
   const today = todayIso()
   const next = sorted.find((e) => e.date >= today)

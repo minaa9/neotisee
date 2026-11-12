@@ -1,3 +1,4 @@
+import { Suspense, lazy } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router'
 import Layout from './components/Layout'
 import Home from './pages/Home'
@@ -13,10 +14,21 @@ import LegalNoticePage from './pages/LegalNotice'
 import PrivacyPage from './pages/Privacy'
 import CookiesPage from './pages/Cookies'
 
+// Back-office : chargé seulement quand on va sur /admin.
+const AdminApp = lazy(() => import('./admin/AdminApp'))
+
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route
+          path="admin/*"
+          element={
+            <Suspense fallback={<div className="min-h-svh bg-creme" />}>
+              <AdminApp />
+            </Suspense>
+          }
+        />
         <Route element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="association" element={<About />} />

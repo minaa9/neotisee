@@ -24,6 +24,7 @@
 
   function play() {
     stop();
+    if (location.pathname.startsWith('/admin')) return; // pas d'intro dans le back-office
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const W = innerWidth, H = innerHeight;

@@ -5,7 +5,8 @@ import { Field, PillChoice } from '../components/forms'
 import { EMAIL_RE, inputCls, openMail, selectArrow } from '../components/formUtils'
 import { Button, Reveal } from '../components/ui'
 import { MOTION_OK, gsap, useGSAP } from '../motion/gsap'
-import { events } from '../data/events'
+import { usePublic } from '../lib/usePublic'
+import { isLive, submit as enregistrer } from '../lib/store'
 import { contact } from '../data/navigation'
 import heroImage from '../assets/ateliers/broderie.webp'
 import fuseau from '../assets/association/fuseau.webp'
@@ -66,6 +67,7 @@ export default function ContactPage() {
   const threadRef = useRef(null)
   const trackRef = useRef(null)
   const [params] = useSearchParams()
+  const events = usePublic('evenements')
   const rdv = events.find((e) => e.id === params.get('rdv'))
   const initialObjet = OBJETS[params.get('objet')] ? params.get('objet') : ''
 
@@ -106,7 +108,7 @@ export default function ContactPage() {
     setErrors((e) => ({ ...e, [name]: undefined }))
   }
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault()
     const found = {}
     if (!values.nom.trim()) found.nom = 'Indiquez votre nom et prénom.'
@@ -120,11 +122,31 @@ export default function ContactPage() {
       document.getElementById(`ct-${Object.keys(found)[0]}`)?.focus()
       return
     }
-    openMail(
-      contact.email,
-      `[Site Néotisse] ${OBJETS[values.objet]}`,
-      `${values.message}\n\n— ${values.nom} (${values.profil.toLowerCase()}) · ${values.email}`,
-    )
+    const row = {
+      nom: values.nom.trim(),
+      email: values.email.trim(),
+      profil: values.profil,
+      objet: OBJETS[values.objet],
+      message: values.message.trim(),
+      rdv: rdv ? rdv.titre : '',
+    }
+    // Le message arrive dans le back-office (rubrique Messages).
+    try {
+      await enregistrer('messages', row)
+    } catch {
+      if (isLive) {
+        setErrors({ message: `L’envoi n’a pas fonctionné. Réessayez ou écrivez-nous à ${contact.email}.` })
+        return
+      }
+    }
+    // Sans base en ligne : on ouvre aussi la messagerie pour que le message parte vraiment.
+    if (!isLive) {
+      openMail(
+        contact.email,
+        `[Site Néotisse] ${OBJETS[values.objet]}`,
+        `${values.message}\n\n— ${values.nom} (${values.profil.toLowerCase()}) · ${values.email}`,
+      )
+    }
     setSent(true)
   }
 
@@ -194,14 +216,21 @@ export default function ContactPage() {
             {sent ? (
               <div role="status">
                 <p className="font-serif text-[34px] leading-[1.18] text-brun">Merci, à très vite !</p>
-                <p className="mt-3 text-courant text-brun-doux">
-                  Votre messagerie s’est ouverte avec votre message pré-rempli : il ne vous reste plus
-                  qu’à l’envoyer. Si rien ne s’est ouvert, écrivez-nous à{' '}
-                  <a href={`mailto:${contact.email}`} className="text-terre-cuite underline">
-                    {contact.email}
-                  </a>
-                  .
-                </p>
+                {isLive ? (
+                  <p className="mt-3 text-courant text-brun-doux">
+                    Votre message nous est bien parvenu. Nous vous répondrons très vite à l’adresse{' '}
+                    {values.email}.
+                  </p>
+                ) : (
+                  <p className="mt-3 text-courant text-brun-doux">
+                    Votre messagerie s’est ouverte avec votre message pré-rempli : il ne vous reste plus
+                    qu’à l’envoyer. Si rien ne s’est ouvert, écrivez-nous à{' '}
+                    <a href={`mailto:${contact.email}`} className="text-terre-cuite underline">
+                      {contact.email}
+                    </a>
+                    .
+                  </p>
+                )}
                 <button type="button" onClick={() => setSent(false)} className="mt-6 text-petit text-terre-cuite underline">
                   Écrire un autre message
                 </button>

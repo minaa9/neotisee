@@ -7,7 +7,8 @@ import { inputCls, openMail, selectArrow } from '../components/formUtils'
 import { Button, Reveal } from '../components/ui'
 import { ateliers } from '../data/ateliers'
 import { contact } from '../data/navigation'
-import { temoignages } from '../data/temoignages'
+import { usePublic } from '../lib/usePublic'
+import { isLive, submit as enregistrer } from '../lib/store'
 import heroImage from '../assets/events/teinture.webp'
 import fleurSechee from '../assets/home/fleur-seche.webp'
 import vague from '../assets/v3/home/vague-avis.svg'
@@ -46,7 +47,7 @@ function LeaveAWord() {
     setErrors((e) => ({ ...e, [name]: undefined }))
   }
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault()
     const found = {}
     if (!values.prenom.trim()) found.prenom = 'Indiquez votre prénom.'
@@ -56,11 +57,28 @@ function LeaveAWord() {
       document.getElementById(`lo-${Object.keys(found)[0]}`)?.focus()
       return
     }
-    openMail(
-      contact.email,
-      `[Livre d’or] Un mot de ${values.prenom}`,
-      `${values.message}\n\nAtelier : ${values.atelier || 'non précisé'}\nNote : ${values.note}/5\n— ${values.prenom}`,
-    )
+    // Le témoignage arrive dans le back-office, en attente de relecture.
+    try {
+      await enregistrer('temoignages', {
+        prenom: values.prenom.trim(),
+        atelier: values.atelier,
+        note: values.note,
+        texte: values.message.trim(),
+        date: String(new Date().getFullYear()),
+      })
+    } catch {
+      if (isLive) {
+        setErrors({ message: `L’envoi n’a pas fonctionné. Réessayez ou écrivez-nous à ${contact.email}.` })
+        return
+      }
+    }
+    if (!isLive) {
+      openMail(
+        contact.email,
+        `[Livre d’or] Un mot de ${values.prenom}`,
+        `${values.message}\n\nAtelier : ${values.atelier || 'non précisé'}\nNote : ${values.note}/5\n— ${values.prenom}`,
+      )
+    }
     setSent(true)
   }
 
@@ -87,8 +105,9 @@ function LeaveAWord() {
             <div role="status">
               <p className="font-serif text-[30px] leading-[1.18] text-brun">Merci pour votre mot !</p>
               <p className="mt-3 text-courant text-brun-doux">
-                Votre messagerie s’est ouverte avec votre message : il ne reste plus qu’à l’envoyer. Il
-                sera publié après relecture.
+                {isLive
+                  ? 'Votre mot nous est bien parvenu. Il sera publié après relecture par l’association.'
+                  : 'Votre messagerie s’est ouverte avec votre message : il ne reste plus qu’à l’envoyer. Il sera publié après relecture.'}
               </p>
               <button type="button" onClick={() => setSent(false)} className="mt-6 text-petit text-terre-cuite underline">
                 Écrire un autre mot
@@ -152,6 +171,7 @@ function LeaveAWord() {
 
 /** Page Livre d'or V3 (Figma 354:318) */
 export default function GuestbookPage() {
+  const temoignages = usePublic('temoignages')
   return (
     <>
       <PageHeader

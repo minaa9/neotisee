@@ -79,6 +79,11 @@ const sections = [
                 <td className="px-5 py-4">Retenir votre choix sur les cookies (stockage local du navigateur)</td>
                 <td className="px-5 py-4">6 mois</td>
               </tr>
+              <tr className="border-t border-brun/10">
+                <td className="px-5 py-4 text-brun">sb-…-auth-token</td>
+                <td className="px-5 py-4">Garder connectés les membres de l’association à l’espace de gestion. Jamais déposé pour les visiteurs.</td>
+                <td className="px-5 py-4">Jusqu’à la déconnexion</td>
+              </tr>
             </tbody>
           </table>
         </div>

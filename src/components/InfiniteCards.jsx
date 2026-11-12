@@ -65,7 +65,7 @@ export default function InfiniteCards({ items }) {
         loop.kill()
       }
     },
-    { scope: wrapRef },
+    { scope: wrapRef, dependencies: [items], revertOnUpdate: true },
   )
 
   const go = (fn) => loopRef.current && fn(loopRef.current)

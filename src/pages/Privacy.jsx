@@ -40,9 +40,9 @@ const sections = [
           ]}
         />
         <P>
-          Ces formulaires n’enregistrent rien sur un serveur : ils ouvrent votre propre messagerie
-          avec un message pré-rempli adressé à l’association. Vos données ne nous parviennent donc
-          que si vous envoyez cet e-mail.
+          Les messages et témoignages envoyés sont enregistrés dans la base de données de
+          l’association, hébergée par Supabase, et consultés depuis notre espace de gestion réservé
+          à l’équipe. Les témoignages ne sont publiés qu’après relecture.
         </P>
         <P>
           La base légale de ces traitements est votre consentement (vous choisissez de nous écrire)
@@ -79,12 +79,17 @@ const sections = [
     titre: 'Services extérieurs',
     contenu: (
       <>
-        <P>Pour fonctionner, le site s’appuie sur deux services :</P>
+        <P>Pour fonctionner, le site s’appuie sur trois services :</P>
         <Liste
           items={[
             <>
               <strong className="font-normal text-brun">Netlify</strong> (hébergement) : comme tout
               hébergeur, il reçoit votre adresse IP pour afficher le site et le protéger des abus.
+            </>,
+            <>
+              <strong className="font-normal text-brun">Supabase</strong> (base de données) : conserve
+              les messages, témoignages et contenus du site. Région d’hébergement :{' '}
+              <ACompleter>région choisie, par exemple Union européenne (Paris)</ACompleter>.
             </>,
             <>
               <strong className="font-normal text-brun">Google Fonts</strong> (polices d’écriture) :
@@ -94,7 +99,7 @@ const sections = [
           ]}
         />
         <P>
-          Ces sociétés sont situées aux États-Unis. Les transferts sont encadrés par le cadre de
+          Ces sociétés sont situées aux États-Unis ou y ont leur maison mère. Les transferts sont encadrés par le cadre de
           protection des données UE – États-Unis et les clauses contractuelles types de la
           Commission européenne.
         </P>
