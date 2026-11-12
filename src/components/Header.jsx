@@ -40,9 +40,27 @@ export default function Header({ variant = 'creme' }) {
           scrolled ? 'h-[68px] xl:h-[76px]' : 'h-[84px] xl:h-24'
         }`}
       >
-        <Link to="/" aria-label="Néotisse, retour à l’accueil" className="relative z-50">
-          <Logo />
-        </Link>
+        <div className="flex items-center gap-3 sm:gap-5">
+          <Link to="/" aria-label="Néotisse, retour à l’accueil" className="relative z-50">
+            <Logo />
+          </Link>
+          <span aria-hidden="true" className={`h-6 w-px transition-colors ${onPhoto || open ? 'bg-lin/40' : 'bg-brun/20'}`} />
+          <button
+            type="button"
+            data-cursor={open ? 'Fermer' : 'Menu'}
+            className={`relative z-50 flex h-11 items-center gap-3 rounded-full px-2 transition-colors ${text}`}
+            aria-expanded={open}
+            aria-controls="menu-plein-ecran"
+            aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'}
+            onClick={() => setOpenOn(open ? null : pathname)}
+          >
+            <span className="hidden text-[14px] tracking-[0.06em] sm:inline">{open ? 'Fermer' : 'Menu'}</span>
+            <span className="relative block h-3 w-6">
+              <span className={`absolute left-0 h-px w-6 bg-current transition-all duration-300 ${open ? 'top-1.5 rotate-45' : 'top-0'}`} />
+              <span className={`absolute left-0 h-px w-6 bg-current transition-all duration-300 ${open ? 'top-1.5 -rotate-45' : 'top-3'}`} />
+            </span>
+          </button>
+        </div>
 
         <nav aria-label="Navigation principale" className={`hidden transition-opacity duration-300 lg:block ${open ? 'pointer-events-none opacity-0' : ''}`}>
           <ul className={`flex gap-7 text-[15px] leading-none tracking-[0.013em] xl:gap-10 ${text}`}>
@@ -69,21 +87,6 @@ export default function Header({ variant = 'creme' }) {
           <Button to="/contact" variant={onPhoto ? 'clair' : 'plein'} className={`hidden sm:inline-flex ${open ? 'invisible' : ''}`}>
             Contact
           </Button>
-          <button
-            type="button"
-            data-cursor={open ? 'Fermer' : 'Menu'}
-            className={`relative z-50 ml-2 flex h-11 items-center gap-3 rounded-full px-2 transition-colors ${text}`}
-            aria-expanded={open}
-            aria-controls="menu-plein-ecran"
-            aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'}
-            onClick={() => setOpenOn(open ? null : pathname)}
-          >
-            <span className="hidden text-[14px] tracking-[0.06em] xl:inline">{open ? 'Fermer' : 'Menu'}</span>
-            <span className="relative block h-3 w-6">
-              <span className={`absolute left-0 h-px w-6 bg-current transition-all duration-300 ${open ? 'top-1.5 rotate-45' : 'top-0'}`} />
-              <span className={`absolute left-0 h-px w-6 bg-current transition-all duration-300 ${open ? 'top-1.5 -rotate-45' : 'top-3'}`} />
-            </span>
-          </button>
         </div>
       </div>
 
