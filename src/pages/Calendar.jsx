@@ -63,9 +63,25 @@ function Loom({ list, view, onMove, highlight }) {
   const days = new Date(view.y, view.m + 1, 0).getDate()
   const prefix = `${view.y}-${pad(view.m + 1)}-`
   const byDay = {}
-  list.filter((e) => e.date.startsWith(prefix)).forEach((e) => {
+  const monthEvents = list.filter((e) => e.date.startsWith(prefix))
+  monthEvents.forEach((e) => {
     ;(byDay[Number(e.date.slice(8))] ??= []).push(e)
   })
+
+  // Anti-encombrement : chaque navette prend un « couloir ». Deux rendez-vous
+  // le même jour ou à un jour d'écart ne partagent jamais le même couloir,
+  // et la largeur de chaque couloir s'adapte au nombre nécessaire.
+  const lanes = {}
+  const occupied = [] // occupied[lane] = jours déjà pris
+  monthEvents.forEach((e) => {
+    const d = Number(e.date.slice(8))
+    let lane = 0
+    while ((occupied[lane] || []).some((o) => Math.abs(o - d) <= 1)) lane++
+    ;(occupied[lane] ??= []).push(d)
+    lanes[e.id] = lane
+  })
+  const laneCount = Math.max(1, occupied.length)
+  const laneWidth = 100 / laneCount
 
   // « Glissez le métier pour changer de mois »
   const onPointerDown = (e) => {
@@ -119,27 +135,29 @@ function Loom({ list, view, onMove, highlight }) {
           return (
             <li key={d} className="relative flex h-[calc((100svh-480px)/31)] max-h-[22px] min-h-[15px] items-center gap-2">
               <span className="w-3 text-center text-[11px] text-brun-doux/70">{LETTRES[wd]}</span>
-              <span className={`w-5 text-right text-[12px] tabular-nums ${isToday ? 'font-medium text-terre-cuite' : 'text-brun'}`}>{d}</span>
+              <span
+                title={isToday ? 'Aujourd’hui' : undefined}
+                className={`flex h-[18px] w-6 items-center justify-center rounded-full text-[12px] tabular-nums ${isToday ? 'bg-terre-cuite font-medium text-lin' : 'text-brun'}`}
+              >
+                {d}
+                {isToday && <span className="sr-only"> (aujourd’hui)</span>}
+              </span>
               <span
                 aria-hidden="true"
                 className={`ml-1 h-px flex-1 ${isToday ? 'h-0.5 bg-terre-cuite' : weekend ? 'bg-brun/22' : 'bg-brun/12'}`}
               />
-              {isToday && (
-                <span className="absolute left-[54px] rounded-full bg-terre-cuite px-2 py-0.5 text-[10px] font-medium tracking-[0.12em] text-lin uppercase">
-                  Aujourd’hui
-                </span>
-              )}
-
-              {/* Navettes */}
-              {evs.map((e, j) => {
+              {/* Navettes, chacune dans son couloir */}
+              <div className="pointer-events-none absolute inset-y-0 right-0 left-[64px]">
+              {evs.map((e) => {
+                const lane = lanes[e.id]
                 const cat = categories[e.categorie]
                 const past = e.date < today
                 const open = hover === e.id || highlight === e.id
                 return (
                   <div
                     key={e.id}
-                    className="absolute top-1/2 z-10 -translate-y-1/2"
-                    style={{ right: `${2 + ((d * 11 + j * 23) % 30)}%` }}
+                    className={`pointer-events-auto absolute top-1/2 flex -translate-y-1/2 ${open ? 'z-30' : 'z-10'}`}
+                    style={{ left: `${lane * laneWidth}%`, maxWidth: `calc(${laneWidth}% - 6px)` }}
                     onMouseEnter={() => setHover(e.id)}
                     onMouseLeave={() => setHover(null)}
                   >
@@ -147,10 +165,10 @@ function Loom({ list, view, onMove, highlight }) {
                       href={`#rdv-${e.id}`}
                       onFocus={() => setHover(e.id)}
                       onBlur={() => setHover(null)}
-                      className={`relative flex items-center rounded-full py-1 pr-3 pl-6 text-[13px] whitespace-nowrap transition-[transform,box-shadow] duration-300 hover:scale-[1.04] ${cat.bg} ${cat.text} ${past ? 'opacity-50' : ''} ${open ? 'scale-110 shadow-[0_0_0_4px_rgba(180,88,61,0.18)]' : ''}`}
+                      className={`relative flex h-[20px] max-w-full origin-left items-center rounded-full pr-3 pl-6 text-[12px] whitespace-nowrap transition-[transform,box-shadow] duration-300 hover:scale-[1.04] ${cat.bg} ${cat.text} ${past ? 'opacity-50' : ''} ${open ? 'scale-110 shadow-[0_0_0_4px_rgba(180,88,61,0.18)]' : ''}`}
                     >
                       <img src={noeud} alt="" aria-hidden="true" className="absolute top-1/2 left-[5px] size-3 -translate-y-1/2" />
-                      {e.court}
+                      <span className="truncate">{e.court}</span>
                       <span className="sr-only">
                         {' '}
                         — {e.titre}, le {d} {MOIS[view.m]}
@@ -159,7 +177,7 @@ function Loom({ list, view, onMove, highlight }) {
                     {/* Infobulle */}
                     <div
                       role="tooltip"
-                      className={`pointer-events-none absolute right-0 bottom-[calc(100%+8px)] z-20 w-[240px] rounded-[18px] border border-brun/12 bg-creme p-4 shadow-[0_12px_30px_rgba(61,42,35,0.12)] transition-all duration-200 ${
+                      className={`pointer-events-none absolute bottom-[calc(100%+8px)] ${lane === laneCount - 1 && laneCount > 1 ? 'right-0' : 'left-0'} z-20 w-[240px] rounded-[18px] border border-brun/12 bg-creme p-4 shadow-[0_12px_30px_rgba(61,42,35,0.12)] transition-all duration-200 ${
                         open ? 'visible translate-y-0 opacity-100' : 'invisible translate-y-1 opacity-0'
                       }`}
                     >
@@ -174,6 +192,7 @@ function Loom({ list, view, onMove, highlight }) {
                   </div>
                 )
               })}
+              </div>
             </li>
           )
         })}

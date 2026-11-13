@@ -4,11 +4,26 @@ import { periodes } from '../data/periodes'
 import { MOTION_OK, gsap } from '../motion/gsap'
 
 /**
- * Frise chronologique interactive : un fil horizontal avec un nœud par
- * période. Choisir une période fait glisser une navette jusqu'au nœud,
+ * Frise chronologique interactive : un fil tissé bien droit avec un nœud par
+ * période. Choisir une période teinte le fil jusqu'au nœud,
  * révèle la nouvelle photo en volet et remplace le texte en fondu.
  * Navigation au clavier avec les flèches gauche / droite.
  */
+/** Cordelette torsadée (motif répété) : petits brins obliques entre deux fils. */
+function Cordelette({ className = '' }) {
+  return (
+    <svg className={`absolute inset-0 size-full ${className}`}>
+      <defs>
+        <pattern id={`torsade-${className.replace(/[^a-z]/g, '')}`} width="6" height="10" patternUnits="userSpaceOnUse">
+          {/* un brin de la torsade : courbe en S, comme une cordelette filée */}
+          <path d="M0.5 8.5 C 2.5 8.5, 3.5 1.5, 5.5 1.5" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="10" fill={`url(#torsade-${className.replace(/[^a-z]/g, '')})`} />
+    </svg>
+  )
+}
+
 export default function PeriodTimeline() {
   const rootRef = useRef(null)
   const [index, setIndex] = useState(0)
@@ -47,15 +62,17 @@ export default function PeriodTimeline() {
     <div ref={rootRef}>
       {/* Le fil et ses nœuds */}
       <div role="tablist" aria-label="Périodes" onKeyDown={onKey} className="relative mx-8 max-w-[900px] sm:mx-auto">
-        <svg aria-hidden="true" viewBox="0 0 900 40" preserveAspectRatio="none" className="absolute inset-x-0 top-[18px] h-10 w-full">
-          <path d="M0 20 C 150 0, 300 40, 450 20 S 750 0, 900 20" fill="none" stroke="#B4583D" strokeOpacity="0.45" vectorEffect="non-scaling-stroke" />
-        </svg>
-        {/* Navette qui glisse vers la période choisie */}
-        <span
-          aria-hidden="true"
-          className="absolute top-[30px] h-3 w-14 -translate-x-1/2 rounded-full bg-terre-cuite transition-[left] duration-700 ease-[cubic-bezier(0.65,0,0.35,1)]"
-          style={{ left: `${(index / (periodes.length - 1)) * 100}%` }}
-        />
+        {/* Fil tissé, bien droit : une cordelette torsadée. La partie déjà
+            parcourue se teinte en terre cuite jusqu'à la période choisie. */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-[40px] h-[10px] -translate-y-1/2">
+          <Cordelette className="text-brun/22" />
+          <div
+            className="absolute inset-0 transition-[clip-path] duration-700 ease-[cubic-bezier(0.65,0,0.35,1)]"
+            style={{ clipPath: `inset(0 ${100 - (index / (periodes.length - 1)) * 100}% 0 0)` }}
+          >
+            <Cordelette className="text-terre-cuite" />
+          </div>
+        </div>
         <div className="relative flex justify-between">
           {periodes.map((per, i) => (
             <button
@@ -69,8 +86,15 @@ export default function PeriodTimeline() {
               data-cursor="Voir"
               className={`group flex w-[100px] flex-col items-center gap-3 first:-ml-[50px] last:-mr-[50px] sm:w-[120px] sm:first:-ml-[60px] sm:last:-mr-[60px] ${index === i ? 'text-terre-cuite' : 'text-brun-doux hover:text-brun'}`}
             >
-              <span className="text-label">{String(i + 1).padStart(2, '0')}</span>
-              <span className={`size-4 rounded-full border-2 transition-all duration-500 ${index === i ? 'scale-125 border-terre-cuite bg-terre-cuite' : 'border-terre-cuite/50 bg-creme group-hover:scale-110'}`} />
+              <span className="flex h-5 items-center text-label">{String(i + 1).padStart(2, '0')}</span>
+              {/* Nœud sur le fil */}
+              <span
+                className={`relative flex size-5 items-center justify-center rounded-full border transition-all duration-500 ${
+                  index === i ? 'scale-125 border-terre-cuite bg-creme' : i < index ? 'border-terre-cuite bg-terre-cuite' : 'border-brun/30 bg-creme group-hover:scale-110 group-hover:border-terre-cuite'
+                }`}
+              >
+                <span className={`size-2 rounded-full transition-colors duration-500 ${index === i ? 'bg-terre-cuite' : i < index ? 'bg-creme' : 'bg-transparent'}`} />
+              </span>
               <span className="font-serif text-[20px] leading-tight sm:text-[24px]">{per.nom}</span>
             </button>
           ))}

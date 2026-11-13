@@ -1,16 +1,41 @@
 import { useRef } from 'react'
-import { Button } from '../../components/ui'
+import { Link } from 'react-router'
 import { MOTION_OK, SplitText, gsap, useGSAP } from '../../motion/gsap'
 import hero from '../../assets/home/hero.webp'
-import cercleFil from '../../assets/v3/home/cercle-fil.svg'
 import noeud from '../../assets/v3/home/noeud.svg'
+import flecheClair from '../../assets/v3/ui/fleche-clair.svg'
+
+/**
+ * Bouton « Découvrir l'association » : pilule en verre dépoli. Au survol,
+ * le lin remplit la pilule depuis la gauche comme un fil qu'on tire, le
+ * texte passe en brun et la navette terre cuite pivote vers la droite.
+ */
+function HeroButton() {
+  return (
+    <Link
+      to="/association"
+      className="group relative mt-8 inline-flex items-center gap-4 overflow-hidden rounded-full border border-lin/45 bg-lin/10 py-2 pr-2 pl-7 backdrop-blur-md transition-[border-color,box-shadow] duration-500 hover:border-lin hover:shadow-[0_18px_40px_-12px_rgba(0,0,0,0.45)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-lin xl:mt-[33px]"
+    >
+      <span aria-hidden="true" className="absolute inset-0 origin-left scale-x-0 rounded-full bg-lin transition-transform duration-700 ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100" />
+      <span className="relative flex flex-col text-left">
+        <span className="text-[11px] tracking-[0.18em] text-lin/70 uppercase transition-colors duration-500 group-hover:text-brique">Notre histoire</span>
+        <span className="font-serif text-[22px] leading-[1.1] text-lin italic transition-colors duration-500 group-hover:text-brun">
+          Découvrir l’association
+        </span>
+      </span>
+      <span className="relative flex size-12 shrink-0 items-center justify-center rounded-full bg-terre-cuite transition-transform duration-500 group-hover:scale-105">
+        <img src={flecheClair} alt="" width="16" height="16" className="size-4 -rotate-45 transition-transform duration-500 group-hover:rotate-0" />
+      </span>
+    </Link>
+  )
+}
 
 /**
  * 01 · Hero — entrée « cinématographique » :
  *  1. la photo s'ouvre depuis une fenêtre arrondie et se dézoome ;
  *  2. un fil terre cuite traverse l'écran en se dessinant et forme une boucle ;
  *  3. « Néotisse » apparaît lettre par lettre, puis l'accroche ligne par ligne ;
- *  4. au défilement, la photo se recadre en arche et le texte s'éloigne.
+ *  4. au défilement, la photo glisse en parallaxe et le texte s'éloigne.
  */
 export default function Hero() {
   const ref = useRef(null)
@@ -36,13 +61,12 @@ export default function Hero() {
           .from(title.chars, { yPercent: 110, rotation: 6, duration: 1.2, stagger: 0.06 }, 1)
           .from(lines.lines, { yPercent: 105, duration: 1, stagger: 0.12 }, 1.4)
           .from('[data-hero-fade]', { autoAlpha: 0, y: 24, duration: 1, stagger: 0.15 }, 1.7)
-          .from('[data-hero-circle]', { autoAlpha: 0, scale: 0.8, duration: 1.6 }, 1.2)
 
-        // Au défilement : la photo se recadre en arche, le texte s'éloigne.
+        // Au défilement : la photo reste plein écran (elle ne rétrécit plus),
+        // elle glisse doucement en parallaxe et le texte s'éloigne.
         gsap
           .timeline({ scrollTrigger: { trigger: ref.current, start: 'top top', end: 'bottom top', scrub: true } })
-          .to('[data-hero-frame]', { clipPath: 'inset(6% 4% 0% 4% round 48px)', ease: 'none' }, 0)
-          .to('[data-hero-img]', { scale: 1.22, yPercent: 8, ease: 'none' }, 0)
+          .to('[data-hero-img]', { yPercent: 12, ease: 'none' }, 0)
           .to('[data-hero-content]', { yPercent: -35, autoAlpha: 0, ease: 'none' }, 0)
 
         return () => {
@@ -84,10 +108,6 @@ export default function Hero() {
         />
       </svg>
 
-      {/* Cercle de fil qui tourne lentement */}
-      <div data-hero-circle aria-hidden="true" className="pointer-events-none absolute top-[calc(50%-20px)] right-[6%] hidden aspect-square h-[min(560px,62svh)] -translate-y-1/2 lg:block">
-        <img src={cercleFil} alt="" className="animate-tourne absolute inset-0 size-full" />
-      </div>
 
       <div className="container-site relative flex h-full items-center pt-20 pb-36 md:pb-40">
         <div data-hero-content>
@@ -104,9 +124,7 @@ export default function Hero() {
             histoires.
           </p>
           <div data-hero-fade>
-            <Button to="/association" variant="clair" className="mt-8 xl:mt-[33px]">
-              Découvrir l’association
-            </Button>
+            <HeroButton />
           </div>
         </div>
       </div>

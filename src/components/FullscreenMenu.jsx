@@ -74,7 +74,7 @@ export default function FullscreenMenu({ open, onClose }) {
                   data-cursor="Ouvrir"
                   data-menu-link
                   className={({ isActive }) =>
-                    `group flex items-baseline gap-5 py-1 font-serif text-[40px] leading-[1.1] font-light transition-colors sm:text-[56px] xl:text-[68px] ${
+                    `group flex items-baseline gap-5 py-1 font-serif text-[30px] leading-[1.15] font-light transition-colors sm:text-[40px] xl:text-[48px] ${
                       isActive ? 'text-poudre italic' : 'text-lin hover:text-poudre'
                     }`
                   }
