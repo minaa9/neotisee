@@ -1,7 +1,8 @@
 import { useRef } from 'react'
 import { Link } from 'react-router'
 import { MOTION_OK, ScrollTrigger, gsap, useGSAP } from '../motion/gsap'
-import { contact, footerNav, socials } from '../data/navigation'
+import { footerNav } from '../data/navigation'
+import { useContact, useSocials } from '../lib/reglages'
 import { Logo } from './ui'
 import planteGravee from '../assets/v3/ui/plante-gravee.webp'
 import instagram from '../assets/v3/ui/instagram.svg'
@@ -16,8 +17,10 @@ const wave = (b) => `M0 ${50 + b * 0.25} C 360 ${-12 + b} 1000 ${96 + b} 1440 ${
  * Pied de page V3, commun à toutes les pages (Figma « V3 Pied de page »).
  * Son bord en vague rebondit selon la vitesse à laquelle on arrive en bas.
  */
-export default function Footer({ afterPeach = false, besideCalendar = false }) {
+export default function Footer({ afterPeach = false }) {
   const footerRef = useRef(null)
+  const contact = useContact()
+  const socials = useSocials()
   const pathRef = useRef(null)
 
   useGSAP(
@@ -71,13 +74,11 @@ export default function Footer({ afterPeach = false, besideCalendar = false }) {
         src={planteGravee}
         alt=""
         aria-hidden="true"
-        hidden={besideCalendar}
         className="pointer-events-none absolute top-[120px] right-[15px] hidden h-[240px] w-[124px] object-contain opacity-70 xl:block"
       />
 
-      {/* Sur la page Calendrier, le calendrier reste fixé à droite : le contenu se range à gauche. */}
-      <div className={`container-site relative pt-24 pb-8 xl:pt-[115px] ${besideCalendar ? 'lg:pr-[540px] xl:pr-[640px]' : ''}`}>
-        <div className={`flex flex-col gap-12 ${besideCalendar ? '' : 'lg:flex-row lg:justify-between'}`}>
+      <div className="container-site relative pt-24 pb-8 xl:pt-[115px]">
+        <div className="flex flex-col gap-12 lg:flex-row lg:justify-between">
           <div className="max-w-[460px]">
             <Logo />
             <p className="mt-4 font-serif text-[42px] leading-[1.15] font-light text-brun italic md:text-[52px]">
@@ -89,7 +90,7 @@ export default function Footer({ afterPeach = false, besideCalendar = false }) {
             </p>
           </div>
 
-          <div className={`grid grid-cols-2 gap-10 sm:grid-cols-[200px_200px_auto] sm:gap-0 ${besideCalendar ? 'lg:grid-cols-[150px_150px_auto]' : 'lg:mr-[80px] lg:pt-2.5'}`}>
+          <div className="grid grid-cols-2 gap-10 sm:grid-cols-[200px_200px_auto] sm:gap-0 lg:mr-[80px] lg:pt-2.5">
             {footerNav.map((col) => (
               <nav key={col.title} aria-label={col.title}>
                 <p className={titleCls}>{col.title}</p>

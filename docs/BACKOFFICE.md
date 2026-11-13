@@ -9,8 +9,10 @@ Il permet à l'équipe de gérer, sans toucher au code :
 | **Tableau de bord** | Vue d'ensemble : rendez-vous à venir, messages non lus, témoignages à relire, actualités en ligne. |
 | **Événements** | Ajouter, modifier, supprimer les rendez-vous du calendrier (avec photo). |
 | **Actualités** | Écrire un article, le publier ou le garder en brouillon. Le plus récent est « à la une ». |
+| **Ateliers** | Changer le nom, l'accroche, la description et la photo des ateliers, en ajouter, les réordonner. |
 | **Livre d'or** | Relire les témoignages envoyés par les visiteurs, les publier ou les refuser. |
-| **Messages** | Lire les messages du formulaire de contact et y répondre par e-mail. |
+| **Messages** | Lire les messages du formulaire de contact, y répondre par e-mail, les marquer lus / non lus, les exporter. |
+| **Réglages** | Coordonnées, réseaux sociaux, photos des pages, bandeau d'annonce, mot de passe, export des données. |
 
 ---
 
@@ -30,7 +32,9 @@ Il permet à l'équipe de gérer, sans toucher au code :
 ### 2. Créer les tables
 1. Dans le menu de gauche : **SQL Editor** → **New query**.
 2. Collez tout le contenu du fichier [`supabase/schema.sql`](../supabase/schema.sql) → **Run**.
-3. (Facultatif) Nouvelle requête avec [`supabase/seed.sql`](../supabase/seed.sql) → **Run** : ajoute les rendez-vous déjà affichés sur le site.
+3. (Facultatif) Nouvelle requête avec [`supabase/seed.sql`](../supabase/seed.sql) → **Run** : ajoute les rendez-vous et les ateliers déjà affichés sur le site.
+
+> Vous aviez déjà lancé `schema.sql` avant l'arrivée des rubriques **Ateliers** et **Réglages** ? Lancez seulement [`supabase/mise-a-jour-ateliers-reglages.sql`](../supabase/mise-a-jour-ateliers-reglages.sql).
 
 ### 3. Créer le compte de l'association
 1. **Authentication** → **Sign In / Providers** → désactivez **Allow new users to sign up** (personne d'autre ne pourra créer de compte).

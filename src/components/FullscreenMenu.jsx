@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { NavLink, useLocation } from 'react-router'
-import { contact, mainNav, socials } from '../data/navigation'
+import { mainNav } from '../data/navigation'
+import { useContact, useSocials } from '../lib/reglages'
 import { menuPhotos } from '../data/photos'
 import { MOTION_OK, gsap, useGSAP } from '../motion/gsap'
 
@@ -12,6 +13,8 @@ import { MOTION_OK, gsap, useGSAP } from '../motion/gsap'
 export default function FullscreenMenu({ open, onClose }) {
   const { pathname } = useLocation()
   const rootRef = useRef(null)
+  const contact = useContact()
+  const socials = useSocials()
   const tlRef = useRef(null)
   const [hovered, setHovered] = useState(null)
   const [mounted, setMounted] = useState(false)

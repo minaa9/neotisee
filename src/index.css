@@ -87,12 +87,27 @@
   }
 }
 
-/* Curseur personnalisé : on masque le curseur système, sauf dans les champs. */
+/* Tout ce qui se clique affiche la main, partout (site et back-office). */
+a[href],
+button:not(:disabled),
+[role='button'],
+[role='tab'],
+select,
+summary,
+label:has(input[type='checkbox'], input[type='radio'], input[type='file']),
+input[type='checkbox'],
+input[type='radio'] {
+  cursor: pointer;
+}
+
+/* Curseur personnalisé : le curseur système est masqué, sauf sur ce qui se
+   clique (main) et dans les champs (curseur texte). */
 .has-cursor,
-.has-cursor a,
-.has-cursor button,
-.has-cursor [data-cursor] {
+.has-cursor [data-cursor]:not(a, button) {
   cursor: none;
+}
+.has-cursor :is(input:not([type='checkbox'], [type='radio'], [type='file']), textarea, [contenteditable='true']) {
+  cursor: text;
 }
 
 /* Lien souligné d'un fil qui se dessine au survol */

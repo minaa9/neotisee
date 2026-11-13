@@ -2,14 +2,14 @@ import { useRef } from 'react'
 import { Link } from 'react-router'
 import { MOTION_OK, gsap, useGSAP } from '../../motion/gsap'
 import { CenteredHeading, Reveal } from '../../components/ui'
-import { ateliers } from '../../data/ateliers'
+import { usePublic } from '../../lib/usePublic'
 import vague from '../../assets/v3/home/vague-ateliers.svg'
 
 /**
  * Effet « dock macOS » : sur ordinateur, les arches grossissent selon la
  * distance au curseur (la plus proche le plus), puis reviennent en place.
  */
-function useDock(listRef) {
+function useDock(listRef, deps) {
   useGSAP(
     () => {
       const mm = gsap.matchMedia()
@@ -39,14 +39,15 @@ function useDock(listRef) {
       })
       return () => mm.revert()
     },
-    { scope: listRef },
+    { scope: listRef, dependencies: deps, revertOnUpdate: true },
   )
 }
 
 /** 05 · Nos ateliers (Figma 348:71) */
 export default function Workshops() {
   const listRef = useRef(null)
-  useDock(listRef)
+  const ateliers = usePublic('ateliers')
+  useDock(listRef, [ateliers])
   return (
     <section className="relative bg-creme pt-24 pb-16 xl:pt-[160px] xl:pb-[90px]">
       <img src={vague} alt="" aria-hidden="true" className="absolute inset-x-0 top-[-1px] h-[70px] w-full md:h-[141px]" />

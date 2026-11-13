@@ -1,12 +1,23 @@
 import { Link } from 'react-router'
 import LegalLayout, { ACompleter, Liste, P } from '../components/LegalLayout'
-import { contact } from '../data/navigation'
+import { useContact } from '../lib/reglages'
 
-const mail = (
-  <a href={`mailto:${contact.email}`} className="link-fil text-terre-cuite">
-    {contact.email}
-  </a>
-)
+function Tel() {
+  const { phone, phoneHref } = useContact()
+  return (
+    <a href={phoneHref} className="link-fil text-terre-cuite">
+      {phone}
+    </a>
+  )
+}
+function Mail() {
+  const { email } = useContact()
+  return (
+    <a href={`mailto:${email}`} className="link-fil text-terre-cuite">
+      {email}
+    </a>
+  )
+}
 
 const sections = [
   {
@@ -24,12 +35,9 @@ const sections = [
             <>Siège social : <ACompleter>adresse du siège</ACompleter>, Montpellier, France</>,
             <>Numéro RNA : <ACompleter>numéro W… de déclaration en préfecture</ACompleter></>,
             <>SIRET (si l’association en possède un) : <ACompleter>numéro SIRET</ACompleter></>,
-            <>Courriel : {mail}</>,
+            <>Courriel : <Mail /></>,
             <>
-              Téléphone :{' '}
-              <a href={contact.phoneHref} className="link-fil text-terre-cuite">
-                {contact.phone}
-              </a>
+              Téléphone : <Tel />
             </>,
           ]}
         />
@@ -43,7 +51,7 @@ const sections = [
       <P>
         La directrice ou le directeur de la publication est <ACompleter>nom et prénom</ACompleter>, en
         qualité de <ACompleter>fonction, par exemple présidente de l’association</ACompleter>. Contact :{' '}
-        {mail}.
+        <Mail />.
       </P>
     ),
   },
@@ -93,7 +101,7 @@ const sections = [
         </P>
         <P>
           Toute reproduction, représentation ou diffusion, totale ou partielle, sans autorisation
-          écrite préalable est interdite. Pour toute demande d’utilisation, écrivez-nous à {mail}.
+          écrite préalable est interdite. Pour toute demande d’utilisation, écrivez-nous à <Mail />.
         </P>
         <P>
           Crédits photographiques : <ACompleter>noms des photographes, le cas échéant</ACompleter>.

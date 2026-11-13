@@ -21,7 +21,7 @@ export const news = [
   },
   {
     id: 'plantes-au-service-des-couleurs',
-    rubrique: 'Atelier · Teinture végétale',
+    rubrique: '',
     titre: 'Les plantes au service des couleurs',
     paragraphes: [
       'Explorez les pigments naturels et découvrez comment les plantes permettent de teindre les fibres.',
@@ -32,7 +32,7 @@ export const news = [
   },
   {
     id: 'textile-une-histoire-a-explorer',
-    rubrique: 'Recherche · Archéologie expérimentale',
+    rubrique: '',
     titre: 'Le textile, une histoire à explorer',
     paragraphes: [
       'Les recherches et expérimentations qui nous aident à comprendre les textiles anciens.',
@@ -43,7 +43,7 @@ export const news = [
   },
   {
     id: 'journee-patrimoine-textile',
-    rubrique: 'Événement · Exposition',
+    rubrique: '',
     titre: 'Journée spéciale patrimoine textile',
     paragraphes: [
       'Tissus, outils et reconstitutions : une journée pour découvrir le patrimoine textile, du Néolithique au Moyen Âge.',

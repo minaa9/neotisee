@@ -92,6 +92,7 @@ export default function About() {
   return (
     <>
       <PageHeader
+        photoId="association"
         title="L’association"
         subtitle={
           <>

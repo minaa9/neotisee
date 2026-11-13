@@ -68,21 +68,6 @@ function Loom({ list, view, onMove, highlight }) {
     ;(byDay[Number(e.date.slice(8))] ??= []).push(e)
   })
 
-  // Anti-encombrement : chaque navette prend un « couloir ». Deux rendez-vous
-  // le même jour ou à un jour d'écart ne partagent jamais le même couloir,
-  // et la largeur de chaque couloir s'adapte au nombre nécessaire.
-  const lanes = {}
-  const occupied = [] // occupied[lane] = jours déjà pris
-  monthEvents.forEach((e) => {
-    const d = Number(e.date.slice(8))
-    let lane = 0
-    while ((occupied[lane] || []).some((o) => Math.abs(o - d) <= 1)) lane++
-    ;(occupied[lane] ??= []).push(d)
-    lanes[e.id] = lane
-  })
-  const laneCount = Math.max(1, occupied.length)
-  const laneWidth = 100 / laneCount
-
   // « Glissez le métier pour changer de mois »
   const onPointerDown = (e) => {
     drag.current = e.clientX
@@ -123,7 +108,8 @@ function Loom({ list, view, onMove, highlight }) {
         ))}
       </ul>
 
-      {/* Fils des jours */}
+      {/* Fils des jours : les jours sans rendez-vous sont resserrés, ceux qui en
+          ont s'élargissent et sont soulignés, pour voir d'un coup d'œil la date. */}
       <ol className="mt-4">
         {Array.from({ length: days }, (_, i) => {
           const d = i + 1
@@ -132,67 +118,74 @@ function Loom({ list, view, onMove, highlight }) {
           const isToday = iso === today
           const weekend = wd === 0 || wd === 6
           const evs = byDay[d] || []
+          const has = evs.length > 0
           return (
-            <li key={d} className="relative flex h-[calc((100svh-480px)/31)] max-h-[22px] min-h-[15px] items-center gap-2">
-              <span className="w-3 text-center text-[11px] text-brun-doux/70">{LETTRES[wd]}</span>
+            <li
+              key={d}
+              className={`relative flex items-center gap-2 transition-[height] duration-500 ${has ? 'my-1 py-1' : 'h-[14px]'}`}
+              style={has ? { minHeight: `${evs.length * 26 + 8}px` } : undefined}
+            >
+              {/* Bande qui met la date en valeur */}
+              {has && <span aria-hidden="true" className="absolute inset-y-0 -right-2 -left-2 rounded-[14px] bg-terre-cuite/[0.07]" />}
+              <span className={`relative w-3 text-center text-[11px] ${has ? 'text-brique' : 'text-brun-doux/70'}`}>{LETTRES[wd]}</span>
               <span
                 title={isToday ? 'Aujourd’hui' : undefined}
-                className={`flex h-[18px] w-6 items-center justify-center rounded-full text-[12px] tabular-nums ${isToday ? 'bg-terre-cuite font-medium text-lin' : 'text-brun'}`}
+                className={`relative flex h-[18px] w-6 shrink-0 items-center justify-center rounded-full text-[12px] tabular-nums ${
+                  isToday ? 'bg-terre-cuite font-medium text-lin' : has ? 'font-medium text-brun' : 'text-brun/80'
+                }`}
               >
                 {d}
                 {isToday && <span className="sr-only"> (aujourd’hui)</span>}
               </span>
-              <span
-                aria-hidden="true"
-                className={`ml-1 h-px flex-1 ${isToday ? 'h-0.5 bg-terre-cuite' : weekend ? 'bg-brun/22' : 'bg-brun/12'}`}
-              />
-              {/* Navettes, chacune dans son couloir */}
-              <div className="pointer-events-none absolute inset-y-0 right-0 left-[64px]">
-              {evs.map((e) => {
-                const lane = lanes[e.id]
-                const cat = categories[e.categorie]
-                const past = e.date < today
-                const open = hover === e.id || highlight === e.id
-                return (
-                  <div
-                    key={e.id}
-                    className={`pointer-events-auto absolute top-1/2 flex -translate-y-1/2 ${open ? 'z-30' : 'z-10'}`}
-                    style={{ left: `${lane * laneWidth}%`, maxWidth: `calc(${laneWidth}% - 6px)` }}
-                    onMouseEnter={() => setHover(e.id)}
-                    onMouseLeave={() => setHover(null)}
-                  >
-                    <a
-                      href={`#rdv-${e.id}`}
-                      onFocus={() => setHover(e.id)}
-                      onBlur={() => setHover(null)}
-                      className={`relative flex h-[20px] max-w-full origin-left items-center rounded-full pr-3 pl-6 text-[12px] whitespace-nowrap transition-[transform,box-shadow] duration-300 hover:scale-[1.04] ${cat.bg} ${cat.text} ${past ? 'opacity-50' : ''} ${open ? 'scale-110 shadow-[0_0_0_4px_rgba(180,88,61,0.18)]' : ''}`}
-                    >
-                      <img src={noeud} alt="" aria-hidden="true" className="absolute top-1/2 left-[5px] size-3 -translate-y-1/2" />
-                      <span className="truncate">{e.court}</span>
-                      <span className="sr-only">
-                        {' '}
-                        — {e.titre}, le {d} {MOIS[view.m]}
-                      </span>
-                    </a>
-                    {/* Infobulle */}
-                    <div
-                      role="tooltip"
-                      className={`pointer-events-none absolute bottom-[calc(100%+8px)] ${lane === laneCount - 1 && laneCount > 1 ? 'right-0' : 'left-0'} z-20 w-[240px] rounded-[18px] border border-brun/12 bg-creme p-4 shadow-[0_12px_30px_rgba(61,42,35,0.12)] transition-all duration-200 ${
-                        open ? 'visible translate-y-0 opacity-100' : 'invisible translate-y-1 opacity-0'
-                      }`}
-                    >
-                      <p className="text-label text-brique">
-                        {JOURS[wd]} {d} {MOIS[view.m]}
-                      </p>
-                      <p className="mt-1 font-serif text-[19px] leading-[1.18] text-brun">{e.titre}</p>
-                      <p className="mt-1 text-petit text-brun-doux">
-                        {horaires(e)} · {e.lieu}
-                      </p>
-                    </div>
+
+              {has ? (
+                /* Navettes du jour, l'une sous l'autre, accrochées à la date */
+                <div className="relative flex min-w-0 flex-1 items-center gap-2">
+                  <span aria-hidden="true" className="h-px w-4 shrink-0 bg-terre-cuite/50" />
+                  <div className="flex min-w-0 flex-1 flex-col items-start gap-1.5">
+                    {evs.map((e) => {
+                      const cat = categories[e.categorie]
+                      const past = e.date < today
+                      const open = hover === e.id || highlight === e.id
+                      return (
+                        <div key={e.id} className={`relative flex max-w-full ${open ? 'z-30' : 'z-10'}`} onMouseEnter={() => setHover(e.id)} onMouseLeave={() => setHover(null)}>
+                          <a
+                            href={`#rdv-${e.id}`}
+                            onFocus={() => setHover(e.id)}
+                            onBlur={() => setHover(null)}
+                            className={`relative flex h-[22px] max-w-full origin-left items-center rounded-full pr-3 pl-6 text-[12.5px] whitespace-nowrap transition-[transform,box-shadow] duration-300 hover:scale-[1.04] ${cat.bg} ${cat.text} ${past ? 'opacity-50' : ''} ${open ? 'scale-[1.06] shadow-[0_0_0_4px_rgba(180,88,61,0.18)]' : ''}`}
+                          >
+                            <img src={noeud} alt="" aria-hidden="true" className="absolute top-1/2 left-[5px] size-3 -translate-y-1/2" />
+                            <span className="truncate">{e.court}</span>
+                            <span className="ml-2 shrink-0 opacity-75">{e.debut?.replace(':', 'h')}</span>
+                            <span className="sr-only">
+                              {' '}
+                              — {e.titre}, le {d} {MOIS[view.m]}
+                            </span>
+                          </a>
+                          {/* Infobulle */}
+                          <div
+                            role="tooltip"
+                            className={`pointer-events-none absolute bottom-[calc(100%+8px)] left-0 z-20 w-[240px] rounded-[18px] border border-brun/12 bg-creme p-4 shadow-[0_12px_30px_rgba(61,42,35,0.12)] transition-all duration-200 ${
+                              open ? 'visible translate-y-0 opacity-100' : 'invisible translate-y-1 opacity-0'
+                            }`}
+                          >
+                            <p className="text-label text-brique">
+                              {JOURS[wd]} {d} {MOIS[view.m]}
+                            </p>
+                            <p className="mt-1 font-serif text-[19px] leading-[1.18] text-brun">{e.titre}</p>
+                            <p className="mt-1 text-petit text-brun-doux">
+                              {horaires(e)} · {e.lieu}
+                            </p>
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
-                )
-              })}
-              </div>
+                </div>
+              ) : (
+                <span aria-hidden="true" className={`ml-1 h-px flex-1 ${isToday ? 'h-0.5 bg-terre-cuite' : weekend ? 'bg-brun/22' : 'bg-brun/12'}`} />
+              )}
             </li>
           )
         })}
@@ -292,28 +285,34 @@ export default function CalendarPage() {
   const today = todayIso()
   const next = sorted.find((e) => e.date >= today)
 
-  // Sur ordinateur, le calendrier reste fixé à l'écran jusqu'en bas de la
-  // page, pied de page compris : il ne bouge plus et ne disparaît jamais.
+  const now = toDate(today)
+  const [view, setView] = useState({ y: now.getFullYear(), m: now.getMonth() })
+
+  // Sur ordinateur, le calendrier reste fixé à l'écran pendant qu'on parcourt
+  // la liste, et s'arrête au début du pied de page.
   const loomRef = useRef(null)
   useGSAP(
     () => {
       const mm = window.matchMedia('(min-width: 1024px)')
       if (!mm.matches) return
+      const loom = loomRef.current
+      const footer = document.querySelector('footer')
+      const top = () => Math.min(96, window.innerHeight - loom.offsetHeight - 24)
       const st = ScrollTrigger.create({
-        trigger: loomRef.current,
-        start: 'top 96px',
-        endTrigger: document.documentElement,
-        end: 'max',
+        trigger: loom,
+        start: () => `top ${top()}px`,
+        // Il s'arrête pile là où commence le pied de page.
+        endTrigger: footer,
+        end: () => `top ${top() + loom.offsetHeight + 32}px`,
         pin: true,
         pinSpacing: false,
+        invalidateOnRefresh: true,
       })
       return () => st.kill()
     },
-    { dependencies: [filter], revertOnUpdate: true },
+    { dependencies: [filter, view, events], revertOnUpdate: true },
   )
 
-  const now = toDate(today)
-  const [view, setView] = useState({ y: now.getFullYear(), m: now.getMonth() })
   const move = (delta) =>
     setView(({ y, m }) => {
       const d = new Date(y, m + delta, 1)
@@ -333,6 +332,7 @@ export default function CalendarPage() {
   return (
     <>
       <PageHeader
+        photoId="calendrier"
         title="Calendrier"
         subtitle={
           <>
@@ -376,7 +376,7 @@ export default function CalendarPage() {
             <div className="order-2 lg:order-1">
               <AllEvents list={list} onHover={setHighlight} />
             </div>
-            {/* À droite : le calendrier, fixé à l'écran jusqu'au pied de page */}
+            {/* À droite : le calendrier, fixé à l'écran jusqu'au début du pied de page */}
             <div ref={loomRef} className="relative z-30 order-1 lg:order-2">
               <Loom list={list} view={view} onMove={move} highlight={highlight} />
             </div>

@@ -35,7 +35,7 @@ export default function Layout() {
       <SiteMotion />
       <PageTransition />
       <Cursor />
-      <Footer afterPeach={PEACH_ENDINGS.includes(pathname)} besideCalendar={pathname === '/calendrier'} />
+      <Footer afterPeach={PEACH_ENDINGS.includes(pathname)} />
       <CookieBanner />
     </>
   )

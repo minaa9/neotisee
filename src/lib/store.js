@@ -14,12 +14,13 @@
 import { events as staticEvents } from '../data/events'
 import { news as staticNews } from '../data/news'
 import { temoignages as staticTemoignages } from '../data/temoignages'
+import { ateliers as staticAteliers } from '../data/ateliers'
 
 const SB_URL = import.meta.env.VITE_SUPABASE_URL
 const KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 export const isLive = Boolean(SB_URL && KEY)
 
-export const TABLES = ['evenements', 'actualites', 'temoignages', 'messages']
+export const TABLES = ['evenements', 'actualites', 'temoignages', 'messages', 'ateliers', 'reglages']
 
 // ---------------------------------------------------------------- Supabase
 let clientPromise
@@ -52,6 +53,8 @@ function seed() {
         created_at: hier(),
       },
     ],
+    ateliers: staticAteliers.map(({ id, titre, accroche, description, image }, i) => ({ id, titre, accroche, description, image, ordre: i + 1, created_at: now() })),
+    reglages: [],
     messages: [
       {
         id: 'exemple-message',
@@ -71,7 +74,14 @@ function seed() {
 function readDemo() {
   try {
     const saved = JSON.parse(localStorage.getItem(DEMO_KEY))
-    if (saved && TABLES.every((t) => Array.isArray(saved[t]))) return saved
+    if (saved && typeof saved === 'object') {
+      // Une démo créée avant l'ajout d'une rubrique reçoit son contenu d'origine.
+      const base = seed()
+      TABLES.forEach((t) => {
+        if (!Array.isArray(saved[t])) saved[t] = base[t]
+      })
+      return saved
+    }
   } catch {
     // ignore
   }
@@ -96,11 +106,19 @@ export const resetDemo = () => {
 }
 
 // ---------------------------------------------------------------- Lecture / écriture (back-office)
-const ORDER = { evenements: ['date', true], actualites: ['created_at', false], temoignages: ['created_at', false], messages: ['created_at', false] }
+const ORDER = {
+  evenements: ['date', true],
+  actualites: ['created_at', false],
+  temoignages: ['created_at', false],
+  messages: ['created_at', false],
+  ateliers: ['ordre', true],
+  reglages: ['id', true],
+}
 
 function sortRows(table, rows) {
   const [col, asc] = ORDER[table]
-  return [...rows].sort((a, b) => String(a[col] ?? '').localeCompare(String(b[col] ?? '')) * (asc ? 1 : -1))
+  const cmp = (a, b) => (typeof a[col] === 'number' ? a[col] - b[col] : String(a[col] ?? '').localeCompare(String(b[col] ?? '')))
+  return [...rows].sort((a, b) => cmp(a, b) * (asc ? 1 : -1))
 }
 
 export async function list(table) {
@@ -148,6 +166,28 @@ export async function remove(table, id) {
   const sb = await client()
   const { error } = await sb.from(table).delete().eq('id', id)
   if (error) throw error
+}
+
+/** Enregistre un réglage du site (coordonnées, photos, bandeau…). */
+export async function saveSetting(id, valeur) {
+  if (!isLive) {
+    const db = readDemo()
+    const row = { id, valeur, updated_at: now() }
+    db.reglages = db.reglages.some((r) => r.id === id) ? db.reglages.map((r) => (r.id === id ? row : r)) : [...db.reglages, row]
+    writeDemo(db)
+    return
+  }
+  const sb = await client()
+  const { error } = await sb.from('reglages').upsert({ id, valeur, updated_at: now() })
+  if (error) throw error
+}
+
+/** Change le mot de passe du compte connecté (mode en ligne). */
+export async function changePassword(password) {
+  if (!isLive) throw new Error('En mode démo, il n’y a pas de mot de passe à changer.')
+  const sb = await client()
+  const { error } = await sb.auth.updateUser({ password })
+  if (error) throw new Error(error.message.includes('different') ? 'Choisissez un mot de passe différent de l’actuel.' : 'Le changement n’a pas fonctionné. Réessayez.')
 }
 
 /** Envoie une photo et renvoie son adresse publique. */

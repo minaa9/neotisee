@@ -4,41 +4,36 @@ import { MOTION_OK, SplitText, gsap, useGSAP } from '../../motion/gsap'
 import hero from '../../assets/home/hero.webp'
 import noeud from '../../assets/v3/home/noeud.svg'
 import flecheClair from '../../assets/v3/ui/fleche-clair.svg'
+import { usePhoto } from '../../lib/reglages'
 
 /**
- * Bouton « Découvrir l'association » : pilule en verre dépoli. Au survol,
- * le lin remplit la pilule depuis la gauche comme un fil qu'on tire, le
- * texte passe en brun et la navette terre cuite pivote vers la droite.
+ * Bouton « Découvrir l'association » : pilule en verre dépoli, sobre.
+ * Au survol, seule la navette terre cuite réagit (la flèche se redresse
+ * et avance) et le fil sous le texte se tend : pas d'aplat blanc.
  */
 function HeroButton() {
   return (
     <Link
       to="/association"
-      className="group relative mt-8 inline-flex items-center gap-4 overflow-hidden rounded-full border border-lin/45 bg-lin/10 py-2 pr-2 pl-7 backdrop-blur-md transition-[border-color,box-shadow] duration-500 hover:border-lin hover:shadow-[0_18px_40px_-12px_rgba(0,0,0,0.45)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-lin xl:mt-[33px]"
+      className="group mt-8 inline-flex items-center gap-4 rounded-full border border-lin/35 bg-brun/15 py-2 pr-2 pl-7 backdrop-blur-md transition-colors duration-500 hover:border-lin/60 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-lin xl:mt-[33px]"
     >
-      <span aria-hidden="true" className="absolute inset-0 origin-left scale-x-0 rounded-full bg-lin transition-transform duration-700 ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100" />
-      <span className="relative flex flex-col text-left">
-        <span className="text-[11px] tracking-[0.18em] text-lin/70 uppercase transition-colors duration-500 group-hover:text-brique">Notre histoire</span>
-        <span className="font-serif text-[22px] leading-[1.1] text-lin italic transition-colors duration-500 group-hover:text-brun">
+      <span className="flex flex-col text-left">
+        <span className="text-[11px] tracking-[0.18em] text-lin/65 uppercase">Notre histoire</span>
+        <span className="relative font-serif text-[22px] leading-[1.15] text-lin italic">
           Découvrir l’association
+          <span aria-hidden="true" className="absolute -bottom-0.5 left-0 h-px w-full origin-left scale-x-0 bg-lin/70 transition-transform duration-500 ease-out group-hover:scale-x-100" />
         </span>
       </span>
-      <span className="relative flex size-12 shrink-0 items-center justify-center rounded-full bg-terre-cuite transition-transform duration-500 group-hover:scale-105">
-        <img src={flecheClair} alt="" width="16" height="16" className="size-4 -rotate-45 transition-transform duration-500 group-hover:rotate-0" />
+      <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-terre-cuite transition-colors duration-500 group-hover:bg-brique">
+        <img src={flecheClair} alt="" width="16" height="16" className="size-4 -rotate-45 transition-transform duration-500 group-hover:translate-x-0.5 group-hover:rotate-0" />
       </span>
     </Link>
   )
 }
 
-/**
- * 01 · Hero — entrée « cinématographique » :
- *  1. la photo s'ouvre depuis une fenêtre arrondie et se dézoome ;
- *  2. un fil terre cuite traverse l'écran en se dessinant et forme une boucle ;
- *  3. « Néotisse » apparaît lettre par lettre, puis l'accroche ligne par ligne ;
- *  4. au défilement, la photo glisse en parallaxe et le texte s'éloigne.
- */
 export default function Hero() {
   const ref = useRef(null)
+  const photo = usePhoto('accueil', hero)
 
   useGSAP(
     () => {
@@ -84,7 +79,7 @@ export default function Hero() {
       <div data-hero-frame className="absolute inset-0 -z-10 overflow-hidden bg-brun">
         <img
           data-hero-img
-          src={hero}
+          src={photo}
           alt=""
           fetchPriority="high"
           className="absolute inset-0 size-full object-cover object-[70%_center]"

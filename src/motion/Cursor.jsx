@@ -1,10 +1,35 @@
 import { useRef, useState } from 'react'
 import { MOTION_OK, gsap, useGSAP } from './gsap'
 
+// Tout ce qui se clique : le curseur système « main » prend le relais.
+const CLICKABLE = 'a[href], button:not(:disabled), [role="button"], [role="tab"], label:has(input[type="checkbox"], input[type="radio"]), select, summary, input[type="checkbox"], input[type="radio"]'
+const FIELD = 'input, textarea, select, [contenteditable="true"]'
+const TERRE = { ring: 'rgba(180,88,61,0.7)', dot: '#B4583D' }
+const LIN = { ring: 'rgba(255,250,245,0.95)', dot: '#FFFAF5' }
+
+/** Le point sous la souris est-il sur une photo (pas une icône ni un décor dessiné) ? */
+function overPhoto(x, y) {
+  for (const el of document.elementsFromPoint(x, y)) {
+    if (el.tagName === 'IMG' || el.tagName === 'VIDEO') {
+      const r = el.getBoundingClientRect()
+      const decor = el.getAttribute('aria-hidden') === 'true' || /\.svg($|\?)/.test(el.currentSrc || el.src || '')
+      if (!decor && r.width >= 140 && r.height >= 100) return true
+      continue
+    }
+    if (el.tagName === 'MAIN' || el.tagName === 'FOOTER' || el.tagName === 'BODY') return false
+    // Un fond opaque (carte, barre de navigation, bannière) recouvre ce qui est dessous.
+    const bg = getComputedStyle(el).backgroundColor.match(/[\d.]+/g)
+    if (bg && (bg.length === 3 || Number(bg[3]) >= 0.85)) return false
+  }
+  return false
+}
+
 /**
  * Curseur personnalisé (ordinateur uniquement) : une petite pelote terre cuite
- * suivie d'un anneau de fil. Sur un élément portant data-cursor="Explorer",
- * l'anneau s'agrandit et affiche le mot. Sur les liens et boutons, il grossit.
+ * suivie d'un anneau de fil.
+ * - Sur une photo, il passe en blanc pour rester visible.
+ * - Sur un lien ou un bouton, il laisse la place à la main du système.
+ * - Dans un champ de saisie, il laisse la place au curseur texte.
  * Désactivé sur écran tactile et si l'on réduit les animations.
  */
 export default function Cursor() {
@@ -23,35 +48,59 @@ export default function Cursor() {
       const rx = gsap.quickTo(ringRef.current, 'x', { duration: 0.55, ease: 'power3.out' })
       const ry = gsap.quickTo(ringRef.current, 'y', { duration: 0.55, ease: 'power3.out' })
 
-      let current = null
+      let state = '' // « main », « champ », « photo », « libellé » ou normal
+      let curText = ''
+      let frame = 0
+      let last = null
+
+      const apply = (next, text = '') => {
+        if (next === state && text === curText) return
+        state = next
+        curText = text
+        setLabel(text)
+        const hidden = next === 'main' || next === 'champ'
+        const c = next === 'photo' ? LIN : TERRE
+        gsap.to([ringRef.current, dotRef.current], { autoAlpha: hidden ? 0 : 1, duration: 0.2, overwrite: 'auto' })
+        gsap.to(ringRef.current, {
+          scale: text ? 2.6 : 1,
+          borderColor: c.ring,
+          backgroundColor: text ? 'rgba(180,88,61,0.92)' : 'rgba(180,88,61,0)',
+          duration: 0.35,
+          ease: 'power3.out',
+        })
+        gsap.to(dotRef.current, { backgroundColor: c.dot, scale: text ? 0 : 1, duration: 0.3 })
+      }
+
+      const check = () => {
+        frame = 0
+        const e = last
+        const t = e.target
+        if (t.closest?.(CLICKABLE)) return apply('main')
+        if (t.closest?.(FIELD)) return apply('champ')
+        const lab = t.closest?.('[data-cursor]')?.dataset.cursor
+        if (lab) return apply('libelle', lab)
+        apply(overPhoto(e.clientX, e.clientY) ? 'photo' : '')
+      }
+
       const onMove = (e) => {
         dx(e.clientX)
         dy(e.clientY)
         rx(e.clientX)
         ry(e.clientY)
-        const target = e.target.closest?.('[data-cursor], a, button, [role="button"], input, textarea, select, label')
-        if (target === current) return
-        current = target
-        const text = target?.dataset?.cursor || ''
-        const isField = target && /INPUT|TEXTAREA|SELECT/.test(target.tagName)
-        setLabel(text)
-        gsap.to(ringRef.current, {
-          scale: text ? 2.6 : target && !isField ? 1.6 : 1,
-          opacity: isField ? 0 : 1,
-          backgroundColor: text ? 'rgba(180,88,61,0.92)' : 'rgba(180,88,61,0)',
-          duration: 0.4,
-          ease: 'power3.out',
-        })
-        gsap.to(dotRef.current, { scale: text || isField ? 0 : 1, duration: 0.3 })
+        last = e
+        if (!frame) frame = requestAnimationFrame(check)
       }
       const onDown = () => gsap.to(ringRef.current, { scale: '-=0.25', duration: 0.15, yoyo: true, repeat: 1 })
-      const onLeave = () => gsap.to([dotRef.current, ringRef.current], { opacity: 0, duration: 0.2 })
-      const onEnter = () => gsap.to([dotRef.current, ringRef.current], { opacity: 1, duration: 0.2 })
+      const onLeave = () => gsap.to([dotRef.current, ringRef.current], { autoAlpha: 0, duration: 0.2 })
+      const onEnter = () => {
+        state = 'x' // force la remise à jour au prochain mouvement
+      }
       window.addEventListener('mousemove', onMove, { passive: true })
       window.addEventListener('mousedown', onDown)
       document.addEventListener('mouseleave', onLeave)
       document.addEventListener('mouseenter', onEnter)
       return () => {
+        cancelAnimationFrame(frame)
         setActive(false)
         document.documentElement.classList.remove('has-cursor')
         window.removeEventListener('mousemove', onMove)

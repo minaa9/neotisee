@@ -7,7 +7,7 @@ import { Button, Reveal } from '../components/ui'
 import { MOTION_OK, gsap, useGSAP } from '../motion/gsap'
 import { usePublic } from '../lib/usePublic'
 import { isLive, submit as enregistrer } from '../lib/store'
-import { contact } from '../data/navigation'
+import { useContact } from '../lib/reglages'
 import heroImage from '../assets/ateliers/broderie.webp'
 import fuseau from '../assets/association/fuseau.webp'
 import pastille from '../assets/v3/contact/pastille.svg'
@@ -22,11 +22,6 @@ const OBJETS = {
   question: 'Une autre question',
 }
 
-const infos = [
-  { icon: iconeMail, label: 'E-mail', value: contact.email, href: `mailto:${contact.email}` },
-  { icon: iconeTel, label: 'Téléphone', value: contact.phone, href: contact.phoneHref },
-  { icon: iconeLieu, label: 'Localisation', value: contact.city },
-]
 
 /** Page Contact V3 (Figma 354:428) */
 /** Bouton « aimanté » : il suit légèrement le curseur quand on s'en approche. */
@@ -64,6 +59,12 @@ function Magnetic({ children }) {
 }
 
 export default function ContactPage() {
+  const contact = useContact()
+  const infos = [
+    { icon: iconeMail, label: 'E-mail', value: contact.email, href: `mailto:${contact.email}` },
+    { icon: iconeTel, label: 'Téléphone', value: contact.phone, href: contact.phoneHref },
+    { icon: iconeLieu, label: 'Localisation', value: contact.city },
+  ]
   const threadRef = useRef(null)
   const trackRef = useRef(null)
   const [params] = useSearchParams()
@@ -155,6 +156,7 @@ export default function ContactPage() {
   return (
     <>
       <PageHeader
+        photoId="contact"
         title="Contact"
         subtitle={
           <>
@@ -171,7 +173,7 @@ export default function ContactPage() {
       <section aria-label="Coordonnées et formulaire" className="relative bg-creme pb-16 xl:pt-2 xl:pb-[100px]">
         <div className="container-site flex flex-col gap-14 lg:flex-row lg:items-start lg:justify-between">
           {/* Coordonnées */}
-          <Reveal className="relative lg:w-[460px] lg:shrink-0 lg:pt-5">
+          <Reveal className="relative lg:w-[380px] lg:shrink-0 xl:w-[460px] lg:pt-5">
             <ul className="flex flex-col gap-7">
               {infos.map((info) => (
                 <li key={info.label} className="group flex items-center gap-6">
@@ -212,7 +214,7 @@ export default function ContactPage() {
           </Reveal>
 
           {/* Formulaire */}
-          <Reveal delay={120} className="w-full rounded-[32px] border border-brun/6 bg-lin p-6 sm:p-[43px] lg:w-[640px] lg:shrink-0">
+          <Reveal delay={120} className="w-full rounded-[32px] border border-brun/6 bg-lin p-6 sm:p-[43px] lg:min-w-0 lg:flex-1 xl:w-[640px] xl:flex-none">
             {sent ? (
               <div role="status">
                 <p className="font-serif text-[34px] leading-[1.18] text-brun">Merci, à très vite !</p>

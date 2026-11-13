@@ -5,8 +5,7 @@ import QuoteCycler from '../components/QuoteCycler'
 import { Field } from '../components/forms'
 import { inputCls, openMail, selectArrow } from '../components/formUtils'
 import { Button, Reveal } from '../components/ui'
-import { ateliers } from '../data/ateliers'
-import { contact } from '../data/navigation'
+import { useContact } from '../lib/reglages'
 import { usePublic } from '../lib/usePublic'
 import { isLive, submit as enregistrer } from '../lib/store'
 import heroImage from '../assets/events/teinture.webp'
@@ -38,6 +37,8 @@ function Stars({ value, onChange }) {
 }
 
 function LeaveAWord() {
+  const contact = useContact()
+  const ateliers = usePublic('ateliers')
   const [values, setValues] = useState({ prenom: '', atelier: '', note: 5, message: '' })
   const [errors, setErrors] = useState({})
   const [sent, setSent] = useState(false)
@@ -175,6 +176,7 @@ export default function GuestbookPage() {
   return (
     <>
       <PageHeader
+        photoId="livre"
         title="Livre d’or"
         subtitle={
           <>

@@ -1,5 +1,6 @@
 import { Eyebrow, Reveal } from '../../components/ui'
 import photo from '../../assets/ateliers/tissage.webp'
+import { usePhoto } from '../../lib/reglages'
 import planteGravee from '../../assets/v3/ui/plante-gravee.webp'
 
 const stats = [
@@ -10,6 +11,7 @@ const stats = [
 
 /** 02 · L'association (Figma 347:59) */
 export default function Association() {
+  const image = usePhoto('accueilAsso', photo)
   return (
     <section id="association" className="relative scroll-mt-10 overflow-hidden bg-creme py-12 xl:h-[600px] xl:py-0">
       <div className="flex flex-col gap-12 lg:flex-row lg:items-start">
@@ -18,7 +20,7 @@ export default function Association() {
           effect="reveal-wave"
           className="h-[320px] w-[92%] shrink-0 overflow-hidden rounded-tr-[180px] rounded-br-[36px] sm:h-[440px] lg:h-[540px] lg:w-[500px] lg:rounded-tr-[270px] lg:rounded-br-[50px] xl:mt-5 xl:-ml-px"
         >
-          <img src={photo} alt="Bandes tissées à motifs de chevrons sur des cadres en bois" loading="lazy" className="size-full object-cover" />
+          <img src={image} alt="Bandes tissées à motifs de chevrons sur des cadres en bois" loading="lazy" className="size-full object-cover" />
         </Reveal>
 
         <div className="px-5 md:px-12 lg:px-0 lg:pt-[70px] lg:pl-[100px]">

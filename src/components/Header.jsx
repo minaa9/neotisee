@@ -3,6 +3,61 @@ import { Link, NavLink, useLocation } from 'react-router'
 import { mainNav } from '../data/navigation'
 import { Button, Logo } from './ui'
 import FullscreenMenu from './FullscreenMenu'
+import { useReglages } from '../lib/reglages'
+
+const FERME = 'neotisse-annonce-fermee'
+
+/**
+ * Bandeau d'annonce (Réglages › Bandeau d'annonce dans le back-office).
+ * Le visiteur peut le fermer ; il revient si le texte change.
+ */
+function Annonce({ hidden }) {
+  const { annonce } = useReglages()
+  const [ferme, setFerme] = useState(() => {
+    try {
+      return sessionStorage.getItem(FERME)
+    } catch {
+      return null
+    }
+  })
+  if (!annonce.actif || !annonce.texte || ferme === annonce.texte || hidden) return null
+  const fermer = () => {
+    try {
+      sessionStorage.setItem(FERME, annonce.texte)
+    } catch {
+      // ignore
+    }
+    setFerme(annonce.texte)
+  }
+  const externe = /^https?:/.test(annonce.lien)
+  return (
+    <div className="relative bg-brun text-lin">
+      <div className="container-site flex min-h-9 items-center justify-center gap-3 py-2 pr-10 text-center text-[13px] leading-snug">
+        <span aria-hidden="true" className="hidden size-1.5 shrink-0 rounded-full bg-poudre sm:block" />
+        <p>
+          {annonce.texte}
+          {annonce.lien && (
+            <>
+              {' '}
+              {externe ? (
+                <a href={annonce.lien} target="_blank" rel="noreferrer" className="link-fil ml-1 text-poudre">
+                  {annonce.libelle || 'En savoir plus'} ↗
+                </a>
+              ) : (
+                <Link to={annonce.lien} className="link-fil ml-1 text-poudre">
+                  {annonce.libelle || 'En savoir plus'} →
+                </Link>
+              )}
+            </>
+          )}
+        </p>
+        <button type="button" onClick={fermer} aria-label="Fermer l’annonce" className="absolute top-1/2 right-3 flex size-7 -translate-y-1/2 items-center justify-center rounded-full text-lin/70 transition-colors hover:bg-lin/10 hover:text-lin">
+          ✕
+        </button>
+      </div>
+    </div>
+  )
+}
 
 /**
  * Navigation V3 (Figma « V3 Navigation »).
@@ -35,6 +90,7 @@ export default function Header({ variant = 'creme' }) {
         open ? '' : scrolled ? 'bg-creme/92 shadow-[0_1px_0_rgba(61,42,35,0.08)] backdrop-blur-md' : ''
       }`}
     >
+      <Annonce hidden={open} />
       <div
         className={`container-site flex items-center justify-between transition-[height] duration-300 ${
           scrolled ? 'h-[68px] xl:h-[76px]' : 'h-[84px] xl:h-24'

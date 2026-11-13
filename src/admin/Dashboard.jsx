@@ -174,6 +174,29 @@ export default function Dashboard() {
               </section>
             </div>
           </div>
+
+          {/* Raccourcis vers ce qui se personnalise */}
+          <section data-bloc className="mt-8">
+            <h2 className="font-serif text-[30px] leading-tight">Personnaliser <em>le site</em></h2>
+            <ul className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {[
+                ['/admin/reglages?onglet=photos', 'Photos du site', 'Changer les grandes photos des pages'],
+                ['/admin/ateliers', 'Ateliers', 'Textes, photos et ordre des ateliers'],
+                ['/admin/reglages?onglet=annonce', 'Bandeau d’annonce', 'Un message en haut de toutes les pages'],
+                ['/admin/reglages?onglet=coordonnees', 'Coordonnées', 'E-mail, téléphone, réseaux sociaux'],
+              ].map(([to, titre, texte]) => (
+                <li key={to}>
+                  <Link to={to} className="group flex h-full items-start justify-between gap-4 rounded-[24px] border border-brun/10 p-5 transition-colors duration-300 hover:border-terre-cuite/40 hover:bg-lin">
+                    <span>
+                      <span className="block font-serif text-[21px] leading-tight">{titre}</span>
+                      <span className="mt-1 block text-[13px] text-brun-doux">{texte}</span>
+                    </span>
+                    <span aria-hidden="true" className="text-terre-cuite transition-transform duration-300 group-hover:translate-x-1">→</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
         </>
       )}
       {toast}

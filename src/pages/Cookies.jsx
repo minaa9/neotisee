@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import LegalLayout, { Liste, P } from '../components/LegalLayout'
 import { Toggle } from '../components/CookieBanner'
 import { CHANGE_EVENT, getConsent, saveConsent } from '../data/cookies'
-import { contact } from '../data/navigation'
+import { useContact } from '../lib/reglages'
 
 /** Réglages directement dans la page, synchronisés avec la bannière. */
 function Reglages() {
@@ -43,6 +43,15 @@ function Reglages() {
         {saved ? 'Votre choix est enregistré.' : consent ? '' : 'Vous n’avez pas encore fait de choix.'}
       </p>
     </div>
+  )
+}
+
+function Mail() {
+  const { email } = useContact()
+  return (
+    <a href={`mailto:${email}`} className="link-fil text-terre-cuite">
+      {email}
+    </a>
   )
 }
 
@@ -120,9 +129,7 @@ const sections = [
         />
         <P>
           Une question ?{' '}
-          <a href={`mailto:${contact.email}`} className="link-fil text-terre-cuite">
-            {contact.email}
-          </a>
+          <Mail />
         </P>
       </>
     ),

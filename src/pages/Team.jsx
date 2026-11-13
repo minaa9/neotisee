@@ -25,6 +25,7 @@ export default function TeamPage() {
   return (
     <>
       <PageHeader
+        photoId="equipe"
         title="L’équipe"
         subtitle={
           <>

@@ -1,9 +1,8 @@
 import { useRef } from 'react'
 import PageHeader from '../components/PageHeader'
-import Hotspots from '../components/Hotspots'
 import { MOTION_OK, ScrollTrigger, gsap, useGSAP } from '../motion/gsap'
 import { Button, Reveal } from '../components/ui'
-import { ateliers } from '../data/ateliers'
+import { usePublic } from '../lib/usePublic'
 import hero from '../assets/events/patrimoine.webp'
 import pastille from '../assets/v3/ateliers/pastille.svg'
 import iconeParticipatifs from '../assets/v3/ateliers/icone-participatifs.svg'
@@ -22,7 +21,7 @@ const formats = [
  * Si une section est plus haute que l'écran (« overscroll »), elle n'est
  * épinglée qu'une fois son bas atteint, pour qu'on puisse tout lire.
  */
-function useStackedSlides(ref) {
+function useStackedSlides(ref, deps) {
   useGSAP(
     () => {
       const mm = gsap.matchMedia()
@@ -50,17 +49,19 @@ function useStackedSlides(ref) {
       })
       return () => mm.revert()
     },
-    { scope: ref },
+    { scope: ref, dependencies: deps, revertOnUpdate: true },
   )
 }
 
 /** Page Nos ateliers V3 (Figma 352:195) */
 export default function WorkshopsPage() {
   const slidesRef = useRef(null)
-  useStackedSlides(slidesRef)
+  const ateliers = usePublic('ateliers')
+  useStackedSlides(slidesRef, [ateliers])
   return (
     <>
       <PageHeader
+        photoId="ateliers"
         title="Nos ateliers"
         subtitle={
           <>
@@ -95,7 +96,9 @@ export default function WorkshopsPage() {
       </section>
 
       {/* Les quatre ateliers, en alternance */}
-      <div ref={slidesRef}>
+      {/* La clé force un nouveau rendu complet quand la liste change (ordre,
+          ajout) : les sections épinglées par GSAP ne sont jamais déplacées. */}
+      <div ref={slidesRef} key={ateliers.map((a) => a.id).join('|')}>
       {ateliers.map((a, i) => {
         const reversed = i % 2 === 1
         return (
@@ -117,7 +120,6 @@ export default function WorkshopsPage() {
                 <div className={`overflow-hidden ${reversed ? 'rounded-t-[250px] rounded-b-[24px]' : 'rounded-l-[24px] rounded-r-[250px]'}`}>
                   <img src={a.image} alt="" loading="lazy" className="aspect-[540/400] w-full object-cover" />
                 </div>
-                <Hotspots points={a.points} />
               </Reveal>
 
               <Reveal delay={120} className={`relative lg:pt-[30px] ${reversed ? 'lg:pl-10' : ''}`}>

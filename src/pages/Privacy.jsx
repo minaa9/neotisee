@@ -1,12 +1,15 @@
 import { Link } from 'react-router'
 import LegalLayout, { ACompleter, Liste, P } from '../components/LegalLayout'
-import { contact } from '../data/navigation'
+import { useContact } from '../lib/reglages'
 
-const mail = (
-  <a href={`mailto:${contact.email}`} className="link-fil text-terre-cuite">
-    {contact.email}
-  </a>
-)
+function Mail() {
+  const { email } = useContact()
+  return (
+    <a href={`mailto:${email}`} className="link-fil text-terre-cuite">
+      {email}
+    </a>
+  )
+}
 
 const sections = [
   {
@@ -15,7 +18,7 @@ const sections = [
     contenu: (
       <P>
         L’association Néotisse, dont le siège est à Montpellier, est responsable des données
-        collectées sur ce site. Pour toute question : {mail}.
+        collectées sur ce site. Pour toute question : <Mail />.
       </P>
     ),
   },
@@ -125,7 +128,7 @@ const sections = [
           ]}
         />
         <P>
-          Il suffit d’écrire à {mail}. Nous vous répondrons dans un délai d’un mois. Si vous estimez
+          Il suffit d’écrire à <Mail />. Nous vous répondrons dans un délai d’un mois. Si vous estimez
           que vos droits ne sont pas respectés, vous pouvez adresser une réclamation à la CNIL (
           <a href="https://www.cnil.fr" target="_blank" rel="noreferrer" className="link-fil text-terre-cuite">
             www.cnil.fr

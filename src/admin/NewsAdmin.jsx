@@ -42,7 +42,7 @@ function NewsForm({ initial, onSaved }) {
       <Champ label="Titre">
         <input value={v.titre} onChange={set('titre')} className={fieldCls} />
       </Champ>
-      <Champ label="Sur-titre" hint="Ex. « Atelier · Teinture végétale » ou une date.">
+      <Champ label="Date ou précision (facultatif)" hint="Affichée seulement à côté de « À la une », ex. « 9–10 octobre 2027 ».">
         <input value={v.rubrique} onChange={set('rubrique')} className={fieldCls} />
       </Champ>
       <Champ label="Texte" hint="Laissez une ligne vide entre deux paragraphes. Le premier paragraphe sert de résumé.">
@@ -98,8 +98,8 @@ export default function NewsAdmin() {
                 </div>
               </div>
               <div className="flex flex-1 flex-col p-5">
-                <p className="text-label text-brique">{n.rubrique}</p>
-                <p className="mt-2 font-serif text-[22px] leading-tight">{n.titre}</p>
+                {n.rubrique && <p className="mb-2 text-label text-brique">{n.rubrique}</p>}
+                <p className="font-serif text-[22px] leading-tight">{n.titre}</p>
                 <p className="mt-2 line-clamp-2 text-[13px] text-brun-doux">{n.paragraphes?.[0]}</p>
                 <p className="mt-3 text-[12px] text-brun-doux">Créée le {formatDate(n.created_at)}</p>
                 <div className="mt-auto flex gap-2 pt-4">

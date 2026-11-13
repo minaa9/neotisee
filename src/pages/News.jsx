@@ -55,6 +55,7 @@ export default function NewsPage() {
   return (
     <>
       <PageHeader
+        photoId="actualites"
         title="Actualités"
         subtitle={
           <>
@@ -75,7 +76,7 @@ export default function NewsPage() {
             <img src={featured.image} alt={featured.alt} loading="lazy" className="aspect-[640/460] w-full object-cover" />
           </Reveal>
           <Reveal delay={120} className="lg:pt-[20px]">
-            <Eyebrow>À la une · {featured.rubrique}</Eyebrow>
+            <Eyebrow>À la une{featured.rubrique ? ` · ${featured.rubrique}` : ''}</Eyebrow>
             <h2 className="mt-5 max-w-[500px] font-serif text-[34px] leading-[1.08] tracking-[-0.005em] text-brun md:text-[44px] xl:-ml-0.5">
               {featured.titre}
             </h2>
@@ -101,8 +102,7 @@ export default function NewsPage() {
                 <article className="h-full overflow-hidden rounded-[24px] bg-lin">
                   <img src={a.image} alt={a.alt} loading="lazy" className="aspect-[380/200] w-full object-cover" />
                   <div className="px-7 pt-6 pb-8">
-                    <p className="text-label text-brique">{a.rubrique}</p>
-                    <h3 className="mt-2.5 font-serif text-[28px] leading-[1.18] text-brun">{a.titre}</h3>
+                    <h3 className="font-serif text-[28px] leading-[1.18] text-brun">{a.titre}</h3>
                     <div className="mt-2 space-y-[1.55em] text-petit text-brun-doux">
                       {a.paragraphes.map((p) => (
                         <p key={p}>{p}</p>

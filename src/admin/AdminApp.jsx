@@ -11,13 +11,22 @@ import EventsAdmin from './EventsAdmin'
 import NewsAdmin from './NewsAdmin'
 import GuestbookAdmin from './GuestbookAdmin'
 import MessagesAdmin from './MessagesAdmin'
+import AteliersAdmin from './AteliersAdmin'
+import ReglagesAdmin from './ReglagesAdmin'
 
 const NAV = [
   { to: '/admin', label: 'Tableau de bord', end: true, icon: 'M3 12h7V3H3v9Zm11 9h7v-9h-7v9ZM3 21h7v-5H3v5Zm11-12h7V3h-7v6Z' },
   { to: '/admin/evenements', label: 'Événements', icon: 'M7 3v3m10-3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z' },
   { to: '/admin/actualites', label: 'Actualités', icon: 'M5 4h11l3 3v13H5V4Zm3 6h8M8 14h8M8 18h5' },
+  { to: '/admin/ateliers', label: 'Ateliers', icon: 'M4 20V10a8 8 0 0 1 16 0v10M4 20h16M9 20v-6a3 3 0 0 1 6 0v6' },
   { to: '/admin/livre-d-or', label: 'Livre d’or', icon: 'M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z', badge: 'temoignages' },
   { to: '/admin/messages', label: 'Messages', icon: 'M4 6h16v12H4V6Zm0 0 8 7 8-7', badge: 'messages' },
+  {
+    to: '/admin/reglages',
+    label: 'Réglages',
+    separe: true,
+    icon: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm7.4-3a7.4 7.4 0 0 0-.1-1.3l2-1.6-2-3.4-2.4 1a7.5 7.5 0 0 0-2.2-1.3L14.3 3h-4l-.4 2.4a7.5 7.5 0 0 0-2.2 1.3l-2.4-1-2 3.4 2 1.6a7.4 7.4 0 0 0 0 2.6l-2 1.6 2 3.4 2.4-1a7.5 7.5 0 0 0 2.2 1.3l.4 2.4h4l.4-2.4a7.5 7.5 0 0 0 2.2-1.3l2.4 1 2-3.4-2-1.6c.1-.4.1-.9.1-1.3Z',
+  },
 ]
 
 function Icon({ d }) {
@@ -99,7 +108,7 @@ function Shell({ email, children }) {
           <nav aria-label="Back-office" className="mt-10 flex-1">
             <ul className="flex flex-col gap-1">
               {NAV.map((item) => (
-                <li key={item.to} data-nav-item>
+                <li key={item.to} data-nav-item className={item.separe ? 'mt-4 border-t border-brun/10 pt-4' : ''}>
                   <NavLink
                     to={item.to}
                     end={item.end}
@@ -257,6 +266,8 @@ export default function AdminApp() {
         <Route path="actualites" element={<NewsAdmin />} />
         <Route path="livre-d-or" element={<GuestbookAdmin />} />
         <Route path="messages" element={<MessagesAdmin />} />
+        <Route path="ateliers" element={<AteliersAdmin />} />
+        <Route path="reglages" element={<ReglagesAdmin />} />
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Routes>
     </Shell>

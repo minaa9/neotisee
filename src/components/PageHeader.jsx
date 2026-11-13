@@ -1,11 +1,14 @@
 import { Reveal } from './ui'
+import { usePhoto } from '../lib/reglages'
 
 /**
  * En-tête des pages intérieures V3 (Figma « Header », version resserrée) :
  * grand titre, sous-titre en italique, texte, et image organique à droite
  * soulignée d'un fil courbe.
  */
-export default function PageHeader({ title, subtitle, text, image, imageAlt = '', children }) {
+export default function PageHeader({ title, subtitle, text, image: origine, photoId, imageAlt = '', children }) {
+  // La photo peut être remplacée depuis le back-office (Réglages › Photos du site).
+  const image = usePhoto(photoId, origine)
   return (
     <section className="relative overflow-hidden bg-creme pt-24 pb-12 lg:min-h-[600px] lg:pt-0 lg:pb-0 xl:h-[640px]">
       {image && (
