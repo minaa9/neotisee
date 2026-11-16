@@ -18,8 +18,22 @@ Il permet à l'équipe de gérer, sans toucher au code :
 
 ## Les deux modes
 
-- **Mode démo** (par défaut) : tant que Supabase n'est pas branché, tout fonctionne mais les changements restent **dans votre navigateur**. N'importe quelle adresse e-mail permet d'entrer. Pratique pour tester et pour la soutenance.
-- **Mode en ligne** : une fois Supabase branché (étapes ci-dessous), les données sont enregistrées dans une vraie base, visibles par tous les visiteurs, et seul le compte de l'association peut se connecter.
+- **Mode démo** : tant que Supabase n'est pas branché, le back-office s'ouvre **uniquement sur votre ordinateur** (`npm run dev`, adresse `localhost`). N'importe quelle adresse e-mail permet d'entrer, et les changements restent dans votre navigateur. Pratique pour tester.
+- **Sur le site en ligne sans Supabase**, la page `/admin` affiche « Espace fermé » : **personne ne peut entrer**. (Pour une soutenance sans Supabase, on peut ajouter la variable `VITE_ADMIN_DEMO=true` sur Netlify, puis la retirer ensuite.)
+- **Mode en ligne** : une fois Supabase branché (étapes ci-dessous), les données sont enregistrées dans une vraie base, et seuls les comptes créés par l'association peuvent se connecter.
+
+## La sécurité, en bref
+
+| Protection | Comment |
+| --- | --- |
+| Personne ne peut s'inscrire | Les comptes sont créés à la main dans Supabase (inscriptions désactivées). |
+| Mots de passe | Jamais stockés en clair (Supabase), 10 caractères minimum avec une jauge de solidité. |
+| Essais répétés | Après 5 erreurs, la connexion est bloquée 2 minutes (et Supabase limite aussi les essais). |
+| Session oubliée ouverte | Déconnexion automatique après 30 minutes sans activité. |
+| Changer le mot de passe | Le mot de passe actuel est redemandé. |
+| Ordinateur perdu | Réglages → Compte et sécurité → « Déconnecter tous les appareils ». |
+| Données | Règles de la base (RLS) : un visiteur peut seulement envoyer un message ou un témoignage, jamais lire ni modifier. |
+| Hébergement | En-têtes de sécurité Netlify, `/admin` jamais référencé par Google. |
 
 ---
 
@@ -36,10 +50,22 @@ Il permet à l'équipe de gérer, sans toucher au code :
 
 > Vous aviez déjà lancé `schema.sql` avant l'arrivée des rubriques **Ateliers** et **Réglages** ? Lancez seulement [`supabase/mise-a-jour-ateliers-reglages.sql`](../supabase/mise-a-jour-ateliers-reglages.sql).
 
-### 3. Créer le compte de l'association
+### 3. Créer le compte (avec votre adresse)
 1. **Authentication** → **Sign In / Providers** → désactivez **Allow new users to sign up** (personne d'autre ne pourra créer de compte).
-2. **Authentication** → **Users** → **Add user** → **Create new user** : l'adresse e-mail et un mot de passe solide, cochez **Auto Confirm User**.
-3. Répétez pour chaque membre de l'équipe qui doit accéder au back-office.
+2. **Authentication** → **Users** → **Add user** → **Create new user** : **votre** adresse e-mail et un mot de passe solide (10 caractères ou plus, majuscules, chiffres, symbole), cochez **Auto Confirm User**.
+3. **Authentication** → **URL Configuration** :
+   - **Site URL** : l'adresse du site, par ex. `https://votre-site.netlify.app`
+   - **Redirect URLs** → **Add URL** : `https://votre-site.netlify.app/admin/**` (et `http://localhost:5173/admin/**` pour tester en local)
+
+   Sans cette étape, les liens « mot de passe oublié » et « changement d'adresse » ne ramènent pas au site.
+
+### Transmettre l'accès à l'association
+Une fois le site prêt, sans jamais leur donner votre mot de passe définitif :
+1. Connectez-vous → **Réglages** → **Compte et sécurité** → **Adresse e-mail de connexion** : mettez l'adresse de l'association, puis cliquez sur les liens de confirmation reçus.
+2. La personne de l'association va sur `/admin`, clique sur **Mot de passe oublié ?** et choisit **son** mot de passe. Le vôtre ne fonctionne plus.
+3. Elle clique sur **Déconnecter tous les appareils** : plus personne d'autre n'est connecté.
+
+Pour ajouter un autre membre de l'équipe : refaites l'étape 3.2 avec son adresse.
 
 ### 4. Récupérer les deux clés
 **Project Settings** → **API** (ou **Data API** / **API Keys**) :
