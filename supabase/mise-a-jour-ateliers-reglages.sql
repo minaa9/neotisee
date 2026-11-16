@@ -26,12 +26,16 @@ alter table public.ateliers enable row level security;
 alter table public.reglages enable row level security;
 
 -- Ateliers et réglages : lecture publique, gestion par l'équipe
+drop policy if exists "ateliers lecture publique" on public.ateliers;
 create policy "ateliers lecture publique" on public.ateliers
   for select using (true);
+drop policy if exists "ateliers gestion equipe" on public.ateliers;
 create policy "ateliers gestion equipe" on public.ateliers
   for all to authenticated using (true) with check (true);
+drop policy if exists "reglages lecture publique" on public.reglages;
 create policy "reglages lecture publique" on public.reglages
   for select using (true);
+drop policy if exists "reglages gestion equipe" on public.reglages;
 create policy "reglages gestion equipe" on public.reglages
   for all to authenticated using (true) with check (true);
 

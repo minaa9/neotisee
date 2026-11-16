@@ -6,7 +6,9 @@
 -- ajoutées ensuite depuis le back-office.
 -- =====================================================================
 
-insert into public.evenements (titre, court, categorie, date, debut, fin, lieu, description) values
+-- (ignoré si le calendrier contient déjà des rendez-vous : pas de doublons)
+insert into public.evenements (titre, court, categorie, date, debut, fin, lieu, description)
+select v.titre, v.court, v.categorie, v.date::date, v.debut, v.fin, v.lieu, v.description from (values
   ('Initiation au filage de la laine', 'Initiation au filage', 'atelier', '2026-11-08', '10:00', '16:00', 'Montpellier',
    'Découvrez les gestes du filage traditionnel et apprenez à transformer la laine en fil, comme autrefois.'),
   ('Teinture végétale : les couleurs du vivant', 'Teinture végétale', 'evenement', '2026-11-19', '10:00', '16:00', 'Montpellier',
@@ -14,7 +16,9 @@ insert into public.evenements (titre, court, categorie, date, debut, fin, lieu, 
   ('Le textile dans l’Égypte ancienne', 'Le textile dans l’Égypte ancienne', 'conference', '2026-11-28', '14:00', '16:00', 'Montpellier',
    'Des sources écrites aux vestiges : la place du textile dans les sociétés de l’Égypte ancienne.'),
   ('Journée spéciale patrimoine textile', 'Patrimoine textile', 'exposition', '2026-12-05', '10:00', '17:00', 'Montpellier',
-   'Tissus, outils et reconstitutions : une journée pour découvrir le patrimoine textile, du Néolithique au Moyen Âge.');
+   'Tissus, outils et reconstitutions : une journée pour découvrir le patrimoine textile, du Néolithique au Moyen Âge.')
+) as v(titre, court, categorie, date, debut, fin, lieu, description)
+where not exists (select 1 from public.evenements);
 
 -- Les quatre ateliers affichés sur le site (les photos d'origine restent
 -- utilisées tant qu'aucune photo n'est choisie dans le back-office).

@@ -1,6 +1,7 @@
 -- =====================================================================
 -- Néotisse · base de données du back-office (Supabase)
--- À coller une seule fois dans Supabase > SQL Editor > New query > Run.
+-- À coller dans Supabase > SQL Editor > New query > Run.
+-- Peut être relancé sans danger : rien n'est effacé, rien n'est créé en double.
 -- Voir docs/BACKOFFICE.md.
 -- =====================================================================
 
@@ -84,38 +85,51 @@ alter table public.ateliers    enable row level security;
 alter table public.reglages    enable row level security;
 
 -- Événements : lecture publique, gestion par l'équipe
+drop policy if exists "evenements lecture publique" on public.evenements;
 create policy "evenements lecture publique" on public.evenements
   for select using (true);
+drop policy if exists "evenements gestion equipe" on public.evenements;
 create policy "evenements gestion equipe" on public.evenements
   for all to authenticated using (true) with check (true);
 
 -- Actualités : seules les publiées sont visibles du public
+drop policy if exists "actualites lecture publique" on public.actualites;
 create policy "actualites lecture publique" on public.actualites
   for select using (publie = true);
+drop policy if exists "actualites gestion equipe" on public.actualites;
 create policy "actualites gestion equipe" on public.actualites
   for all to authenticated using (true) with check (true);
 
 -- Témoignages : le public voit les publiés et peut en proposer (toujours « en attente »)
+drop policy if exists "temoignages lecture publique" on public.temoignages;
 create policy "temoignages lecture publique" on public.temoignages
   for select using (statut = 'publie');
+drop policy if exists "temoignages envoi public" on public.temoignages;
 create policy "temoignages envoi public" on public.temoignages
   for insert to anon with check (statut = 'en_attente');
+drop policy if exists "temoignages gestion equipe" on public.temoignages;
 create policy "temoignages gestion equipe" on public.temoignages
   for all to authenticated using (true) with check (true);
 
 -- Messages : le public peut seulement en envoyer, jamais les lire
+drop policy if exists "messages envoi public" on public.messages;
 create policy "messages envoi public" on public.messages
   for insert to anon with check (lu = false);
+drop policy if exists "messages gestion equipe" on public.messages;
 create policy "messages gestion equipe" on public.messages
   for all to authenticated using (true) with check (true);
 
 -- Ateliers et réglages : lecture publique, gestion par l'équipe
+drop policy if exists "ateliers lecture publique" on public.ateliers;
 create policy "ateliers lecture publique" on public.ateliers
   for select using (true);
+drop policy if exists "ateliers gestion equipe" on public.ateliers;
 create policy "ateliers gestion equipe" on public.ateliers
   for all to authenticated using (true) with check (true);
+drop policy if exists "reglages lecture publique" on public.reglages;
 create policy "reglages lecture publique" on public.reglages
   for select using (true);
+drop policy if exists "reglages gestion equipe" on public.reglages;
 create policy "reglages gestion equipe" on public.reglages
   for all to authenticated using (true) with check (true);
 
@@ -126,9 +140,12 @@ insert into storage.buckets (id, name, public)
 values ('images', 'images', true)
 on conflict (id) do nothing;
 
+drop policy if exists "images lecture publique" on storage.objects;
 create policy "images lecture publique" on storage.objects
   for select using (bucket_id = 'images');
+drop policy if exists "images envoi equipe" on storage.objects;
 create policy "images envoi equipe" on storage.objects
   for insert to authenticated with check (bucket_id = 'images');
+drop policy if exists "images suppression equipe" on storage.objects;
 create policy "images suppression equipe" on storage.objects
   for delete to authenticated using (bucket_id = 'images');
