@@ -182,11 +182,18 @@ export async function saveSetting(id, valeur) {
   if (error) throw error
 }
 
-/** Change le mot de passe du compte connecté (mode en ligne). */
-export async function changePassword(password) {
+/**
+ * Change le mot de passe du compte connecté (mode en ligne).
+ * Le mot de passe actuel est vérifié d'abord : quelqu'un qui trouverait une
+ * session ouverte ne peut pas le changer sans le connaître.
+ */
+export async function changePassword(actuel, nouveau) {
   if (!isLive) throw new Error('En mode démo, il n’y a pas de mot de passe à changer.')
   const sb = await client()
-  const { error } = await sb.auth.updateUser({ password })
+  const email = (await sb.auth.getUser()).data.user?.email
+  const verif = await sb.auth.signInWithPassword({ email, password: actuel })
+  if (verif.error) throw new Error('Le mot de passe actuel est incorrect.')
+  const { error } = await sb.auth.updateUser({ password: nouveau })
   if (error) throw new Error(error.message.includes('different') ? 'Choisissez un mot de passe différent de l’actuel.' : 'Le changement n’a pas fonctionné. Réessayez.')
 }
 
@@ -222,8 +229,20 @@ function shrink(file, max) {
 }
 
 // ---------------------------------------------------------------- Connexion
+/**
+ * Mode démo : seulement sur l'ordinateur du développeur (localhost), ou si
+ * VITE_ADMIN_DEMO=true est défini. Sur le site en ligne sans Supabase,
+ * personne ne peut entrer dans le back-office.
+ */
+export const demoAllowed =
+  !isLive &&
+  (import.meta.env.DEV ||
+    import.meta.env.VITE_ADMIN_DEMO === 'true' ||
+    (typeof location !== 'undefined' && ['localhost', '127.0.0.1'].includes(location.hostname)))
+
 export async function getSession() {
   if (!isLive) {
+    if (!demoAllowed) return null
     try {
       return sessionStorage.getItem(DEMO_SESSION) ? { user: { email: sessionStorage.getItem(DEMO_SESSION) } } : null
     } catch {
@@ -234,8 +253,33 @@ export async function getSession() {
   return (await sb.auth.getSession()).data.session
 }
 
+// Anti-force brute : après 5 essais ratés, la connexion est bloquée 2 minutes
+// sur ce navigateur (Supabase limite aussi le nombre d'essais de son côté).
+const ESSAIS = 'neotisse-admin-essais'
+const MAX_ESSAIS = 5
+const BLOCAGE = 2 * 60 * 1000
+function lireEssais() {
+  try {
+    return JSON.parse(localStorage.getItem(ESSAIS)) || { n: 0, jusqua: 0 }
+  } catch {
+    return { n: 0, jusqua: 0 }
+  }
+}
+function ecrireEssais(v) {
+  try {
+    localStorage.setItem(ESSAIS, JSON.stringify(v))
+  } catch {
+    // ignore
+  }
+}
+/** Secondes restantes avant de pouvoir réessayer (0 si rien ne bloque). */
+export function attenteConnexion() {
+  return Math.max(0, Math.ceil((lireEssais().jusqua - Date.now()) / 1000))
+}
+
 export async function signIn(email, password) {
   if (!isLive) {
+    if (!demoAllowed) throw new Error('Le back-office n’est pas encore activé sur ce site.')
     try {
       sessionStorage.setItem(DEMO_SESSION, email || 'demo@neotisse')
     } catch {
@@ -243,12 +287,25 @@ export async function signIn(email, password) {
     }
     return
   }
+  const attente = attenteConnexion()
+  if (attente) throw new Error(`Trop d’essais. Réessayez dans ${attente} s.`)
   const sb = await client()
   const { error } = await sb.auth.signInWithPassword({ email, password })
-  if (error) throw new Error('Adresse e-mail ou mot de passe incorrect.')
+  if (error) {
+    const e = lireEssais()
+    const n = e.n + 1
+    if (n >= MAX_ESSAIS) {
+      ecrireEssais({ n: 0, jusqua: Date.now() + BLOCAGE })
+      throw new Error('Trop d’essais ratés : la connexion est bloquée 2 minutes.')
+    }
+    ecrireEssais({ n, jusqua: 0 })
+    throw new Error(`Adresse e-mail ou mot de passe incorrect (${MAX_ESSAIS - n} essai${MAX_ESSAIS - n > 1 ? 's' : ''} restant${MAX_ESSAIS - n > 1 ? 's' : ''}).`)
+  }
+  ecrireEssais({ n: 0, jusqua: 0 })
 }
 
-export async function signOut() {
+/** Déconnexion. partout = déconnecter aussi les autres appareils. */
+export async function signOut(partout = false) {
   if (!isLive) {
     try {
       sessionStorage.removeItem(DEMO_SESSION)
@@ -258,7 +315,47 @@ export async function signOut() {
     return
   }
   const sb = await client()
-  await sb.auth.signOut()
+  await sb.auth.signOut({ scope: partout ? 'global' : 'local' })
+}
+
+/** Mot de passe oublié : Supabase envoie un lien de réinitialisation par e-mail. */
+export async function resetPassword(email) {
+  if (!isLive) throw new Error('Disponible une fois Supabase branché.')
+  const sb = await client()
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/admin/nouveau-mot-de-passe` })
+  if (error) throw new Error('L’envoi n’a pas fonctionné. Réessayez dans quelques minutes.')
+}
+
+/**
+ * Arrivée depuis le lien reçu par e-mail : ouvre la session de récupération
+ * (lien « ?code=… » ou « #access_token=… », selon la configuration Supabase).
+ */
+export async function ouvrirLienRecuperation() {
+  if (!isLive) return null
+  const sb = await client()
+  const code = new URLSearchParams(location.search).get('code')
+  if (code) {
+    const { error } = await sb.auth.exchangeCodeForSession(code)
+    if (error) throw new Error('Ce lien a expiré ou a déjà servi. Demandez-en un nouveau.')
+  }
+  const { data } = await sb.auth.getSession()
+  if (!data.session) throw new Error('Ce lien a expiré ou a déjà servi. Demandez-en un nouveau.')
+  return data.session
+}
+
+/** Nouveau mot de passe, après le lien de réinitialisation (sans l'ancien). */
+export async function definirMotDePasse(password) {
+  const sb = await client()
+  const { error } = await sb.auth.updateUser({ password })
+  if (error) throw new Error(error.message.includes('different') ? 'Choisissez un mot de passe différent de l’ancien.' : 'Le changement n’a pas fonctionné.')
+}
+
+/** Changer l'adresse e-mail du compte : Supabase demande une confirmation par e-mail. */
+export async function changeEmail(email) {
+  if (!isLive) throw new Error('Disponible une fois Supabase branché.')
+  const sb = await client()
+  const { error } = await sb.auth.updateUser({ email }, { emailRedirectTo: `${location.origin}/admin` })
+  if (error) throw new Error('Le changement n’a pas fonctionné. Vérifiez l’adresse.')
 }
 
 // ---------------------------------------------------------------- Site public

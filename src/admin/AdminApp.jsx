@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router'
 import { Logo } from '../components/ui'
-import { getSession, isLive, resetDemo, signIn, signOut } from '../lib/store'
+import { demoAllowed, getSession, isLive, resetDemo, signOut } from '../lib/store'
 import { MOTION_OK, gsap, useGSAP } from '../motion/gsap'
-import { Btn, Champ } from './kit'
 import { useTable } from './hooks'
-import { fieldCls } from './format'
+import { Connexion, NonActive, NouveauMotDePasse } from './Auth'
+import { INACTIVITE_MS } from './securite'
 import Dashboard from './Dashboard'
 import EventsAdmin from './EventsAdmin'
 import NewsAdmin from './NewsAdmin'
@@ -87,6 +87,25 @@ function Shell({ email, children }) {
     navigate('/admin/connexion')
   }
 
+  // Sécurité : sans activité pendant 30 minutes, la session se ferme seule.
+  useEffect(() => {
+    let t
+    const relancer = () => {
+      clearTimeout(t)
+      t = setTimeout(async () => {
+        await signOut()
+        navigate('/admin/connexion?raison=inactivite')
+      }, INACTIVITE_MS)
+    }
+    const evts = ['pointerdown', 'keydown', 'scroll', 'mousemove']
+    evts.forEach((e) => window.addEventListener(e, relancer, { passive: true }))
+    relancer()
+    return () => {
+      clearTimeout(t)
+      evts.forEach((e) => window.removeEventListener(e, relancer))
+    }
+  }, [navigate])
+
   return (
     <div className="min-h-svh bg-creme text-brun">
       <div className="flex">
@@ -164,81 +183,6 @@ function Shell({ email, children }) {
   )
 }
 
-function Login({ onDone }) {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [busy, setBusy] = useState(false)
-  const ref = useRef(null)
-
-  useGSAP(
-    () => {
-      const mm = gsap.matchMedia()
-      mm.add(MOTION_OK, () => {
-        gsap.from('[data-login]', { y: 30, autoAlpha: 0, duration: 1, ease: 'expo.out', stagger: 0.08 })
-        gsap.from('[data-login-fil]', { drawSVG: 0, duration: 2.2, ease: 'power2.inOut' })
-      })
-      return () => mm.revert()
-    },
-    { scope: ref },
-  )
-
-  const submit = async (e) => {
-    e.preventDefault()
-    setBusy(true)
-    setError('')
-    try {
-      await signIn(email.trim(), password)
-      onDone()
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  return (
-    <div ref={ref} className="relative flex min-h-svh items-center justify-center overflow-hidden bg-creme px-5">
-      <svg aria-hidden="true" viewBox="0 0 1440 900" preserveAspectRatio="none" className="pointer-events-none absolute inset-0 size-full">
-        <path data-login-fil d="M-20 640 C 260 520, 420 760, 700 640 C 820 590, 860 560, 900 600 C 930 630, 880 670, 860 640 C 840 610, 920 560, 1000 580 C 1180 620, 1300 520, 1460 560" fill="none" stroke="#B4583D" strokeOpacity="0.5" strokeWidth="1.4" />
-      </svg>
-      <form onSubmit={submit} className="relative w-full max-w-[440px] rounded-[32px] bg-lin p-8 shadow-[0_30px_80px_-40px_rgba(61,42,35,0.5)] sm:p-10">
-        <div data-login className="flex items-center gap-3">
-          <Logo />
-          <span className="text-label text-brique">Back-office</span>
-        </div>
-        <h1 data-login className="mt-6 font-serif text-[44px] leading-[1.02] font-light">
-          Bon retour <em>parmi nous</em>
-        </h1>
-        <p data-login className="mt-3 text-petit text-brun-doux">
-          {isLive ? 'Connectez-vous avec le compte de l’association.' : 'Mode démo : saisissez n’importe quelle adresse pour entrer.'}
-        </p>
-        <div data-login className="mt-8 flex flex-col gap-5">
-          <Champ label="Adresse e-mail">
-            <input type="email" required={isLive} autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} className={fieldCls} placeholder="asso.neotisse@gmail.com" />
-          </Champ>
-          <Champ label="Mot de passe">
-            <input type="password" required={isLive} autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} className={fieldCls} />
-          </Champ>
-        </div>
-        {error && (
-          <p role="alert" className="mt-4 text-petit text-terre-cuite">
-            {error}
-          </p>
-        )}
-        <div data-login className="mt-8 flex items-center justify-between gap-4">
-          <a href="/" className="link-fil text-[14px] text-brun-doux">
-            ← Retour au site
-          </a>
-          <Btn type="submit" disabled={busy}>
-            {busy ? 'Connexion…' : 'Se connecter'}
-          </Btn>
-        </div>
-      </form>
-    </div>
-  )
-}
-
 /** Application du back-office (/admin). Accessible seulement une fois connecté. */
 export default function AdminApp() {
   const [session, setSession] = useState(undefined)
@@ -247,14 +191,26 @@ export default function AdminApp() {
 
   useEffect(() => {
     document.title = 'Back-office · Néotisse'
+    // Jamais référencé par les moteurs de recherche.
+    let meta = document.querySelector('meta[name="robots"]')
+    if (!meta) {
+      meta = document.createElement('meta')
+      meta.name = 'robots'
+      document.head.appendChild(meta)
+    }
+    meta.content = 'noindex, nofollow'
     getSession().then(setSession)
   }, [pathname])
 
+  // Lien reçu par e-mail (mot de passe oublié) : géré avant tout le reste.
+  if (pathname === '/admin/nouveau-mot-de-passe') return <NouveauMotDePasse />
+  // Site en ligne sans base de données : le back-office reste fermé.
+  if (!isLive && !demoAllowed) return <NonActive />
   if (session === undefined) return <div className="min-h-svh bg-creme" />
 
   if (pathname === '/admin/connexion') {
     if (session) return <Navigate to="/admin" replace />
-    return <Login onDone={() => getSession().then((s) => (setSession(s), navigate('/admin')))} />
+    return <Connexion onDone={() => getSession().then((s) => (setSession(s), navigate('/admin')))} />
   }
   if (!session) return <Navigate to="/admin/connexion" replace />
 

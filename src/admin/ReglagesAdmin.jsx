@@ -1,17 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router'
-import { changePassword, getSession, isLive, list, resetDemo, saveSetting, uploadImage } from '../lib/store'
+import { useNavigate, useSearchParams } from 'react-router'
+import { changeEmail, changePassword, getSession, signOut, isLive, list, resetDemo, saveSetting, uploadImage } from '../lib/store'
 import { DEFAUTS, EMPLACEMENTS } from '../lib/reglages'
 import { Btn, Champ, PageTitle } from './kit'
 import { useTable, useToast } from './hooks'
 import { fieldCls } from './format'
+import { JaugeMotDePasse, MotDePasse } from './Auth'
+import { forceMotDePasse } from './securite'
 
 const ONGLETS = [
   { id: 'coordonnees', label: 'Coordonnées', icon: 'M4 6h16v12H4V6Zm0 0 8 7 8-7' },
   { id: 'reseaux', label: 'Réseaux sociaux', icon: 'M7 4h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3Zm5 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm5-2h.01' },
   { id: 'photos', label: 'Photos du site', icon: 'M4 6h16v12H4V6Zm0 9 4-4 4 4 3-3 5 5M15 9h.01' },
   { id: 'annonce', label: 'Bandeau d’annonce', icon: 'M4 10v4h3l6 4V6L7 10H4Zm13-1a4 4 0 0 1 0 6' },
-  { id: 'compte', label: 'Compte et données', icon: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0' },
+  { id: 'compte', label: 'Compte et sécurité', icon: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0' },
 ]
 
 function Icon({ d }) {
@@ -266,58 +268,167 @@ async function exporterMessages() {
 }
 
 function Compte({ toast }) {
-  const [email, setEmail] = useState('')
-  const [pw, setPw] = useState({ a: '', b: '' })
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState('')
+  const navigate = useNavigate()
+  const [session, setSession] = useState(null)
+  const [pw, setPw] = useState({ actuel: '', a: '', b: '' })
+  const [nouvelEmail, setNouvelEmail] = useState('')
+  const [busy, setBusy] = useState('')
+  const [error, setError] = useState({})
+  const [info, setInfo] = useState('')
   const [armed, setArmed] = useState(false)
+  const [partout, setPartout] = useState(false)
   useEffect(() => {
-    getSession().then((s) => setEmail(s?.user?.email || ''))
+    getSession().then(setSession)
   }, [])
+  const email = session?.user?.email || ''
+  const derniere = session?.user?.last_sign_in_at
 
-  const changer = async (e) => {
+  const changerMdp = async (e) => {
     e.preventDefault()
-    if (pw.a.length < 8) return setError('Au moins 8 caractères.')
-    if (pw.a !== pw.b) return setError('Les deux mots de passe ne sont pas identiques.')
-    setError('')
-    setBusy(true)
+    const f = forceMotDePasse(pw.a)
+    if (!pw.actuel) return setError({ mdp: 'Indiquez votre mot de passe actuel.' })
+    if (!f.valide) return setError({ mdp: `Mot de passe trop faible : ajoutez ${f.conseils.join(', ') || 'de la longueur'}.` })
+    if (pw.a !== pw.b) return setError({ mdp: 'Les deux nouveaux mots de passe ne sont pas identiques.' })
+    setError({})
+    setBusy('mdp')
     try {
-      await changePassword(pw.a)
-      setPw({ a: '', b: '' })
+      await changePassword(pw.actuel, pw.a)
+      setPw({ actuel: '', a: '', b: '' })
       toast('Mot de passe modifié')
     } catch (err) {
-      setError(err.message)
+      setError({ mdp: err.message })
     } finally {
-      setBusy(false)
+      setBusy('')
+    }
+  }
+
+  const changerEmail = async (e) => {
+    e.preventDefault()
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(nouvelEmail.trim())) return setError({ email: 'Cette adresse ne semble pas valide.' })
+    setError({})
+    setBusy('email')
+    try {
+      await changeEmail(nouvelEmail.trim())
+      setInfo(`Un e-mail de confirmation a été envoyé à ${nouvelEmail.trim()} (et à l’adresse actuelle). Le changement sera effectif après un clic sur le lien.`)
+      setNouvelEmail('')
+    } catch (err) {
+      setError({ email: err.message })
+    } finally {
+      setBusy('')
     }
   }
 
   return (
     <div className="flex flex-col gap-6">
-      <Carte titre="Votre compte" texte={isLive ? 'Seuls les comptes créés par l’association dans Supabase peuvent se connecter.' : 'Mode démo : aucun mot de passe n’est nécessaire.'}>
-        <div className="flex items-center gap-4 rounded-[20px] border border-brun/10 bg-creme p-4">
+      <Carte titre="Votre compte" texte={isLive ? 'Seuls les comptes créés par l’association peuvent se connecter : personne ne peut s’inscrire seul.' : 'Mode démo : la connexion n’est possible que sur votre ordinateur.'}>
+        <div className="flex flex-wrap items-center gap-4 rounded-[20px] border border-brun/10 bg-creme p-4">
           <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-terre-cuite font-serif text-[22px] text-lin uppercase">{email.slice(0, 1) || '·'}</span>
-          <span className="min-w-0">
+          <span className="min-w-0 flex-1">
             <span className="block truncate text-[15px]">{email}</span>
-            <span className="block text-[13px] text-brun-doux">{isLive ? 'Membre de l’équipe' : 'Session de démonstration'}</span>
+            <span className="block text-[13px] text-brun-doux">
+              {isLive ? 'Membre de l’équipe' : 'Session de démonstration'}
+              {derniere && ` · dernière connexion le ${new Date(derniere).toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' })}`}
+            </span>
           </span>
         </div>
+        {!isLive && (
+          <p className="mt-5 rounded-[16px] border border-dashed border-brun/20 px-4 py-3 text-[13px] text-brun-doux">
+            Le changement de mot de passe et d’adresse e-mail s’active dès que Supabase est branché (voir <code className="rounded bg-creme px-1">docs/BACKOFFICE.md</code>).
+          </p>
+        )}
+      </Carte>
 
-        {isLive && (
-          <form onSubmit={changer} className="mt-6">
-            <p className="text-label text-brun">Changer le mot de passe</p>
-            <div className="mt-3 grid gap-4 sm:grid-cols-2">
-              <input type="password" autoComplete="new-password" placeholder="Nouveau mot de passe" value={pw.a} onChange={(e) => setPw((o) => ({ ...o, a: e.target.value }))} className={fieldCls} aria-label="Nouveau mot de passe" />
-              <input type="password" autoComplete="new-password" placeholder="Confirmer" value={pw.b} onChange={(e) => setPw((o) => ({ ...o, b: e.target.value }))} className={fieldCls} aria-label="Confirmer le mot de passe" />
-            </div>
-            <Erreur>{error}</Erreur>
-            <div className="mt-4 flex justify-end">
-              <Btn type="submit" disabled={busy || !pw.a}>
-                {busy ? 'Modification…' : 'Changer le mot de passe'}
+      {isLive && (
+        <>
+          <Carte titre="Mot de passe" texte="Le mot de passe actuel est demandé pour confirmer que c’est bien vous.">
+            <form onSubmit={changerMdp} className="grid gap-4 sm:grid-cols-2">
+              <div className="sm:col-span-2">
+                <span className="mb-2 block text-label text-brun">Mot de passe actuel</span>
+                <MotDePasse value={pw.actuel} onChange={(e) => setPw((o) => ({ ...o, actuel: e.target.value }))} label="Mot de passe actuel" />
+              </div>
+              <div>
+                <span className="mb-2 block text-label text-brun">Nouveau</span>
+                <MotDePasse value={pw.a} onChange={(e) => setPw((o) => ({ ...o, a: e.target.value }))} autoComplete="new-password" label="Nouveau mot de passe" />
+                <JaugeMotDePasse value={pw.a} />
+              </div>
+              <div>
+                <span className="mb-2 block text-label text-brun">Confirmer</span>
+                <MotDePasse value={pw.b} onChange={(e) => setPw((o) => ({ ...o, b: e.target.value }))} autoComplete="new-password" label="Confirmer le nouveau mot de passe" />
+              </div>
+              <div className="sm:col-span-2">
+                <Erreur>{error.mdp}</Erreur>
+                <div className="mt-2 flex justify-end">
+                  <Btn type="submit" disabled={busy === 'mdp' || !pw.a}>
+                    {busy === 'mdp' ? 'Vérification…' : 'Changer le mot de passe'}
+                  </Btn>
+                </div>
+              </div>
+            </form>
+          </Carte>
+
+          <Carte titre="Adresse e-mail de connexion" texte="Pour transmettre le compte à quelqu’un d’autre, ou si l’adresse de l’association change.">
+            <form onSubmit={changerEmail} className="flex flex-col gap-4 sm:flex-row sm:items-end">
+              <Champ label="Nouvelle adresse" className="flex-1">
+                <input type="email" value={nouvelEmail} onChange={(e) => setNouvelEmail(e.target.value)} className={fieldCls} placeholder="presidence@exemple.fr" />
+              </Champ>
+              <Btn type="submit" disabled={busy === 'email' || !nouvelEmail}>
+                {busy === 'email' ? 'Envoi…' : 'Changer l’adresse'}
+              </Btn>
+            </form>
+            <Erreur>{error.email}</Erreur>
+            {info && <p className="mt-4 rounded-[14px] bg-[#7d8f6a]/15 px-4 py-3 text-[13px] text-[#56663f]">{info}</p>}
+          </Carte>
+
+          <Carte titre="Sécurité" texte="Ce qui protège l’espace de gestion.">
+            <ul className="grid gap-3 sm:grid-cols-2">
+              {[
+                ['Connexion chiffrée', 'Les échanges passent en HTTPS ; les mots de passe ne sont jamais stockés en clair.'],
+                ['Inscriptions fermées', 'Seuls les comptes créés par l’association existent.'],
+                ['Anti-essais', 'Après 5 erreurs, la connexion est bloquée 2 minutes.'],
+                ['Déconnexion automatique', 'Après 30 minutes sans activité.'],
+              ].map(([t, d]) => (
+                <li key={t} className="rounded-[18px] border border-brun/10 bg-creme p-4">
+                  <span className="flex items-center gap-2 text-[14px] text-brun">
+                    <span aria-hidden="true" className="flex size-5 items-center justify-center rounded-full bg-[#56663f] text-[11px] text-lin">✓</span>
+                    {t}
+                  </span>
+                  <span className="mt-1 block text-[13px] text-brun-doux">{d}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-brun/10 pt-5">
+              <p className="max-w-[420px] text-[13px] text-brun-doux">Un ordinateur perdu, un mot de passe partagé par erreur ? Fermez toutes les sessions ouvertes.</p>
+              <Btn
+                variant={partout ? 'plein' : 'danger'}
+                onClick={async () => {
+                  if (!partout) return setPartout(true)
+                  await signOut(true)
+                  navigate('/admin/connexion')
+                }}
+              >
+                {partout ? 'Confirmer ?' : 'Déconnecter tous les appareils'}
               </Btn>
             </div>
-          </form>
-        )}
+          </Carte>
+        </>
+      )}
+
+      <Carte titre="Transmettre l’accès" texte="Vous avez créé le compte et voulez le confier à l’association ? Trois étapes, sans jamais partager votre mot de passe définitif.">
+        <ol className="flex flex-col gap-4">
+          {[
+            ['Changez l’adresse', 'Dans « Adresse e-mail de connexion », mettez l’adresse de la personne qui reprend le compte, puis confirmez avec les liens reçus.'],
+            ['Elle choisit son mot de passe', 'Sur la page de connexion, elle clique sur « Mot de passe oublié ? » et reçoit un lien pour choisir le sien. L’ancien ne fonctionne plus.'],
+            ['Fermez vos sessions', 'Elle clique sur « Déconnecter tous les appareils » : plus personne d’autre n’est connecté.'],
+          ].map(([t, d], i) => (
+            <li key={t} className="flex gap-4">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-terre-cuite/40 font-serif text-[18px] text-terre-cuite">{i + 1}</span>
+              <span>
+                <span className="block font-serif text-[20px] leading-tight">{t}</span>
+                <span className="mt-1 block text-[13px] text-brun-doux">{d}</span>
+              </span>
+            </li>
+          ))}
+        </ol>
       </Carte>
 
       <Carte titre="Vos données" texte="Récupérez les messages reçus dans un tableur (Excel, Numbers, Google Sheets).">
