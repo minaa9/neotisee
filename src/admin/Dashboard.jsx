@@ -6,6 +6,7 @@ import { MOTION_OK, gsap, useGSAP } from '../motion/gsap'
 import { Badge, Btn, PageTitle } from './kit'
 import { useTable, useToast } from './hooks'
 import { formatDate } from './format'
+import Indicateurs from './Indicateurs'
 
 function StatCard({ to, label, value, hint, accent }) {
   return (
@@ -94,6 +95,8 @@ export default function Dashboard() {
             <StatCard to="/admin/livre-d-or" label="Témoignages à relire" value={pending.length} hint={`${tem.rows.length - pending.length} déjà traités`} />
             <StatCard to="/admin/actualites" label="Actualités en ligne" value={published.length} hint={`${news.rows.length - published.length} brouillon${news.rows.length - published.length > 1 ? 's' : ''}`} />
           </div>
+
+          <Indicateurs messages={msg.rows} temoignages={tem.rows} evenements={ev.rows} />
 
           <div className="mt-8 grid gap-6 xl:grid-cols-[1.15fr_1fr] [&>*]:min-w-0">
             {/* Prochains rendez-vous */}
