@@ -1,7 +1,7 @@
 /**
  * Consentement aux cookies.
- * Le choix est gardé dans le navigateur (localStorage) pendant 6 mois,
- * comme le recommande la CNIL, puis la bannière réapparaît.
+ * Le choix est gardé dans le navigateur (localStorage) pendant 12 mois
+ * (la CNIL fixe un maximum de 13 mois), puis la bannière réapparaît.
  *
  * Aujourd'hui le site n'installe AUCUN cookie de mesure d'audience ni de
  * publicité. La catégorie « audience » est prête au cas où l'association
@@ -9,14 +9,14 @@
  * getConsent()?.audience est vrai.
  */
 const KEY = 'neotisse-cookies'
-const SIX_MOIS = 1000 * 60 * 60 * 24 * 182
+const DUREE = 1000 * 60 * 60 * 24 * 365 // 12 mois
 export const OPEN_EVENT = 'neotisse:cookies-open'
 export const CHANGE_EVENT = 'neotisse:cookies-change'
 
 export function getConsent() {
   try {
     const saved = JSON.parse(localStorage.getItem(KEY))
-    if (!saved || Date.now() - saved.date > SIX_MOIS) return null
+    if (!saved || Date.now() - saved.date > DUREE) return null
     return saved
   } catch {
     return null

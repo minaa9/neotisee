@@ -37,7 +37,7 @@ export default function CookieBanner() {
   const [audience, setAudience] = useState(false)
   const ref = useRef(null)
 
-  // Première visite (ou choix de plus de 6 mois) : on attend la fin de l'intro pelote.
+  // Première visite (ou choix de plus de 12 mois) : on attend la fin de l'intro pelote.
   useEffect(() => {
     if (getConsent()) return
     const t = setTimeout(() => setOpen(true), 4200)

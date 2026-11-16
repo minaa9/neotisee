@@ -56,7 +56,7 @@ function Mail() {
 }
 
 const TRACEURS = [
-  { nom: 'neotisse-cookies', qui: 'Tous les visiteurs', role: 'Retenir votre choix sur les cookies, pour ne pas vous reposer la question à chaque visite.', duree: '6 mois' },
+  { nom: 'neotisse-cookies', qui: 'Tous les visiteurs', role: 'Retenir votre choix sur les cookies, pour ne pas vous reposer la question à chaque visite.', duree: '12 mois' },
   { nom: 'neotisse-annonce-fermee', qui: 'Tous les visiteurs', role: 'Ne plus afficher le bandeau d’annonce une fois que vous l’avez fermé.', duree: 'Jusqu’à la fermeture de l’onglet' },
   { nom: 'sb-…-auth-token', qui: 'Équipe uniquement', role: 'Garder les membres de l’association connectés à l’espace de gestion. Jamais déposé pour les visiteurs.', duree: 'Jusqu’à la déconnexion' },
 ]
@@ -152,7 +152,7 @@ export default function CookiesPage() {
       essentiel={[
         { titre: 'Publicité', texte: 'Aucun cookie' },
         { titre: 'Mesure d’audience', texte: 'Aucune, sans votre accord' },
-        { titre: 'Stocké chez vous', texte: 'Votre choix, 6 mois' },
+        { titre: 'Stocké chez vous', texte: 'Votre choix, 12 mois' },
         { titre: 'Partagé', texte: 'Avec personne' },
       ]}
       sections={sections}
