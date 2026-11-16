@@ -49,7 +49,7 @@ export default function TeamPage() {
               className={`flex flex-col gap-6 sm:flex-row sm:gap-[30px] ${i === 1 ? 'lg:mt-[70px]' : ''}`}
             >
               {/* Portrait : sépia → couleur, fil qui fait le tour de l'arche, carte qui se dévoile */}
-              <figure data-cursor="Découvrir" tabIndex={0} className="group relative aspect-[300/400] w-full max-w-[250px] shrink-0 outline-none">
+              <figure tabIndex={0} className="group relative aspect-[300/400] w-full max-w-[250px] shrink-0 outline-none">
                 <div className="absolute inset-0 overflow-hidden rounded-t-[150px] rounded-b-[24px]">
                   <img
                     src={m.photo}
