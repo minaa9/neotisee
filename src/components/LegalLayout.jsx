@@ -4,12 +4,27 @@ import { Eyebrow } from './ui'
 import ThreadDivider from './ThreadDivider'
 import { MOTION_OK, gsap, useGSAP } from '../motion/gsap'
 
-/** Information que l'association doit encore fournir : bien visible pour ne pas l'oublier. */
-export function ACompleter({ children }) {
+/** Lien en ligne dans un texte légal. */
+export function Lien({ href, children }) {
+  const externe = /^https?:/.test(href)
   return (
-    <span className="rounded-md border border-dashed border-terre-cuite/60 bg-lin px-1.5 py-0.5 text-[0.92em] text-terre-cuite">
-      À compléter : {children}
-    </span>
+    <a href={href} {...(externe ? { target: '_blank', rel: 'noreferrer' } : {})} className="link-fil text-terre-cuite">
+      {children}
+    </a>
+  )
+}
+
+/** Fiche d'identité : libellés à gauche, valeurs à droite. */
+export function Fiche({ lignes }) {
+  return (
+    <dl className="mt-5 overflow-hidden rounded-[22px] border border-brun/10 bg-lin">
+      {lignes.map(([k, v], i) => (
+        <div key={k} className={`grid gap-1 px-5 py-4 sm:grid-cols-[180px_1fr] sm:gap-6 ${i ? 'border-t border-brun/10' : ''}`}>
+          <dt className="text-label text-brique">{k}</dt>
+          <dd className="text-courant text-brun">{v}</dd>
+        </div>
+      ))}
+    </dl>
   )
 }
 
@@ -41,7 +56,7 @@ const others = [
  * la lecture (un fil se remplit), sections numérotées à droite.
  * sections = [{ id, titre, contenu }]
  */
-export default function LegalLayout({ title, intro, maj, sections, current }) {
+export default function LegalLayout({ title, intro, maj, sections, current, essentiel = [] }) {
   const ref = useRef(null)
   const [active, setActive] = useState(sections[0].id)
 
@@ -68,6 +83,7 @@ export default function LegalLayout({ title, intro, maj, sections, current }) {
           { scaleY: 0 },
           { scaleY: 1, ease: 'none', scrollTrigger: { trigger: '[data-legal-body]', start: 'top 40%', end: 'bottom 60%', scrub: true } },
         )
+        gsap.from('[data-legal-cle]', { y: 30, autoAlpha: 0, duration: 1, ease: 'expo.out', stagger: 0.08, delay: 0.3 })
         gsap.utils.toArray('[data-legal-num]').forEach((n) =>
           gsap.from(n, { xPercent: -60, autoAlpha: 0, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: n, start: 'top 85%' } }),
         )
@@ -79,11 +95,24 @@ export default function LegalLayout({ title, intro, maj, sections, current }) {
 
   return (
     <div ref={ref} className="bg-creme">
-      <header className="container-site pt-36 pb-6 xl:pt-44">
-        <Eyebrow>Informations</Eyebrow>
-        <h1 className="mt-5 font-serif text-[52px] leading-[1.02] font-light tracking-[-0.01em] text-brun md:text-[80px]">{title}</h1>
-        <p className="mt-6 max-w-[620px] text-chapo text-brun-doux">{intro}</p>
-        <p className="mt-4 text-label text-brique">Dernière mise à jour : {maj}</p>
+      <header className="container-site grid gap-10 pt-36 pb-6 lg:grid-cols-[1fr_440px] lg:items-end lg:gap-16 xl:pt-44">
+        <div>
+          <Eyebrow>Informations</Eyebrow>
+          <h1 className="mt-5 font-serif text-[52px] leading-[1.02] font-light tracking-[-0.01em] text-brun md:text-[80px]">{title}</h1>
+          <p className="mt-6 max-w-[620px] text-chapo text-brun-doux">{intro}</p>
+          <p className="mt-4 text-label text-brique">Dernière mise à jour : {maj}</p>
+        </div>
+        {/* L'essentiel en un coup d'œil */}
+        {essentiel.length > 0 && (
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {essentiel.map((e) => (
+              <li data-legal-cle key={e.titre} className="rounded-[22px] border border-brun/8 bg-lin p-5">
+                <span className="text-label text-brique">{e.titre}</span>
+                <span className="mt-2 block font-serif text-[21px] leading-[1.15] text-brun">{e.texte}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </header>
 
       <ThreadDivider />

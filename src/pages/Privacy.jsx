@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import LegalLayout, { ACompleter, Liste, P } from '../components/LegalLayout'
+import LegalLayout, { Liste, P } from '../components/LegalLayout'
 import { useContact } from '../lib/reglages'
 
 function Mail() {
@@ -60,8 +60,8 @@ const sections = [
     contenu: (
       <P>
         Seuls les membres de l’association chargés de vous répondre ont accès à vos messages. Vos
-        données ne sont jamais vendues ni cédées. Les échanges transitent par notre messagerie
-        électronique, gérée par <ACompleter>fournisseur de la boîte mail de l’association</ACompleter>.
+        données ne sont jamais vendues ni cédées, et ne servent jamais à de la prospection. Nos
+        réponses partent de la messagerie électronique de l’association.
       </P>
     ),
   },
@@ -91,8 +91,7 @@ const sections = [
             </>,
             <>
               <strong className="font-normal text-brun">Supabase</strong> (base de données) : conserve
-              les messages, témoignages et contenus du site. Région d’hébergement :{' '}
-              <ACompleter>région choisie, par exemple Union européenne (Paris)</ACompleter>.
+              les messages, témoignages et contenus du site, avec un accès réservé à l’équipe.
             </>,
             <>
               <strong className="font-normal text-brun">Google Fonts</strong> (polices d’écriture) :
@@ -159,7 +158,13 @@ export default function PrivacyPage() {
       current="/confidentialite"
       title="Confidentialité"
       intro="Quelles données nous recevons, ce que nous en faisons et comment exercer vos droits. En bref : le strict nécessaire."
-      maj="12 novembre 2026"
+      maj="16 novembre 2026"
+      essentiel={[
+        { titre: 'Ce que nous recevons', texte: 'Vos messages et témoignages' },
+        { titre: 'Pourquoi', texte: 'Vous répondre, rien d’autre' },
+        { titre: 'Combien de temps', texte: '3 ans au plus' },
+        { titre: 'Vente ou publicité', texte: 'Jamais' },
+      ]}
       sections={sections}
     />
   )

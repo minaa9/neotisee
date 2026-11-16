@@ -55,6 +55,12 @@ function Mail() {
   )
 }
 
+const TRACEURS = [
+  { nom: 'neotisse-cookies', qui: 'Tous les visiteurs', role: 'Retenir votre choix sur les cookies, pour ne pas vous reposer la question à chaque visite.', duree: '6 mois' },
+  { nom: 'neotisse-annonce-fermee', qui: 'Tous les visiteurs', role: 'Ne plus afficher le bandeau d’annonce une fois que vous l’avez fermé.', duree: 'Jusqu’à la fermeture de l’onglet' },
+  { nom: 'sb-…-auth-token', qui: 'Équipe uniquement', role: 'Garder les membres de l’association connectés à l’espace de gestion. Jamais déposé pour les visiteurs.', duree: 'Jusqu’à la déconnexion' },
+]
+
 const sections = [
   {
     id: 'definition',
@@ -69,36 +75,33 @@ const sections = [
   },
   {
     id: 'utilises',
-    titre: 'Ce que ce site utilise',
+    titre: 'Ce que ce site enregistre',
     contenu: (
       <>
-        <P>Le site Néotisse est volontairement léger : aucun cookie publicitaire, aucun réseau social intégré, aucun suivi de navigation.</P>
-        <div className="mt-6 overflow-x-auto rounded-[20px] border border-brun/10">
-          <table className="w-full min-w-[520px] text-left text-petit">
-            <thead className="bg-lin text-label text-brique">
-              <tr>
-                <th scope="col" className="px-5 py-4 font-normal">Nom</th>
-                <th scope="col" className="px-5 py-4 font-normal">À quoi il sert</th>
-                <th scope="col" className="px-5 py-4 font-normal">Durée</th>
-              </tr>
-            </thead>
-            <tbody className="text-brun-doux">
-              <tr className="border-t border-brun/10">
-                <td className="px-5 py-4 text-brun">neotisse-cookies</td>
-                <td className="px-5 py-4">Retenir votre choix sur les cookies (stockage local du navigateur)</td>
-                <td className="px-5 py-4">6 mois</td>
-              </tr>
-              <tr className="border-t border-brun/10">
-                <td className="px-5 py-4 text-brun">sb-…-auth-token</td>
-                <td className="px-5 py-4">Garder connectés les membres de l’association à l’espace de gestion. Jamais déposé pour les visiteurs.</td>
-                <td className="px-5 py-4">Jusqu’à la déconnexion</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
         <P>
-          Ce stockage est strictement nécessaire : il ne contient aucune donnée personnelle et ne
-          quitte jamais votre navigateur.
+          Le site Néotisse est volontairement léger : aucun cookie publicitaire, aucun outil de mesure d’audience, aucun
+          bouton de réseau social qui vous suit. Voici tout ce qui peut être enregistré dans votre navigateur :
+        </P>
+        <ul className="mt-6 flex flex-col gap-3">
+          {TRACEURS.map((t) => (
+            <li key={t.nom} className="grid gap-3 rounded-[22px] border border-brun/10 bg-lin p-5 sm:grid-cols-[1fr_150px] sm:items-start sm:gap-6">
+              <div>
+                <p className="flex flex-wrap items-center gap-2">
+                  <code className="rounded-md bg-creme px-2 py-0.5 text-[13px] text-brun">{t.nom}</code>
+                  <span className={`rounded-full px-2.5 py-0.5 text-[12px] ${t.qui === 'Équipe uniquement' ? 'bg-brun/8 text-brun-doux' : 'bg-terre-cuite/12 text-terre-cuite'}`}>{t.qui}</span>
+                </p>
+                <p className="mt-2 text-petit text-brun-doux">{t.role}</p>
+              </div>
+              <p className="text-petit text-brun sm:text-right">
+                <span className="block text-label text-brique">Durée</span>
+                {t.duree}
+              </p>
+            </li>
+          ))}
+        </ul>
+        <P>
+          Ces éléments sont strictement nécessaires au fonctionnement du site : la loi n’exige pas votre accord pour
+          eux. Ils ne contiennent aucune donnée permettant de vous identifier et ne sont lus par aucun autre site.
         </P>
       </>
     ),
@@ -108,7 +111,10 @@ const sections = [
     titre: 'Vos réglages',
     contenu: (
       <>
-        <P>Vous pouvez changer d’avis à tout moment, ici même :</P>
+        <P>
+          Si nous ajoutons un jour un outil de mesure d’audience, il ne fonctionnera qu’avec votre accord. Vous pouvez
+          changer d’avis à tout moment, ici même :
+        </P>
         <Reglages />
       </>
     ),
@@ -142,7 +148,13 @@ export default function CookiesPage() {
       current="/cookies"
       title="Gestion des cookies"
       intro="Pas de pistage ici : seulement de quoi retenir votre choix. Voici le détail, et de quoi le modifier."
-      maj="12 novembre 2026"
+      maj="16 novembre 2026"
+      essentiel={[
+        { titre: 'Publicité', texte: 'Aucun cookie' },
+        { titre: 'Mesure d’audience', texte: 'Aucune, sans votre accord' },
+        { titre: 'Stocké chez vous', texte: 'Votre choix, 6 mois' },
+        { titre: 'Partagé', texte: 'Avec personne' },
+      ]}
       sections={sections}
     />
   )
