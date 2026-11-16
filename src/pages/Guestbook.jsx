@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import PageHeader from '../components/PageHeader'
-import InfiniteCards from '../components/InfiniteCards'
-import QuoteCycler from '../components/QuoteCycler'
+import { TemoignagesPanel } from '../components/TestimonialCarousel'
 import { Field } from '../components/forms'
 import { inputCls, openMail, selectArrow } from '../components/formUtils'
 import { Button, Reveal } from '../components/ui'
@@ -194,12 +193,19 @@ export default function GuestbookPage() {
         </Button>
       </PageHeader>
 
-      <section aria-label="Témoignages" className="overflow-hidden bg-creme pb-16 xl:pt-2 xl:pb-[90px]">
-        <div className="container-site">
-          <QuoteCycler items={temoignages} />
-          <p className="mt-16 mb-6 text-center text-label text-brique">Tous les témoignages · faites glisser</p>
-          <InfiniteCards items={temoignages} />
-        </div>
+      <section aria-label="Témoignages" className="bg-creme pb-16 xl:pt-2 xl:pb-[90px]">
+        <Reveal className="container-site">
+          <TemoignagesPanel
+            items={temoignages}
+            eyebrow="Leurs mots"
+            title={
+              <>
+                Ce qu’ils <em>en ont retenu</em>
+              </>
+            }
+            subtitle="Faites glisser les cartes ou utilisez les flèches. Chaque témoignage est relu par l’équipe avant d’être publié."
+          />
+        </Reveal>
       </section>
 
       <LeaveAWord />
