@@ -16,8 +16,14 @@ import { news as staticNews } from '../data/news'
 import { temoignages as staticTemoignages } from '../data/temoignages'
 import { ateliers as staticAteliers } from '../data/ateliers'
 
-const SB_URL = import.meta.env.VITE_SUPABASE_URL
-const KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
+const env = import.meta.env
+// Noms acceptés : ceux du guide, ou ceux copiés tels quels depuis Supabase.
+const SB_URL = env.VITE_SUPABASE_URL || env.NEXT_PUBLIC_SUPABASE_URL
+const KEY =
+  env.VITE_SUPABASE_ANON_KEY ||
+  env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 export const isLive = Boolean(SB_URL && KEY)
 
 export const TABLES = ['evenements', 'actualites', 'temoignages', 'messages', 'ateliers', 'reglages']
