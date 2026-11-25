@@ -99,8 +99,8 @@ export default function CookieBanner() {
             Un petit fil <em>de cookies</em>
           </p>
           <p className="mt-2 text-petit text-brun-doux">
-            Ce site n’utilise que les cookies nécessaires à son fonctionnement. Aucun cookie
-            publicitaire, aucun suivi.{' '}
+            Ce site utilise Google Analytics pour mesurer son audience, uniquement avec votre
+            accord. Aucun cookie publicitaire.{' '}
             <Link to="/cookies" onClick={() => setOpen(false)} className="link-fil text-terre-cuite">
               En savoir plus
             </Link>
@@ -120,7 +120,7 @@ export default function CookieBanner() {
           <li className="flex items-center justify-between gap-4">
             <span>
               <span className="block text-[15px] text-brun">Mesure d’audience</span>
-              <span className="block text-[13px] text-brun-doux">Aucun outil installé pour l’instant.</span>
+              <span className="block text-[13px] text-brun-doux">Google Analytics, seulement si vous l’acceptez.</span>
             </span>
             <Toggle checked={audience} onChange={setAudience} label="Cookies de mesure d’audience" />
           </li>
