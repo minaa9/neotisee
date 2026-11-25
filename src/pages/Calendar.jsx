@@ -19,6 +19,7 @@ import flecheGauche from '../assets/v3/calendrier/fleche-gauche.svg'
 import flecheDroite from '../assets/v3/calendrier/fleche-droite.svg'
 import noeud from '../assets/v3/calendrier/noeud.svg'
 import flecheContour from '../assets/v3/ui/fleche-contour.svg'
+import { track } from '../lib/analytics'
 
 const LETTRES = ['D', 'L', 'M', 'M', 'J', 'V', 'S']
 const pad = (n) => String(n).padStart(2, '0')
@@ -151,6 +152,7 @@ function Loom({ list, view, onMove, highlight }) {
                         <div key={e.id} className={`relative flex max-w-full ${open ? 'z-30' : 'z-10'}`} onMouseEnter={() => setHover(e.id)} onMouseLeave={() => setHover(null)}>
                           <a
                             href={`#rdv-${e.id}`}
+                            onClick={() => track('click_event', { event_name: e.titre })}
                             onFocus={() => setHover(e.id)}
                             onBlur={() => setHover(null)}
                             className={`relative flex h-[22px] max-w-full origin-left items-center rounded-full pr-3 pl-6 text-[12.5px] whitespace-nowrap transition-[transform,box-shadow] duration-300 hover:scale-[1.04] ${cat.bg} ${cat.text} ${past ? 'opacity-50' : ''} ${open ? 'scale-[1.06] shadow-[0_0_0_4px_rgba(180,88,61,0.18)]' : ''}`}
