@@ -8,6 +8,7 @@ import { MOTION_OK, gsap, useGSAP } from '../motion/gsap'
 import { usePublic } from '../lib/usePublic'
 import { isLive, submit as enregistrer } from '../lib/store'
 import { useContact } from '../lib/reglages'
+import { track } from '../lib/analytics'
 import heroImage from '../assets/ateliers/broderie.webp'
 import fuseau from '../assets/association/fuseau.webp'
 import pastille from '../assets/v3/contact/pastille.svg'
@@ -149,6 +150,7 @@ export default function ContactPage() {
       )
     }
     setSent(true)
+    track('generate_lead', { form_name: 'demande_contact' })
   }
 
   const described = (n) => (errors[n] ? `ct-${n}-erreur` : undefined)

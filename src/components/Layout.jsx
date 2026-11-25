@@ -6,6 +6,7 @@ import SiteMotion from '../motion/SiteMotion'
 import Cursor from '../motion/Cursor'
 import PageTransition from '../motion/PageTransition'
 import CookieBanner from './CookieBanner'
+import { trackContactLinks } from '../lib/analytics'
 
 // Pages dont l'en-tête est posé sur une photo (navigation claire).
 const PHOTO_HEADERS = ['/']
@@ -19,6 +20,9 @@ export default function Layout() {
   useEffect(() => {
     if (!hash) window.scrollTo(0, 0)
   }, [pathname, hash])
+
+  // Suivi GA4 des clics sur les liens e-mail et téléphone.
+  useEffect(() => trackContactLinks(), [])
 
   return (
     <>
