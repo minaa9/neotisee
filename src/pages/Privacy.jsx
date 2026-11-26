@@ -40,6 +40,12 @@ const sections = [
               note, message) : pour publier votre témoignage sur le site, après relecture, avec votre
               seul prénom.
             </>,
+            <>
+              <strong className="font-normal text-brun">Mesure d’audience</strong>, uniquement si vous
+              l’acceptez (pages consultées, durée de visite, provenance, type d’appareil, ville
+              approximative) : pour comprendre comment le site est utilisé et l’améliorer. Ces
+              statistiques sont anonymes et consultées par l’équipe depuis son espace de gestion.
+            </>,
           ]}
         />
         <P>
@@ -48,8 +54,14 @@ const sections = [
           à l’équipe. Les témoignages ne sont publiés qu’après relecture.
         </P>
         <P>
-          La base légale de ces traitements est votre consentement (vous choisissez de nous écrire)
-          et l’intérêt légitime de l’association à organiser ses activités.
+          La base légale de ces traitements est votre consentement (vous choisissez de nous écrire,
+          vous acceptez ou non la mesure d’audience) et l’intérêt légitime de l’association à
+          organiser ses activités. Vous pouvez retirer votre accord à la mesure d’audience à tout
+          moment sur la page{' '}
+          <Link to="/cookies" className="link-fil text-terre-cuite">
+            gestion des cookies
+          </Link>
+          .
         </P>
       </>
     ),
@@ -73,6 +85,7 @@ const sections = [
         items={[
           <>Messages et demandes : le temps de traiter votre demande, puis au maximum 3 ans après notre dernier échange.</>,
           <>Témoignages du livre d’or : tant qu’ils sont publiés, ou jusqu’à ce que vous demandiez leur retrait.</>,
+          <>Statistiques de visite : 2 mois pour le détail dans Google Analytics, puis uniquement des chiffres globaux ; cookies de mesure : 13 mois au plus.</>,
         ]}
       />
     ),
@@ -82,7 +95,7 @@ const sections = [
     titre: 'Services extérieurs',
     contenu: (
       <>
-        <P>Pour fonctionner, le site s’appuie sur trois services :</P>
+        <P>Pour fonctionner, le site s’appuie sur quatre services :</P>
         <Liste
           items={[
             <>
@@ -97,6 +110,11 @@ const sections = [
               <strong className="font-normal text-brun">Google Fonts</strong> (polices d’écriture) :
               les polices sont chargées depuis les serveurs de Google, qui reçoivent ainsi votre
               adresse IP.
+            </>,
+            <>
+              <strong className="font-normal text-brun">Google Analytics</strong> (mesure d’audience) :
+              seulement si vous l’acceptez ; reçoit des informations sur votre visite, jamais votre nom
+              ni votre adresse e-mail.
             </>,
           ]}
         />
@@ -158,10 +176,10 @@ export default function PrivacyPage() {
       current="/confidentialite"
       title="Confidentialité"
       intro="Quelles données nous recevons, ce que nous en faisons et comment exercer vos droits. En bref : le strict nécessaire."
-      maj="16 novembre 2026"
+      maj="26 novembre 2026"
       essentiel={[
-        { titre: 'Ce que nous recevons', texte: 'Vos messages et témoignages' },
-        { titre: 'Pourquoi', texte: 'Vous répondre, rien d’autre' },
+        { titre: 'Ce que nous recevons', texte: 'Messages, témoignages, statistiques (avec accord)' },
+        { titre: 'Pourquoi', texte: 'Vous répondre, améliorer le site' },
         { titre: 'Combien de temps', texte: '3 ans au plus' },
         { titre: 'Vente ou publicité', texte: 'Jamais' },
       ]}

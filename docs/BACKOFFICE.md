@@ -1,6 +1,6 @@
 # Back-office Néotisse
 
-Le back-office se trouve à l'adresse **`/admin`** du site (par exemple `https://votre-site.netlify.app/admin`).
+Le back-office se trouve à l'adresse **`/admin`** du site (par exemple `https://neotisee.vercel.app/admin`).
 
 Il permet à l'équipe de gérer, sans toucher au code :
 
@@ -19,7 +19,7 @@ Il permet à l'équipe de gérer, sans toucher au code :
 ## Les deux modes
 
 - **Mode démo** : tant que Supabase n'est pas branché, le back-office s'ouvre **uniquement sur votre ordinateur** (`npm run dev`, adresse `localhost`). N'importe quelle adresse e-mail permet d'entrer, et les changements restent dans votre navigateur. Pratique pour tester.
-- **Sur le site en ligne sans Supabase**, la page `/admin` affiche « Espace fermé » : **personne ne peut entrer**. (Pour une soutenance sans Supabase, on peut ajouter la variable `VITE_ADMIN_DEMO=true` sur Netlify, puis la retirer ensuite.)
+- **Sur le site en ligne sans Supabase**, la page `/admin` affiche « Espace fermé » : **personne ne peut entrer**. (Pour une soutenance sans Supabase, on peut ajouter la variable `VITE_ADMIN_DEMO=true` sur Vercel, puis la retirer ensuite.)
 - **Mode en ligne** : une fois Supabase branché (étapes ci-dessous), les données sont enregistrées dans une vraie base, et seuls les comptes créés par l'association peuvent se connecter.
 
 ## La sécurité, en bref
@@ -33,7 +33,7 @@ Il permet à l'équipe de gérer, sans toucher au code :
 | Changer le mot de passe | Le mot de passe actuel est redemandé. |
 | Ordinateur perdu | Réglages → Compte et sécurité → « Déconnecter tous les appareils ». |
 | Données | Règles de la base (RLS) : un visiteur peut seulement envoyer un message ou un témoignage, jamais lire ni modifier. |
-| Hébergement | En-têtes de sécurité Netlify, `/admin` jamais référencé par Google. |
+| Hébergement | En-têtes de sécurité (`vercel.json`), `/admin` jamais référencé par Google. |
 
 ---
 
@@ -54,8 +54,8 @@ Il permet à l'équipe de gérer, sans toucher au code :
 1. **Authentication** → **Sign In / Providers** → désactivez **Allow new users to sign up** (personne d'autre ne pourra créer de compte).
 2. **Authentication** → **Users** → **Add user** → **Create new user** : **votre** adresse e-mail et un mot de passe solide (10 caractères ou plus, majuscules, chiffres, symbole), cochez **Auto Confirm User**.
 3. **Authentication** → **URL Configuration** :
-   - **Site URL** : l'adresse du site, par ex. `https://votre-site.netlify.app`
-   - **Redirect URLs** → **Add URL** : `https://votre-site.netlify.app/admin/**` (et `http://localhost:5173/admin/**` pour tester en local)
+   - **Site URL** : l'adresse du site, `https://neotisee.vercel.app`
+   - **Redirect URLs** → **Add URL** : `https://neotisee.vercel.app/admin/**` (et `http://localhost:5173/admin/**` pour tester en local)
 
    Sans cette étape, les liens « mot de passe oublié » et « changement d'adresse » ne ramènent pas au site.
 
@@ -81,11 +81,13 @@ Pour ajouter un autre membre de l'équipe : refaites l'étape 3.2 avec son adres
 
 Le fichier `.env.local` n'est jamais envoyé sur GitHub.
 
-### 6. Sur Netlify
-1. Netlify → votre site → **Site configuration** → **Environment variables** → **Add a variable** :
-   - `VITE_SUPABASE_URL` = l'URL du projet
-   - `VITE_SUPABASE_ANON_KEY` = la clé anon / publishable
-2. **Deploys** → **Trigger deploy** → **Deploy site**.
+### 6. Sur Vercel
+1. Vercel → projet **neotisee** → **Settings** → **Environments** → **Production** → **Environment Variables** :
+   - `VITE_SUPABASE_URL` = l'URL du projet (type **Config**)
+   - `VITE_SUPABASE_ANON_KEY` = la clé anon / publishable (type **Config**)
+2. **Deployments** → **…** sur le dernier déploiement → **Redeploy**.
+
+Pour les statistiques GA4 du back-office, voir `docs/STATISTIQUES.md`. Mise en ligne complète : `docs/VERCEL.md`.
 
 C'est tout : le back-office en ligne est branché.
 
