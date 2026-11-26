@@ -86,7 +86,7 @@ const sections = [
         <Liste
           items={[
             <>
-              <strong className="font-normal text-brun">Netlify</strong> (hébergement) : comme tout
+              <strong className="font-normal text-brun">Vercel</strong> (hébergement) : comme tout
               hébergeur, il reçoit votre adresse IP pour afficher le site et le protéger des abus.
             </>,
             <>

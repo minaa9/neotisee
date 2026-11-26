@@ -55,8 +55,8 @@ const sections = [
             [
               'Site',
               <>
-                Netlify, Inc. · 101 2nd Street, San Francisco, CA 94105, États-Unis ·{' '}
-                <Lien href="https://www.netlify.com">netlify.com</Lien>
+                Vercel Inc. · 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis ·{' '}
+                <Lien href="https://vercel.com">vercel.com</Lien>
               </>,
             ],
             [
@@ -160,7 +160,7 @@ export default function LegalNoticePage() {
       essentiel={[
         { titre: 'Éditeur', texte: 'Association Néotisse, loi 1901' },
         { titre: 'Siège', texte: 'Montpellier, France' },
-        { titre: 'Hébergeur', texte: 'Netlify, Inc.' },
+        { titre: 'Hébergeur', texte: 'Vercel Inc.' },
         { titre: 'Réalisation', texte: 'Agence ÉTHER' },
       ]}
       sections={sections}

@@ -25,21 +25,21 @@ bandeau jaune. Pour afficher les vrais chiffres, il faut une seule fois :
 2. Coller l'e-mail du compte de service, rôle **Lecteur**, décocher « Informer par e-mail », **Ajouter**.
 3. Dans **Administration › Détails de la propriété**, copier l'**ID de la propriété** (un nombre, ex. `512345678`).
 
-## 3. Ajouter deux variables sur Netlify (2 min)
+## 3. Ajouter deux variables chez l'hébergeur (2 min)
 
-Netlify › projet **neotisse-codee** › **Project configuration › Environment variables › Add a variable** :
+**Vercel** › projet › **Settings › Environment Variables** (ou, sur Netlify : **Project configuration › Environment variables**) :
 
 | Nom | Valeur |
 |---|---|
 | `GA4_PROPERTY_ID` | l'ID de la propriété (ex. `512345678`) |
 | `GA4_SERVICE_ACCOUNT` | tout le contenu du fichier `.json` téléchargé (ouvrir avec TextEdit, tout copier) |
 
-Puis **Deploys › Trigger deploy › Deploy site**. Le bandeau jaune disparaît :
+Puis redéployer (Vercel : **Deployments › … › Redeploy** ; Netlify : **Deploys › Trigger deploy**). Le bandeau jaune disparaît :
 ce sont les vrais chiffres.
 
 ## Comment ça marche
 
-- `netlify/functions/ga4-statistiques.mjs` interroge l'API Google Analytics Data
+- `netlify/functions/ga4-statistiques.mjs` (appelée par `api/ga4-statistiques.js` sur Vercel) interroge l'API Google Analytics Data
   avec le compte de service. Elle vérifie à chaque appel que la personne est
   connectée au back-office (jeton Supabase) : les chiffres ne sont jamais publics.
 - Les objectifs (seuil bas, seuil haut, objectif de demandes) sont enregistrés dans
