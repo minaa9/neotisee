@@ -7,10 +7,12 @@ import { useTable, useToast } from './hooks'
 import { fieldCls } from './format'
 import { JaugeMotDePasse, MotDePasse } from './Auth'
 import { forceMotDePasse } from './securite'
+import TextesAdmin from './TextesAdmin'
 
 const ONGLETS = [
   { id: 'coordonnees', label: 'Coordonnées', icon: 'M4 6h16v12H4V6Zm0 0 8 7 8-7' },
   { id: 'reseaux', label: 'Réseaux sociaux', icon: 'M7 4h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3Zm5 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm5-2h.01' },
+  { id: 'textes', label: 'Textes du site', icon: 'M5 6h14M5 10h14M5 14h9M5 18h6' },
   { id: 'photos', label: 'Photos du site', icon: 'M4 6h16v12H4V6Zm0 9 4-4 4 4 3-3 5 5M15 9h.01' },
   { id: 'annonce', label: 'Bandeau d’annonce', icon: 'M4 10v4h3l6 4V6L7 10H4Zm13-1a4 4 0 0 1 0 6' },
   { id: 'compte', label: 'Compte et sécurité', icon: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0' },
@@ -502,6 +504,7 @@ export default function ReglagesAdmin() {
             <>
               {onglet === 'coordonnees' && <Coordonnees key={cle('coordonnees')} valeur={valeurs.coordonnees} toast={setToast} />}
               {onglet === 'reseaux' && <Reseaux key={cle('reseaux')} valeur={valeurs.reseaux} toast={setToast} />}
+              {onglet === 'textes' && <TextesAdmin key={cle('textes')} valeur={valeurs.textes} toast={setToast} />}
               {onglet === 'photos' && <Photos valeur={valeurs.photos} toast={setToast} />}
               {onglet === 'annonce' && <Annonce key={cle('annonce')} valeur={valeurs.annonce} toast={setToast} />}
               {onglet === 'compte' && <Compte toast={setToast} />}

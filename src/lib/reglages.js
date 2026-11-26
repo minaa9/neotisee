@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { createElement, useEffect, useState } from 'react'
 import { publicList } from './store'
 import { contact, socials } from '../data/navigation'
 import heroAccueil from '../assets/home/hero.webp'
@@ -23,7 +23,58 @@ export const DEFAUTS = {
   },
   photos: {},
   annonce: { actif: false, texte: '', lien: '', libelle: '' },
+  // Textes des pages : seuls ceux modifiés dans le back-office sont enregistrés.
+  textes: {},
+  // Objectifs suivis dans « Statistiques » (par mois).
+  objectifs: { seuilBas: 3, seuilHaut: 10, objectifDemandes: 3 },
 }
+
+/**
+ * Textes modifiables depuis le back-office (Réglages › Textes du site), page par page.
+ * `defaut` = le texte actuel du site, affiché tant que rien n'a été changé.
+ * Un retour à la ligne dans un champ = un retour à la ligne sur le site.
+ */
+export const TEXTES = [
+  {
+    id: 'accueil',
+    page: 'Accueil',
+    bloc: 'Ouverture',
+    champs: [
+      { cle: 'accroche', label: 'Phrase d’accroche', multi: true, defaut: 'Des gestes oubliés,\ndes histoires à retisser' },
+      { cle: 'intro', label: 'Texte sous l’accroche', multi: true, defaut: 'Du Néolithique au Moyen Âge, redécouvrons les savoir-faire textiles qui racontent nos histoires.' },
+    ],
+  },
+  {
+    id: 'accueilAsso',
+    page: 'Accueil',
+    bloc: 'Section « L’association »',
+    champs: [
+      { cle: 'titre', label: 'Titre (1re ligne)', defaut: 'Un fil ancien,' },
+      { cle: 'titreItalique', label: 'Titre (2e ligne, en italique)', defaut: 'une histoire bien actuelle.' },
+      { cle: 'texte', label: 'Texte', multi: true, defaut: 'Néotisse fait revivre les savoir-faire textiles anciens à travers l’archéologie expérimentale et la médiation scientifique. Fondée en 2024 à Montpellier, l’association fait découvrir l’histoire du textile, du filage au tissage.' },
+      { cle: 'chiffreAteliers', label: 'Chiffre « ateliers de savoir-faire »', court: true, defaut: '4' },
+      { cle: 'chiffrePartenaires', label: 'Chiffre « partenaires culturels »', court: true, defaut: '5' },
+    ],
+  },
+  ...[
+    ['association', 'L’association', 'L’association', 'Un fil ancien,\nune histoire bien actuelle', 'Fondée en mai 2024 à Montpellier, Néotisse est une association loi 1901 née d’une conviction : les textiles anciens ont beaucoup à nous raconter.'],
+    ['equipe', 'L’équipe', 'L’équipe', 'Deux chercheuses,\nune même passion', 'Archéologie, égyptologie, gestes de tisserands : Néotisse est née de la rencontre entre la recherche et l’envie de transmettre.'],
+    ['ateliers', 'Nos ateliers', 'Nos ateliers', 'Apprendre, expérimenter,\ntransmettre', 'Des ateliers participatifs, adaptés à tous, pour découvrir les gestes anciens et explorer les matières.'],
+    ['actualites', 'Actualités', 'Actualités', 'Les fils de\nnos découvertes', 'Événements, ateliers, rencontres et nouvelles collaborations : suivez la vie de Néotisse.'],
+    ['calendrier', 'Calendrier', 'Calendrier', 'Nos prochains\nrendez-vous', 'Ateliers, événements, conférences… choisissez votre fil et venez tisser avec nous.'],
+    ['livre', 'Livre d’or', 'Livre d’or', 'Ils ont tissé\navec nous', 'Les mots laissés par celles et ceux qui ont partagé un atelier, une démonstration ou une rencontre.'],
+    ['contact', 'Contact', 'Contact', 'Une question ?\nUne envie de projet ?', 'Un atelier pour une école, un musée, un festival ? Écrivez-nous, nous serons ravies d’échanger avec vous.'],
+  ].map(([id, page, titre, sousTitre, texte]) => ({
+    id,
+    page,
+    bloc: 'En-tête de la page',
+    champs: [
+      { cle: 'titre', label: 'Titre', defaut: titre },
+      { cle: 'sousTitre', label: 'Sous-titre (en italique)', multi: true, defaut: sousTitre },
+      { cle: 'texte', label: 'Texte d’introduction', multi: true, defaut: texte },
+    ],
+  })),
+]
 
 /** Emplacements de photos que l'équipe peut remplacer (avec la photo d'origine). */
 export const EMPLACEMENTS = [
@@ -100,6 +151,20 @@ export function useSocials() {
     { label: 'Instagram', href: reseaux.instagram },
     { label: 'Facebook', href: reseaux.facebook },
   ].filter((s) => s.href)
+}
+
+/**
+ * Textes modifiés d'un bloc (ex. useTexte('contact').titre).
+ * Renvoie seulement ce qui a été changé : sinon, la page garde son texte d'origine.
+ */
+export function useTexte(id) {
+  const t = useReglages().textes?.[id] || {}
+  return Object.fromEntries(Object.entries(t).filter(([, v]) => typeof v === 'string' && v.trim()))
+}
+
+/** « ligne 1\nligne 2 » → ligne 1<br />ligne 2 */
+export function lignes(texte) {
+  return texte.split('\n').flatMap((l, i) => (i ? [createElement('br', { key: `br${i}` }), l] : [l]))
 }
 
 /** Photo d'un emplacement : celle choisie dans le back-office, sinon celle d'origine. */
