@@ -4,7 +4,7 @@ import { MOTION_OK, SplitText, gsap, useGSAP } from '../../motion/gsap'
 import hero from '../../assets/home/hero.webp'
 import noeud from '../../assets/v3/home/noeud.svg'
 import flecheClair from '../../assets/v3/ui/fleche-clair.svg'
-import { usePhoto } from '../../lib/reglages'
+import { lignes, usePhoto, useTexte } from '../../lib/reglages'
 
 /**
  * Bouton « Découvrir l'association » : pilule en verre dépoli, sobre.
@@ -34,6 +34,8 @@ function HeroButton() {
 export default function Hero() {
   const ref = useRef(null)
   const photo = usePhoto('accueil', hero)
+  // Accroche et texte modifiables depuis le back-office (Réglages › Textes du site).
+  const t = useTexte('accueil')
 
   useGSAP(
     () => {
@@ -109,14 +111,20 @@ export default function Hero() {
           <h1 data-hero-title className="-ml-1 font-serif text-[96px] leading-[0.95] font-light tracking-[-0.02em] text-lin sm:text-[120px] xl:-ml-2 xl:text-[clamp(110px,15svh,140px)]">
             Néotisse
           </h1>
-          <p data-hero-lines className="mt-6 max-w-[700px] font-serif text-[38px] leading-[1.15] font-light text-lin italic sm:text-[48px] xl:mt-[12px] xl:text-[48px]">
-            Des gestes oubliés,
-            <br />
-            des histoires à retisser
+          <p key={t.accroche || 'origine'} data-hero-lines className="mt-6 max-w-[700px] font-serif text-[38px] leading-[1.15] font-light text-lin italic sm:text-[48px] xl:mt-[12px] xl:text-[48px]">
+            {t.accroche ? (
+              lignes(t.accroche)
+            ) : (
+              <>
+                Des gestes oubliés,
+                <br />
+                des histoires à retisser
+              </>
+            )}
           </p>
           <p data-hero-fade className="mt-6 max-w-[420px] text-courant text-lin/88 xl:mt-[17px]">
-            Du Néolithique au Moyen Âge, redécouvrons les savoir-faire textiles qui racontent nos
-            histoires.
+            {t.intro ||
+              'Du Néolithique au Moyen Âge, redécouvrons les savoir-faire textiles qui racontent nos histoires.'}
           </p>
           <div data-hero-fade>
             <HeroButton />

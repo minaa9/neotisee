@@ -181,8 +181,9 @@ export default function Dashboard() {
           {/* Raccourcis vers ce qui se personnalise */}
           <section data-bloc className="mt-8">
             <h2 className="font-serif text-[30px] leading-tight">Personnaliser <em>le site</em></h2>
-            <ul className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <ul className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {[
+                ['/admin/reglages?onglet=textes', 'Textes du site', 'Titres, accroches et chiffres des pages'],
                 ['/admin/reglages?onglet=photos', 'Photos du site', 'Changer les grandes photos des pages'],
                 ['/admin/ateliers', 'Ateliers', 'Textes, photos et ordre des ateliers'],
                 ['/admin/reglages?onglet=annonce', 'Bandeau d’annonce', 'Un message en haut de toutes les pages'],

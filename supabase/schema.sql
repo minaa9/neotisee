@@ -65,9 +65,9 @@ create table if not exists public.ateliers (
   created_at  timestamptz not null default now()
 );
 
--- Réglages du site : une ligne par groupe (coordonnees, reseaux, photos, annonce).
+-- Réglages du site : une ligne par groupe (coordonnees, reseaux, photos, annonce, textes, objectifs).
 create table if not exists public.reglages (
-  id          text primary key check (id in ('coordonnees', 'reseaux', 'photos', 'annonce')),
+  id          text primary key check (id in ('coordonnees', 'reseaux', 'photos', 'annonce', 'textes', 'objectifs')),
   valeur      jsonb not null default '{}'::jsonb,
   updated_at  timestamptz not null default now()
 );
