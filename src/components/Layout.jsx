@@ -7,6 +7,7 @@ import Cursor from '../motion/Cursor'
 import PageTransition from '../motion/PageTransition'
 import CookieBanner from './CookieBanner'
 import { trackContactLinks } from '../lib/analytics'
+import Seo from './Seo'
 
 // Pages dont l'en-tête est posé sur une photo (navigation claire).
 const PHOTO_HEADERS = ['/']
@@ -26,6 +27,7 @@ export default function Layout() {
 
   return (
     <>
+      <Seo />
       <a
         href="#contenu"
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-brun focus:px-4 focus:py-2 focus:text-lin"
