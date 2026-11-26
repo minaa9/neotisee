@@ -156,7 +156,7 @@ export default function LegalNoticePage() {
       current="/mentions-legales"
       title="Mentions légales"
       intro="Qui édite ce site, qui l’héberge et comment nous joindre."
-      maj="16 novembre 2026"
+      maj="26 novembre 2026"
       essentiel={[
         { titre: 'Éditeur', texte: 'Association Néotisse, loi 1901' },
         { titre: 'Siège', texte: 'Montpellier, France' },

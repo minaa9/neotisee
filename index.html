@@ -26,7 +26,8 @@
           s.src = 'https://www.googletagmanager.com/gtag/js?id=G-G6EEVQB8N4';
           document.head.appendChild(s);
           gtag('js', new Date());
-          gtag('config', 'G-G6EEVQB8N4');
+          // Cookies GA limités à 13 mois (recommandation CNIL), au lieu de 2 ans par défaut.
+          gtag('config', 'G-G6EEVQB8N4', { cookie_expires: 33696000 });
         }
       })();
     </script>
