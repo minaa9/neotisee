@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <!-- Mode consentement Google : doit s'exécuter avant le snippet GA4 injecté par Netlify.
+    <!-- Google Analytics 4 en mode consentement : le consentement par défaut est posé AVANT la balise.
          Rien n'est collecté tant que le visiteur n'a pas accepté (choix gardé 12 mois). -->
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -19,6 +19,15 @@
           ad_user_data: 'denied',
           ad_personalization: 'denied'
         });
+        // Balise GA4 (propriété « Néotisse vibecoding »), jamais chargée en local.
+        if (!/^(localhost|127\.|\[::1\])/.test(location.hostname)) {
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=G-G6EEVQB8N4';
+          document.head.appendChild(s);
+          gtag('js', new Date());
+          gtag('config', 'G-G6EEVQB8N4');
+        }
       })();
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

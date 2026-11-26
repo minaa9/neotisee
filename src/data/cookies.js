@@ -3,7 +3,7 @@
  * Le choix est gardé dans le navigateur (localStorage) pendant 12 mois
  * (la CNIL fixe un maximum de 13 mois), puis la bannière réapparaît.
  *
- * Google Analytics 4 (snippet Netlify) fonctionne en mode consentement :
+ * Google Analytics 4 (balise dans index.html) fonctionne en mode consentement :
  * index.html pose analytics_storage « denied » par défaut, et le choix
  * « audience » est transmis à gtag à chaque enregistrement.
  */

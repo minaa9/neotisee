@@ -3,7 +3,7 @@
  *
  * Deux modes :
  * - EN LIGNE : si VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY sont définies
- *   (fichier .env.local en local, variables d'environnement sur Netlify),
+ *   (fichier .env.local en local, variables d'environnement sur Vercel),
  *   tout est lu et écrit dans la base Supabase de l'association.
  * - DÉMO : sinon, les données sont gardées dans ce navigateur (localStorage),
  *   à partir des contenus actuels du site. Pratique pour essayer le

@@ -42,12 +42,18 @@ export const PAGES = {
 export async function chargerStatistiques(jours) {
   try {
     const session = isLive ? await getSession() : null
-    const r = await fetch(`/.netlify/functions/ga4-statistiques?jours=${jours}`, {
-      headers: session?.access_token ? { authorization: `Bearer ${session.access_token}` } : {},
-    })
-    const type = r.headers.get('content-type') || ''
-    // En local (sans Netlify), la fonction n'existe pas : données d'exemple.
-    if (!type.includes('application/json')) return { etat: 'exemple', raison: 'local', donnees: exemple(jours) }
+    const headers = session?.access_token ? { authorization: `Bearer ${session.access_token}` } : {}
+    // Vercel (/api) puis Netlify : la première adresse qui répond en JSON est la bonne.
+    let r = null
+    for (const url of [`/api/ga4-statistiques?jours=${jours}`, `/.netlify/functions/ga4-statistiques?jours=${jours}`]) {
+      const essai = await fetch(url, { headers })
+      if ((essai.headers.get('content-type') || '').includes('application/json')) {
+        r = essai
+        break
+      }
+    }
+    // En local (sans hébergeur), la fonction n'existe pas : données d'exemple.
+    if (!r) return { etat: 'exemple', raison: 'local', donnees: exemple(jours) }
     const data = await r.json()
     if (r.ok && data.configure === false) return { etat: 'exemple', raison: 'non-relie', donnees: exemple(jours) }
     if (!r.ok) return { etat: 'erreur', message: data.erreur || 'Statistiques indisponibles.', donnees: null }
