@@ -13,6 +13,7 @@ import GuestbookAdmin from './GuestbookAdmin'
 import MessagesAdmin from './MessagesAdmin'
 import AteliersAdmin from './AteliersAdmin'
 import ReglagesAdmin from './ReglagesAdmin'
+import StatistiquesAdmin from './StatistiquesAdmin'
 
 const NAV = [
   { to: '/admin', label: 'Tableau de bord', end: true, icon: 'M3 12h7V3H3v9Zm11 9h7v-9h-7v9ZM3 21h7v-5H3v5Zm11-12h7V3h-7v6Z' },
@@ -21,6 +22,7 @@ const NAV = [
   { to: '/admin/ateliers', label: 'Ateliers', icon: 'M4 20V10a8 8 0 0 1 16 0v10M4 20h16M9 20v-6a3 3 0 0 1 6 0v6' },
   { to: '/admin/livre-d-or', label: 'Livre d’or', icon: 'M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z', badge: 'temoignages' },
   { to: '/admin/messages', label: 'Messages', icon: 'M4 6h16v12H4V6Zm0 0 8 7 8-7', badge: 'messages' },
+  { to: '/admin/statistiques', label: 'Statistiques', icon: 'M4 20h16M7 16v-5m5 5V7m5 9v-8' },
   {
     to: '/admin/reglages',
     label: 'Réglages',
@@ -223,6 +225,7 @@ export default function AdminApp() {
         <Route path="livre-d-or" element={<GuestbookAdmin />} />
         <Route path="messages" element={<MessagesAdmin />} />
         <Route path="ateliers" element={<AteliersAdmin />} />
+        <Route path="statistiques" element={<StatistiquesAdmin />} />
         <Route path="reglages" element={<ReglagesAdmin />} />
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Routes>
